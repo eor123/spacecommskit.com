@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pico Imaging Project — SpaceCommsKit OpenLST Explorer Kit</title>
+<meta name="description" content="Complete guide to building the OpenLST-Pico remote imaging pipeline. Capture JPEG images with an Arducam OV2640 and transfer them over 437MHz RF to your Windows PC.">
+<link rel="canonical" href="https://www.spacecommskit.com/pico.html">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo">SpaceComms<span>Kit</span><span class="logo-tag">437 MHz</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="kit.html">The Kit</a></li>
+    <li><a href="documentation.html">Documentation</a></li>
+    <li><a href="software.html">Software</a></li>
+    <li><a href="pico.html" class="active">Pico Project</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="classified.html">⬛ Section 7</a></li>
+    <li><a href="kit.html#buy" class="nav-cta">Buy a Kit</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="hero-inner">
+    <span class="eyebrow">Pico Imaging Project · Full Replication Guide</span>
+    <h1 class="hero-title">Remote Image Capture<br><span>Over 437MHz RF</span></h1>
+    <p class="hero-sub">
+      A proven end-to-end pipeline: command a Raspberry Pi Pico over RF,
+      capture a JPEG image with an Arducam OV2640 camera,
+      and transfer it back to your Windows PC — all wirelessly.
+    </p>
+    <a href="#wiring" class="btn btn-primary">Start Building →</a>
+  </div>
+</section>
+
+<!-- Overview -->
+<div class="section-panel">
+<div class="section">
+  <span class="eyebrow eyebrow-dark">System Overview</span>
+  <h2 class="section-title">How It Works</h2>
+  <p class="section-lead">The Pico acts as a remote payload processor. Board 0004 receives RF commands and forwards them to the Pico over UART. The Pico handles camera, storage, and file transfer.</p>
+
+  <div style="background:var(--void);border-radius:var(--radius-lg);padding:32px;margin-top:40px;font-family:var(--font-mono);font-size:13px;line-height:2.2;color:var(--text-inv);">
+    <div style="color:var(--cyan);">// Complete RF imaging pipeline</div>
+    <br>
+    <span style="color:#fff;">Windows Ground Station</span>
+    <span style="color:#666;"> ──── COM5 · 115200 baud · USB-Serial ────► </span>
+    <span style="color:var(--blue);">Board 0001</span><br>
+    <span style="color:#666;padding-left:160px;">RF 437MHz · 7.4kbaud · 2-FSK+FEC ────► </span>
+    <span style="color:var(--blue);">Board 0004</span><br>
+    <span style="color:#666;padding-left:304px;">UART0 · 115200 baud ────► </span>
+    <span style="color:var(--cyan);">Raspberry Pi Pico</span><br>
+    <span style="color:#666;padding-left:420px;">SPI0 · 400kHz ────► </span>
+    <span style="color:var(--gold);">Arducam OV2640</span><br>
+    <span style="color:#666;padding-left:420px;">SPI0 · 400kHz ────► </span>
+    <span style="color:var(--gold);">SD Card</span>
+  </div>
+
+  <div class="feature-grid" style="background:transparent;margin-top:32px;">
+    <div style="background:var(--void);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;">
+      <div style="font-size:28px;margin-bottom:12px;">📡</div>
+      <h3 style="color:#fff;font-size:15px;margin-bottom:6px;">SNAP Command</h3>
+      <p style="font-size:13px;color:var(--text-inv);">Send PICO Snap from ground station. Pico captures JPEG and saves to SD. Returns filename and size confirmation.</p>
+    </div>
+    <div style="background:var(--void);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;">
+      <div style="font-size:28px;margin-bottom:12px;">📋</div>
+      <h3 style="color:#fff;font-size:15px;margin-bottom:6px;">LIST Command</h3>
+      <p style="font-size:13px;color:var(--text-inv);">Request SD card file listing over RF. Returns comma-separated filenames displayed in the Files tab.</p>
+    </div>
+    <div style="background:var(--void);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;">
+      <div style="font-size:28px;margin-bottom:12px;">⬇️</div>
+      <h3 style="color:#fff;font-size:15px;margin-bottom:6px;">GET Command</h3>
+      <p style="font-size:13px;color:var(--text-inv);">Transfer image in 200-byte chunks over RF. Ground station reassembles and saves to Images\ folder. Auto-opens Explorer.</p>
+    </div>
+    <div style="background:var(--void);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;">
+      <div style="font-size:28px;margin-bottom:12px;">🗑️</div>
+      <h3 style="color:#fff;font-size:15px;margin-bottom:6px;">DELETE Command</h3>
+      <p style="font-size:13px;color:var(--text-inv);">Remove files from SD card remotely. Confirmation dialog prevents accidental deletion.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- Parts List -->
+<div class="section-dark">
+<div class="section">
+  <span class="eyebrow">Parts List</span>
+  <h2 class="section-title-inv section-title">What You'll Need</h2>
+  <p class="section-lead-inv section-lead">In addition to the OpenLST Explorer Dev Kit (which provides board 0004), you need these additional components for the imaging pipeline.</p>
+
+  <table class="spec-table" style="margin-top:40px;">
+    <tr><th>Component</th><th>Notes</th><th>Link</th></tr>
+    <tr>
+      <td style="color:var(--text-inv);">Raspberry Pi Pico</td>
+      <td style="color:var(--text-inv);">Original Pico (RP2040). Micro USB cable required. May need extension cable — board 0004 must be 2–4 feet from board 0001.</td>
+      <td><a href="https://www.raspberrypi.com/products/raspberry-pi-pico/" target="_blank" style="color:var(--cyan);">raspberrypi.com</a></td>
+    </tr>
+    <tr>
+      <td style="color:var(--text-inv);">Arducam OV2640 Mini 2MP</td>
+      <td style="color:var(--text-inv);">SPI camera module. Must be direct-wired to Pico — not through a breadboard. Breadboard connections are unreliable at SPI speeds.</td>
+      <td><a href="https://www.amazon.com/dp/B012UXNDOY" target="_blank" style="color:var(--cyan);">Amazon →</a></td>
+    </tr>
+    <tr>
+      <td style="color:var(--text-inv);">SPI MicroSD Card Adapter</td>
+      <td style="color:var(--text-inv);"><strong style="color:#FFB800;">Important:</strong> Use an adapter with 5V power input and 3.3V logic (level-shifted). Connect VCC to Pico VBUS (5V), not 3.3V.</td>
+      <td><a href="https://www.amazon.com/dp/B07MTTLF75" target="_blank" style="color:var(--cyan);">Amazon →</a></td>
+    </tr>
+    <tr>
+      <td style="color:var(--text-inv);">MicroSD Card</td>
+      <td style="color:var(--text-inv);">Format as FAT32 before use. 8GB or larger recommended.</td>
+      <td>Any retailer</td>
+    </tr>
+    <tr>
+      <td style="color:var(--text-inv);">USB to Serial FTDI Adapter</td>
+      <td style="color:var(--text-inv);">3.3V TTL. Used to connect board 0001 to your Windows PC. Included with Explorer Dev Kit.</td>
+      <td><a href="https://www.amazon.com/dp/B07WX2DSVB" target="_blank" style="color:var(--cyan);">Amazon →</a></td>
+    </tr>
+    <tr>
+      <td style="color:var(--text-inv);">Jumper Wires</td>
+      <td style="color:var(--text-inv);">Male-to-female and male-to-male. Use direct wires for camera — not breadboard connections.</td>
+      <td>Any retailer</td>
+    </tr>
+  </table>
+</div>
+</div>
+
+<!-- Wiring -->
+<div class="section" id="wiring">
+  <span class="eyebrow eyebrow-dark">Wiring Guide</span>
+  <h2 class="section-title">Complete Wiring Diagram</h2>
+  <p class="section-lead">All three devices share the Pico's SPI0 bus with separate chip select pins. Follow this diagram exactly — pin assignment matters.</p>
+
+  <img src="images/pico_circuit.jpg" alt="OpenLST Pico Image RF Transfer Project wiring diagram"
+    style="border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);width:100%;margin:40px 0;">
+
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;margin-top:16px;">
+
+    <div>
+      <h3 style="margin-bottom:12px;color:var(--blue);">Board 0004 → Pico</h3>
+      <table class="spec-table">
+        <tr><th>Board 0004 Pin</th><th>Pico Pin</th></tr>
+        <tr><td>P1_5 (UART0 TX)</td><td>GP1 (UART0 RX)</td></tr>
+        <tr><td>P1_4 (UART0 RX)</td><td>GP0 (UART0 TX)</td></tr>
+        <tr><td>GND</td><td>GND</td></tr>
+      </table>
+    </div>
+
+    <div>
+      <h3 style="margin-bottom:12px;color:var(--gold);">Arducam OV2640 → Pico</h3>
+      <table class="spec-table">
+        <tr><th>Camera Pin</th><th>Pico Pin</th></tr>
+        <tr><td>VCC</td><td>3.3V</td></tr>
+        <tr><td>GND</td><td>GND</td></tr>
+        <tr><td>MISO</td><td>GP16</td></tr>
+        <tr><td>MOSI</td><td>GP19</td></tr>
+        <tr><td>SCK</td><td>GP18</td></tr>
+        <tr><td>CS</td><td>GP15</td></tr>
+        <tr><td>SDA</td><td>GP4</td></tr>
+        <tr><td>SCL</td><td>GP5</td></tr>
+      </table>
+    </div>
+
+    <div>
+      <h3 style="margin-bottom:12px;color:var(--cyan);">SD Card Adapter → Pico</h3>
+      <table class="spec-table">
+        <tr><th>SD Card Pin</th><th>Pico Pin</th></tr>
+        <tr><td>VCC</td><td><strong style="color:#FFB800;">VBUS (5V) ⚠️</strong></td></tr>
+        <tr><td>GND</td><td>GND</td></tr>
+        <tr><td>MISO</td><td>GP16 (shared)</td></tr>
+        <tr><td>MOSI</td><td>GP19 (shared)</td></tr>
+        <tr><td>SCK</td><td>GP18 (shared)</td></tr>
+        <tr><td>CS</td><td>GP17</td></tr>
+      </table>
+    </div>
+
+  </div>
+
+  <div class="notice notice-warn" style="margin-top:24px;">
+    <div class="notice-icon">⚡</div>
+    <div>
+      <strong>SD Card Power — Critical</strong>
+      <p>The SD card adapter VCC must connect to the Pico's VBUS pin (5V from USB), NOT the 3.3V pin. Using 3.3V will cause unreliable SD card operation. The Arducam uses 3.3V — do not connect it to VBUS.</p>
+    </div>
+  </div>
+
+  <div class="notice notice-warn" style="margin-top:12px;">
+    <div class="notice-icon">🔌</div>
+    <div>
+      <strong>Camera — Direct Wire Required</strong>
+      <p>The Arducam OV2640 must be connected with direct jumper wires — not through a breadboard. Breadboard connections introduce enough resistance and capacitance to make SPI communication unreliable at 400kHz, causing FIFO read failures.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Step by Step -->
+<div class="section-panel">
+<div class="section">
+  <span class="eyebrow eyebrow-dark">Setup Guide</span>
+  <h2 class="section-title">Step-by-Step Setup</h2>
+
+  <div style="display:flex;flex-direction:column;gap:20px;margin-top:40px;max-width:800px;">
+
+    <div style="display:flex;gap:20px;">
+      <div style="min-width:40px;height:40px;background:var(--blue);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0;">1</div>
+      <div>
+        <h3 style="margin-bottom:6px;">Install MicroPython on the Pico</h3>
+        <p style="color:var(--text-muted);font-size:14px;">Download MicroPython v1.27 for the Pico from micropython.org. Hold BOOTSEL while connecting USB, then copy the .uf2 file to the drive that appears. Install <a href="https://thonny.org" target="_blank">Thonny</a> to manage files.</p>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:20px;">
+      <div style="min-width:40px;height:40px;background:var(--blue);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0;">2</div>
+      <div>
+        <h3 style="margin-bottom:6px;">Install Pico Firmware</h3>
+        <p style="color:var(--text-muted);font-size:14px;">Open Thonny, connect to the Pico, and upload <a href="https://github.com/eor123/spacecommskit/raw/main/pico/sdcard.py" target="_blank">sdcard.py</a> first, then <a href="https://github.com/eor123/spacecommskit/raw/main/pico/main.py" target="_blank">main.py</a>. Save main.py as <code style="background:var(--panel);padding:1px 6px;border-radius:4px;">main.py</code> on the Pico — it runs automatically at boot.</p>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:20px;">
+      <div style="min-width:40px;height:40px;background:var(--blue);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0;">3</div>
+      <div>
+        <h3 style="margin-bottom:6px;">Wire Everything</h3>
+        <p style="color:var(--text-muted);font-size:14px;">Follow the wiring diagram above. Direct-wire the camera (no breadboard). Connect SD card VCC to VBUS. Connect board 0004 UART0 (P1_5 → GP1, P1_4 → GP0). Insert formatted microSD card.</p>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:20px;">
+      <div style="min-width:40px;height:40px;background:var(--blue);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0;">4</div>
+      <div>
+        <h3 style="margin-bottom:6px;">Flash Board 0004 Custom Firmware</h3>
+        <p style="color:var(--text-muted);font-size:14px;">Board 0004 needs the custom firmware with PICO_MSG support. Clone <a href="https://github.com/eor123/openlst" target="_blank">github.com/eor123/openlst</a>, build with SDCC, and flash OTA from the ground station Firmware tab. See the <a href="documentation.html">Developer Guide</a> for full build instructions.</p>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:20px;">
+      <div style="min-width:40px;height:40px;background:var(--blue);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0;">5</div>
+      <div>
+        <h3 style="margin-bottom:6px;">Power Up and Test</h3>
+        <p style="color:var(--text-muted);font-size:14px;">Power board 0001 (external 5V), power board 0004, power Pico via USB. In the ground station, set HWID to 0004. Wait 5–10 seconds for Pico boot and camera init. Send <strong>PICO Ping</strong> from Custom Commands — you should see <code style="background:var(--panel);padding:1px 6px;border-radius:4px;">✓ ack → PICO:ACK</code>.</p>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:20px;">
+      <div style="min-width:40px;height:40px;background:var(--green);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0;">✓</div>
+      <div>
+        <h3 style="margin-bottom:6px;">Capture Your First Image</h3>
+        <p style="color:var(--text-muted);font-size:14px;">Send <strong>PICO Snap</strong> from Custom Commands. You'll see <code style="background:var(--panel);padding:1px 6px;border-radius:4px;">✓ ack → SNAP:OK:snap_001.jpg:4617</code>. Go to the Files tab, click Refresh List, select snap_001.jpg, click Get File. Image saves to your Images\ folder and Explorer opens automatically.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- Troubleshooting -->
+<div class="section-dark">
+<div class="section">
+  <span class="eyebrow">Troubleshooting</span>
+  <h2 class="section-title-inv section-title">Common Issues</h2>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:40px;">
+
+    <div class="card card-dark">
+      <h3 style="font-size:15px;margin-bottom:8px;">PICO commands return no reply</h3>
+      <p style="font-size:13px;">Wait 5–10 seconds after Pico boot — camera initializes on first idle timeout. Verify UART wires (P1_5→GP1, P1_4→GP0). Confirm Pico is running main.py by checking Thonny console.</p>
+    </div>
+
+    <div class="card card-dark">
+      <h3 style="font-size:15px;margin-bottom:8px;">SNAP returns FIFO error</h3>
+      <p style="font-size:13px;">Camera is on breadboard — direct wire required. Or SPI was corrupted by SD mount — power cycle Pico. Check camera VCC is on 3.3V not VBUS.</p>
+    </div>
+
+    <div class="card card-dark">
+      <h3 style="font-size:15px;margin-bottom:8px;">SD card not mounting</h3>
+      <p style="font-size:13px;">SD card VCC must be on VBUS (5V pin), not 3.3V. Confirm card is formatted as FAT32. Try a different SD card — some cards are incompatible with SPI mode.</p>
+    </div>
+
+    <div class="card card-dark">
+      <h3 style="font-size:15px;margin-bottom:8px;">File transfer stalls or fails</h3>
+      <p style="font-size:13px;">Boards too close together — maintain 2–4 feet separation. Check RF link quality with Get Telem (RSSI should be above −90 dBm). Retry logic will attempt each chunk 3 times.</p>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="nav-logo" style="color:#fff;">SpaceComms<span style="color:var(--cyan);">Kit</span></div>
+      <p>Flight-heritage RF communications for engineers and researchers. Hand-assembled in Tennessee, USA.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <a href="kit.html">The Kit</a>
+      <a href="kit.html#buy">Buy Now</a>
+    </div>
+    <div class="footer-col">
+      <h4>Resources</h4>
+      <a href="documentation.html">Documentation</a>
+      <a href="software.html">Software</a>
+      <a href="pico.html">Pico Project</a>
+      <a href="https://github.com/eor123/spacecommskit" target="_blank">GitHub</a>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <a href="mailto:info@spacecommskit.com">info@spacecommskit.com</a>
+      <a href="mailto:support@spacecommskit.com">support@spacecommskit.com</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 SpaceCommsKit · Tennessee, USA · Ships to United States only</p>
+    <p>Based on OpenLST by Planet Labs Inc. (GPLv3)</p>
+  </div>
+</footer>
+
+</body>
+</html>

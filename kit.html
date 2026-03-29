@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Kit — SpaceCommsKit OpenLST Explorer Kit</title>
+<meta name="description" content="OpenLST Explorer Kit pricing and specifications. Single board $500, Ground Station Kit $750, Explorer Dev Kit $1500. Hand-assembled in Tennessee. US shipping only.">
+<meta name="keywords" content="OpenLST kit price, CC1110 development kit, 437MHz radio kit, CubeSat ground station kit, RF development board">
+<link rel="canonical" href="https://www.spacecommskit.com/kit.html">
+<link rel="stylesheet" href="style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "OpenLST Explorer Kit",
+  "description": "Flight-heritage 437MHz RF communications development kit based on Planet Labs OpenLST design. Hand-assembled in Tennessee.",
+  "brand": { "@type": "Brand", "name": "SpaceCommsKit" },
+  "offers": [
+    { "@type": "Offer", "name": "Single Board Kit", "price": "500", "priceCurrency": "USD", "eligibleRegion": "US" },
+    { "@type": "Offer", "name": "Ground Station Kit", "price": "750", "priceCurrency": "USD", "eligibleRegion": "US" },
+    { "@type": "Offer", "name": "Explorer Dev Kit", "price": "1500", "priceCurrency": "USD", "eligibleRegion": "US" }
+  ]
+}
+</script>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo">SpaceComms<span>Kit</span><span class="logo-tag">437 MHz</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="kit.html" class="active">The Kit</a></li>
+    <li><a href="documentation.html">Documentation</a></li>
+    <li><a href="software.html">Software</a></li>
+    <li><a href="pico.html">Pico Project</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="classified.html">⬛ Section 7</a></li>
+    <li><a href="#buy" class="nav-cta">Buy a Kit</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-inner">
+    <span class="eyebrow">OpenLST Explorer Kit · Three Configurations</span>
+    <h1 class="hero-title">The Right Kit for<br><span>Every Project Stage</span></h1>
+    <p class="hero-sub">From single-board evaluation to a complete two-radio development system — every kit ships bootloader-flashed, lab-keyed, and ready to operate.</p>
+    <div class="flex gap-16">
+      <a href="#buy" class="btn btn-primary">See Pricing →</a>
+      <a href="documentation.html" class="btn btn-outline">Read the Docs</a>
+    </div>
+  </div>
+</section>
+
+<!-- Hardware Story -->
+<div class="section-panel">
+<div class="section">
+  <span class="eyebrow eyebrow-dark">The Hardware</span>
+  <h2 class="section-title">Built to the Original Spec</h2>
+  <p class="section-lead">The SpaceCommsKit board matches the OpenLST reference gerbers from Planet Labs exactly — with two modern component substitutions for parts that are no longer in production.</p>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;margin-top:40px;">
+    <div>
+      <img src="images/board_with_antenna.jpg" alt="OpenLST Explorer Kit board with 437MHz antenna"
+        style="border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);width:100%;">
+      <p class="text-muted text-center mt-16">OpenLST Explorer Kit board with 437MHz SMA antenna</p>
+    </div>
+    <div>
+      <h3 style="margin-bottom:16px;">Component Substitutions</h3>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">
+        Two components in the original design became unavailable. Both replacements are pin-for-pin equivalents — same footprint, same electrical specification, no schematic changes required.
+      </p>
+      <table class="spec-table">
+        <tr><th>Original Part</th><th>Replacement</th><th>Function</th></tr>
+        <tr>
+          <td>Qorvo RFFM6403SB</td>
+          <td><strong>RFFM6406</strong></td>
+          <td>RF Front-End Module</td>
+        </tr>
+        <tr>
+          <td>pSemi PE4259</td>
+          <td><strong>PE4250MLI-2</strong></td>
+          <td>RF Switch</td>
+        </tr>
+      </table>
+      <div class="notice notice-info" style="margin-top:20px;">
+        <div class="notice-icon">🔍</div>
+        <div>
+          <strong>Source Verified</strong>
+          <p>All components sourced exclusively from Digi-Key, Mouser, or manufacturer direct. No clone parts, no gray market chips.</p>
+        </div>
+      </div>
+      <h3 style="margin-top:28px;margin-bottom:16px;">Board Specifications</h3>
+      <table class="spec-table" id="specs">
+        <tr><th>Parameter</th><th>Value</th></tr>
+        <tr><td>RF Frequency</td><td>437 MHz (amateur 70cm band)</td></tr>
+        <tr><td>Modulation</td><td>2-FSK with Forward Error Correction</td></tr>
+        <tr><td>Data Rate</td><td>7.4 kbaud</td></tr>
+        <tr><td>TX Power</td><td>+30 dBm (1 Watt)</td></tr>
+        <tr><td>Receiver Sensitivity</td><td>−112 dBm</td></tr>
+        <tr><td>Microcontroller</td><td>Texas Instruments CC1110 · 26MHz</td></tr>
+        <tr><td>Flash Memory</td><td>32 KB</td></tr>
+        <tr><td>Interface</td><td>3.3V TTL UART × 2 · 115200 baud</td></tr>
+        <tr><td>Supply Voltage</td><td>5V DC · Never exceed 5V</td></tr>
+        <tr><td>Board Size</td><td>50 × 60 × 5 mm</td></tr>
+        <tr><td>Assembly</td><td>Hand-assembled · Tennessee, USA</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- Stand photos -->
+<div class="section-dark">
+<div class="section">
+  <span class="eyebrow">Custom Accessories</span>
+  <h2 class="section-title-inv section-title">3D Printed Stands — Designed In-House</h2>
+  <p class="section-lead-inv section-lead">
+    Every Ground Station Kit and Explorer Dev Kit includes custom 3D printed board stands designed specifically for the OpenLST board. The OpenLST logo is embossed on the front face. Stands include mounting points for the board and cable management.
+  </p>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:40px;">
+    <div>
+      <img src="images/ground_station_full.jpg" alt="OpenLST ground station with custom 3D printed stand"
+        style="border-radius:var(--radius-lg);width:100%;">
+      <p class="text-muted text-center mt-16">Ground Station Kit — board in custom stand with power adapter</p>
+    </div>
+    <div>
+      <img src="images/dev_kit_full.jpg" alt="OpenLST Explorer Dev Kit complete setup"
+        style="border-radius:var(--radius-lg);width:100%;">
+      <p class="text-muted text-center mt-16">Explorer Dev Kit — both radios, stands, and accessories</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- Power Warning -->
+<div class="section">
+  <div class="notice notice-warn" style="max-width:800px;margin:0 auto 40px;">
+    <div class="notice-icon">⚡</div>
+    <div>
+      <strong>Critical — Power Supply Requirements</strong>
+      <p>These boards operate at 5V DC maximum — never connect more than 5 volts under any circumstances. During RF transmission the power amplifier draws a significant current spike. If the reboot LED illuminates during transmit, your power supply cannot deliver sufficient current. Always use the included 5V 3A adapter or a supply rated for at least 2A at 5V.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Pricing / Buy -->
+<div class="section-panel" id="buy">
+<div class="section">
+  <span class="eyebrow eyebrow-dark">Pricing</span>
+  <h2 class="section-title">Choose Your Configuration</h2>
+  <p class="section-lead">All kits are hand-assembled to order. Lead times vary with component availability — contact us for current lead time before ordering.</p>
+
+  <div class="kit-grid">
+    <div class="kit-card">
+      <div class="kit-card-body">
+        <div class="kit-card-name">Entry · HWID 0001</div>
+        <div class="kit-card-title">Single Board Kit</div>
+        <div class="kit-card-price">$500 <span>USD</span></div>
+        <p class="kit-card-desc">One fully provisioned OpenLST radio board with antenna. Ready to integrate into your own hardware setup.</p>
+        <ul class="kit-includes">
+          <li>1× OpenLST radio board (CC1110 · 437MHz)</li>
+          <li>1× 437MHz SMA antenna</li>
+          <li>Bootloader flashed</li>
+          <li>Lab AES keys (all-F) loaded</li>
+          <li>HWID assigned (0001 or your choice)</li>
+          <li>User Guide PDF</li>
+          <li>Developer Guide PDF</li>
+        </ul>
+        <a href="https://spacecommskit.myshopify.com" target="_blank" class="btn btn-primary" style="width:100%;justify-content:center;">
+          Order on Shopify →
+        </a>
+      </div>
+    </div>
+
+    <div class="kit-card featured">
+      <div class="kit-card-badge">Most Popular</div>
+      <div class="kit-card-body">
+        <div class="kit-card-name">Standard · Ground Station</div>
+        <div class="kit-card-title">Ground Station Kit</div>
+        <div class="kit-card-price">$750 <span>USD</span></div>
+        <p class="kit-card-desc">Complete ground station setup — board in custom stand with power management. Plug in, connect, operate.</p>
+        <ul class="kit-includes">
+          <li>1× OpenLST radio board (CC1110 · 437MHz)</li>
+          <li>1× 437MHz SMA antenna</li>
+          <li>Custom 3D printed board stand</li>
+          <li>Inline power switch</li>
+          <li>5V 3A power adapter</li>
+          <li>Bootloader flashed · Lab keys · HWID</li>
+          <li>User Guide + Developer Guide PDF</li>
+        </ul>
+        <a href="https://spacecommskit.myshopify.com" target="_blank" class="btn btn-primary" style="width:100%;justify-content:center;">
+          Order on Shopify →
+        </a>
+      </div>
+    </div>
+
+    <div class="kit-card">
+      <div class="kit-card-body">
+        <div class="kit-card-name">Professional · HWID 0001 + 0004</div>
+        <div class="kit-card-title">Explorer Dev Kit</div>
+        <div class="kit-card-price">$1,500 <span>USD</span></div>
+        <p class="kit-card-desc">The complete two-radio system. Everything you need for RF link testing, payload experiments, OTA firmware development, and remote imaging.</p>
+        <ul class="kit-includes">
+          <li>2× OpenLST radio boards (HWID 0001 + 0004)</li>
+          <li>2× 437MHz SMA antennas</li>
+          <li>2× Custom 3D printed board stands</li>
+          <li>2× 5V 3A power adapters</li>
+          <li>Both boards bootloader flashed · Lab keys</li>
+          <li>OpenLST Ground Station software (Windows)</li>
+          <li>User Guide + Developer Guide PDF</li>
+        </ul>
+        <a href="https://spacecommskit.myshopify.com" target="_blank" class="btn btn-gold" style="width:100%;justify-content:center;">
+          Order on Shopify →
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div style="max-width:700px;margin:40px auto 0;text-align:center;">
+    <p class="text-muted" style="margin-bottom:12px;">
+      ⚠️ <strong>Ships to United States only.</strong>
+      Lead times vary with parts availability.
+      Orders are assembled by hand — please allow 1–3 weeks.
+    </p>
+    <p class="text-muted">
+      Questions before ordering?
+      <a href="mailto:info@spacecommskit.com">info@spacecommskit.com</a>
+      &nbsp;·&nbsp;
+      Volume or university pricing available on request.
+    </p>
+  </div>
+</div>
+</div>
+
+<!-- Coming Soon -->
+<div class="section-dark">
+<div class="section text-center">
+  <span class="eyebrow">Coming Soon</span>
+  <h2 class="section-title-inv section-title" style="margin-left:auto;margin-right:auto;max-width:600px;">
+    Next Generation High-Speed Board
+  </h2>
+  <p class="section-lead-inv section-lead" style="margin-left:auto;margin-right:auto;">
+    Higher throughput. Same open-source philosophy. Same ground station software.
+    Sign up to be notified when it launches.
+  </p>
+  <form style="display:flex;gap:10px;max-width:440px;margin:0 auto;"
+        action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+    <input type="email" name="email" placeholder="your@email.com" required
+      style="flex:1;padding:12px 16px;border-radius:var(--radius);
+             border:1.5px solid var(--border);background:var(--surface);
+             color:#fff;font-size:14px;font-family:var(--font-body);">
+    <input type="hidden" name="form-type" value="nextgen-notify">
+    <button type="submit" class="btn" style="background:var(--cyan);color:var(--void);font-weight:700;">
+      Notify Me
+    </button>
+  </form>
+</div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="nav-logo" style="color:#fff;">SpaceComms<span style="color:var(--cyan);">Kit</span></div>
+      <p>Flight-heritage RF communications for engineers and researchers. Hand-assembled in Tennessee, USA.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <a href="kit.html">The Kit</a>
+      <a href="#specs">Specifications</a>
+      <a href="#buy">Buy Now</a>
+    </div>
+    <div class="footer-col">
+      <h4>Resources</h4>
+      <a href="documentation.html">Documentation</a>
+      <a href="software.html">Software</a>
+      <a href="pico.html">Pico Project</a>
+      <a href="https://github.com/eor123/spacecommskit" target="_blank">GitHub</a>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <a href="mailto:info@spacecommskit.com">info@spacecommskit.com</a>
+      <a href="mailto:support@spacecommskit.com">support@spacecommskit.com</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 SpaceCommsKit · Tennessee, USA · Ships to United States only</p>
+    <p>Based on OpenLST by Planet Labs Inc. (GPLv3)</p>
+  </div>
+</footer>
+
+</body>
+</html>
