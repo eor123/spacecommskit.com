@@ -4,20 +4,21 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>About — SpaceCommsKit</title>
-<meta name="description" content="SpaceCommsKit — bringing flight-heritage RF communications technology to engineers, researchers, and universities. Hand-assembled in Tennessee.">
+<meta name="description" content="SpaceCommsKit — bringing open-source RF communications technology to engineers, researchers, and universities. Based on Planet Labs OpenLST design. Hand-assembled in Tennessee.">
 <link rel="canonical" href="https://www.spacecommskit.com/about.html">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <nav class="nav">
-  <a href="index.html" class="nav-logo">SpaceComms<span>Kit</span><span class="logo-tag">437 MHz</span></a>
+  <a href="index.html" class="nav-logo">SpaceComms<span>Kit</span><span class="logo-tag">915 MHz</span></a>
   <ul class="nav-links">
     <li><a href="index.html">Home</a></li>
     <li><a href="kit.html">The Kit</a></li>
     <li><a href="documentation.html">Documentation</a></li>
     <li><a href="software.html">Software</a></li>
     <li><a href="pico.html">Pico Project</a></li>
+    <li><a href="groundstation.html">Ground Station</a></li>
     <li><a href="about.html" class="active">About</a></li>
     <li><a href="classified.html">⬛ Section 7</a></li>
     <li><a href="kit.html#buy" class="nav-cta">Buy a Kit</a></li>
@@ -41,8 +42,8 @@
   <span class="eyebrow eyebrow-dark">Our Mission</span>
   <div style="max-width:760px;margin:0 auto;text-align:center;">
     <h2 class="section-title" style="font-size:clamp(28px,4vw,44px);margin-bottom:24px;">
-      "Putting flight-heritage RF communications technology in the hands of every engineer,
-      researcher, and student — starting with a proven, open-source radio design
+      "Putting open-source RF communications technology — proven in the lab and inspired by real spacecraft design —
+      in the hands of every engineer, researcher, and student,
       at a price that doesn't require a launch contract."
     </h2>
     <div class="divider"></div>
@@ -63,13 +64,21 @@
         In 2018, Planet Labs did something remarkable — they open-sourced the radio design
         from their Dove Earth-imaging satellite constellation. The Dove Low-Speed Transceiver (LST)
         had by that point accumulated over 200 cumulative years of on-orbit data across more than
-        150 satellites, making it one of the most flight-proven small satellite radio designs ever built.
+        150 satellites, making it one of the most extensively operated small satellite radio designs ever built.
       </p>
       <p style="color:var(--text-inv);margin-bottom:16px;line-height:1.8;">
         The OpenLST project gave the world the complete hardware design, firmware source,
-        and documentation for a real spacecraft radio — not a simplified version,
-        not an educational abstraction, but the actual design that flew in space.
+        and documentation — not a simplified version, not an educational abstraction,
+        but the actual open-source design that informed real spacecraft work.
+        We built the SpaceCommsKit Explorer Kit on that foundation.
       </p>
+      <div style="background:rgba(26,111,235,0.1);border-left:3px solid var(--blue-lt);border-radius:6px;padding:14px 18px;margin-bottom:16px;">
+        <p style="color:var(--cyan);font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;font-family:var(--font-mono);">Experimental Development Kit</p>
+        <p style="color:var(--text-inv);font-size:13px;line-height:1.7;margin:0;">The SpaceCommsKit Explorer Kit is based on the open-source OpenLST design
+        with modern component substitutions. It is an experimental development and research tool —
+        not a certified flight unit. The board shares approximately 85% of the original circuit
+        architecture and is designed for lab research, education, and ground-based RF development.</p>
+      </div>
       <h3 class="inv" style="margin-bottom:16px;margin-top:28px;">Why We Built the Explorer Kit</h3>
       <p style="color:var(--text-inv);margin-bottom:16px;line-height:1.8;">
         The OpenLST project is extraordinary — but working with it requires a Linux build environment,
@@ -98,7 +107,7 @@
             <span style="color:var(--green);font-weight:700;">✓</span>
             <strong style="color:#fff;font-size:14px;">OTA firmware updates</strong>
           </div>
-          <p style="font-size:13px;color:var(--text-inv);margin-left:20px;">AES-signed, page-verified, over 437MHz RF. No physical access.</p>
+          <p style="font-size:13px;color:var(--text-inv);margin-left:20px;">AES-signed, page-verified, over RF. No physical access.</p>
         </div>
         <div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:var(--radius);padding:16px;">
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
@@ -156,6 +165,53 @@
       <div style="font-size:32px;margin-bottom:14px;">🖨️</div>
       <h3>Custom 3D Printed Stands</h3>
       <p style="font-size:14px;color:var(--text-muted);">Board stands are designed and printed in-house with the OpenLST logo embossed. Made to fit the board perfectly.</p>
+    </div>
+  </div>
+</div>
+
+<!-- LEO Guidance -->
+<div class="section">
+  <span class="eyebrow eyebrow-dark">Satellite Applications</span>
+  <h2 class="section-title">Using the Explorer Kit for LEO Research</h2>
+  <p class="section-lead">
+    The Explorer Kit is designed and characterized for terrestrial RF communications.
+    Researchers interested in LEO satellite applications should understand the link budget
+    and antenna requirements.
+  </p>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:32px;">
+    <div class="card">
+      <div style="font-size:32px;margin-bottom:14px;">🛰️</div>
+      <h3>LEO Link Budget Guidance</h3>
+      <p style="font-size:14px;color:var(--text-muted);line-height:1.7;">
+        At 915MHz with +27dBm TX power, the Explorer Kit provides comfortable link margin
+        to a 400–550km LEO satellite at elevation angles above approximately 15° using
+        a directional antenna. A 7–10 dBi yagi is recommended for satellite work.
+        For low elevation passes, reducing data rate to 1.2–9.6 kbaud significantly
+        improves link margin.
+      </p>
+    </div>
+    <div class="card">
+      <div style="font-size:32px;margin-bottom:14px;">📡</div>
+      <h3>The Planet Labs Approach</h3>
+      <p style="font-size:14px;color:var(--text-muted);line-height:1.7;">
+        This approach mirrors how Planet Labs operated the original OpenLST design on
+        their Dove constellation — the same RF architecture, tuned for the geometry of
+        an orbital pass. Ground stations focused on overhead passes where link margin
+        is strongest, using directional antennas for improved performance.
+        At 915MHz the Doppler shift of ±2.8 kHz at LEO velocities should also
+        be accounted for in receiver bandwidth selection.
+      </p>
+    </div>
+  </div>
+  <div class="notice notice-info" style="margin-top:24px;">
+    <div class="notice-icon">🔬</div>
+    <div>
+      <strong>Experimental Research Tool</strong>
+      <p>The OpenLST Explorer Kit is an experimental development and research platform —
+      not a certified flight unit. It is well-suited for ground-based RF research,
+      balloon payloads, UAV communications, and educational satellite ground station
+      development. For actual satellite integration additional engineering and
+      regulatory work is required.</p>
     </div>
   </div>
 </div>

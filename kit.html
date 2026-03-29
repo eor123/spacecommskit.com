@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Kit — SpaceCommsKit OpenLST Explorer Kit</title>
 <meta name="description" content="OpenLST Explorer Kit pricing and specifications. Single board $500, Ground Station Kit $750, Explorer Dev Kit $1500. Hand-assembled in Tennessee. US shipping only.">
-<meta name="keywords" content="OpenLST kit price, CC1110 development kit, 437MHz radio kit, CubeSat ground station kit, RF development board">
+<meta name="keywords" content="OpenLST kit price, CC1110 development kit, 915MHz radio kit, CubeSat ground station kit, RF development board">
 <link rel="canonical" href="https://www.spacecommskit.com/kit.html">
 <link rel="stylesheet" href="style.css">
 <script type="application/ld+json">
@@ -13,7 +13,7 @@
   "@context": "https://schema.org",
   "@type": "Product",
   "name": "OpenLST Explorer Kit",
-  "description": "Flight-heritage 437MHz RF communications development kit based on Planet Labs OpenLST design. Hand-assembled in Tennessee.",
+  "description": "OpenLST Explorer Kit — based on the open-source OpenLST design released by Planet Labs based on Planet Labs OpenLST design. Hand-assembled in Tennessee.",
   "brand": { "@type": "Brand", "name": "SpaceCommsKit" },
   "offers": [
     { "@type": "Offer", "name": "Single Board Kit", "price": "500", "priceCurrency": "USD", "eligibleRegion": "US" },
@@ -26,13 +26,14 @@
 <body>
 
 <nav class="nav">
-  <a href="index.html" class="nav-logo">SpaceComms<span>Kit</span><span class="logo-tag">437 MHz</span></a>
+  <a href="index.html" class="nav-logo">SpaceComms<span>Kit</span><span class="logo-tag">915 MHz</span></a>
   <ul class="nav-links">
     <li><a href="index.html">Home</a></li>
     <li><a href="kit.html" class="active">The Kit</a></li>
     <li><a href="documentation.html">Documentation</a></li>
     <li><a href="software.html">Software</a></li>
     <li><a href="pico.html">Pico Project</a></li>
+    <li><a href="groundstation.html">Ground Station</a></li>
     <li><a href="about.html">About</a></li>
     <li><a href="classified.html">⬛ Section 7</a></li>
     <li><a href="#buy" class="nav-cta">Buy a Kit</a></li>
@@ -61,9 +62,9 @@
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;margin-top:40px;">
     <div>
-      <img src="images/board_with_antenna.jpg" alt="OpenLST Explorer Kit board with 437MHz antenna"
+      <img src="images/board_with_antenna.jpg" alt="OpenLST Explorer Kit board with 915MHz antenna"
         style="border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);width:100%;">
-      <p class="text-muted text-center mt-16">OpenLST Explorer Kit board with 437MHz SMA antenna</p>
+      <p class="text-muted text-center mt-16">OpenLST Explorer Kit board with 915MHz SMA antenna</p>
     </div>
     <div>
       <h3 style="margin-bottom:16px;">Component Substitutions</h3>
@@ -93,10 +94,10 @@
       <h3 style="margin-top:28px;margin-bottom:16px;">Board Specifications</h3>
       <table class="spec-table" id="specs">
         <tr><th>Parameter</th><th>Value</th></tr>
-        <tr><td>RF Frequency</td><td>437 MHz (amateur 70cm band)</td></tr>
+        <tr><td>RF Frequency</td><td>915 MHz (US ISM band — no license required)</td></tr>
         <tr><td>Modulation</td><td>2-FSK with Forward Error Correction</td></tr>
         <tr><td>Data Rate</td><td>7.4 kbaud</td></tr>
-        <tr><td>TX Power</td><td>+30 dBm (1 Watt)</td></tr>
+        <tr><td>TX Power</td><td>+27 dBm</td></tr>
         <tr><td>Receiver Sensitivity</td><td>−112 dBm</td></tr>
         <tr><td>Microcontroller</td><td>Texas Instruments CC1110 · 26MHz</td></tr>
         <tr><td>Flash Memory</td><td>32 KB</td></tr>
@@ -159,8 +160,8 @@
         <div class="kit-card-price">$500 <span>USD</span></div>
         <p class="kit-card-desc">One fully provisioned OpenLST radio board with antenna. Ready to integrate into your own hardware setup.</p>
         <ul class="kit-includes">
-          <li>1× OpenLST radio board (CC1110 · 437MHz)</li>
-          <li>1× 437MHz SMA antenna</li>
+          <li>1× OpenLST radio board (CC1110 · 915MHz)</li>
+          <li>1× 915MHz SMA antenna</li>
           <li>Bootloader flashed</li>
           <li>Lab AES keys (all-F) loaded</li>
           <li>HWID assigned (0001 or your choice)</li>
@@ -181,8 +182,8 @@
         <div class="kit-card-price">$750 <span>USD</span></div>
         <p class="kit-card-desc">Complete ground station setup — board in custom stand with power management. Plug in, connect, operate.</p>
         <ul class="kit-includes">
-          <li>1× OpenLST radio board (CC1110 · 437MHz)</li>
-          <li>1× 437MHz SMA antenna</li>
+          <li>1× OpenLST radio board (CC1110 · 915MHz)</li>
+          <li>1× 915MHz SMA antenna</li>
           <li>Custom 3D printed board stand</li>
           <li>Inline power switch</li>
           <li>5V 3A power adapter</li>
@@ -203,7 +204,7 @@
         <p class="kit-card-desc">The complete two-radio system. Everything you need for RF link testing, payload experiments, OTA firmware development, and remote imaging.</p>
         <ul class="kit-includes">
           <li>2× OpenLST radio boards (HWID 0001 + 0004)</li>
-          <li>2× 437MHz SMA antennas</li>
+          <li>2× 915MHz SMA antennas</li>
           <li>2× Custom 3D printed board stands</li>
           <li>2× 5V 3A power adapters</li>
           <li>Both boards bootloader flashed · Lab keys</li>
@@ -214,6 +215,20 @@
           Order on Shopify →
         </a>
       </div>
+    </div>
+  </div>
+
+  <div class="notice notice-info" style="max-width:800px;margin:0 auto 40px;">
+    <div class="notice-icon">🛰️</div>
+    <div>
+      <strong>LEO Satellite Applications</strong>
+      <p>The OpenLST Explorer Kit is designed and characterized for terrestrial RF communications.
+      For LEO satellite applications, a directional antenna (7–10 dBi yagi) and reduced data rate
+      (1.2–9.6 kbaud) are recommended to achieve adequate link margin across a full orbital pass.
+      This approach mirrors how Planet Labs operated the original OpenLST design on their Dove
+      constellation — the same RF architecture, tuned for the geometry of the pass.
+      At 915MHz a +27dBm ground station with a 7dBi yagi provides comfortable link margin
+      to a 400–550km LEO satellite at elevation angles above approximately 15°.</p>
     </div>
   </div>
 

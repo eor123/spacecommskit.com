@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ground Station Software — SpaceCommsKit OpenLST Explorer Kit</title>
+<meta name="description" content="OpenLST Ground Station — a full-featured Windows C# application for commanding, monitoring, and extending your OpenLST radio system. Free, open source, included with every kit.">
+<meta name="keywords" content="OpenLST ground station software, CC1110 Windows application, RF ground station, CubeSat ground station software, open source radio control">
+<link rel="canonical" href="https://www.spacecommskit.com/groundstation.html">
+<link rel="stylesheet" href="style.css">
+<style>
+  .screenshot-frame {
+    background: #1A1A2E;
+    border: 1px solid #2A2A4A;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  .screenshot-titlebar {
+    background: #111122;
+    padding: 10px 16px;
+    display: flex; align-items: center; gap: 8px;
+    border-bottom: 1px solid #2A2A4A;
+  }
+  .titlebar-dot {
+    width: 12px; height: 12px; border-radius: 50%;
+  }
+  .titlebar-title {
+    font-family: var(--font-mono); font-size: 12px;
+    color: #666; margin-left: 8px;
+  }
+  .screenshot-frame img {
+    width: 100%; display: block;
+  }
+  .tab-nav {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-bottom: 32px;
+  }
+  .tab-btn {
+    padding: 8px 16px; border-radius: 8px;
+    font-size: 13px; font-weight: 500;
+    cursor: pointer; border: 1.5px solid var(--border-lt);
+    background: #fff; color: var(--text-muted);
+    transition: all 0.15s; font-family: var(--font-body);
+  }
+  .tab-btn.active, .tab-btn:hover {
+    background: var(--blue); color: #fff;
+    border-color: var(--blue);
+  }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+  .feature-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .feature-list li {
+    display: flex; gap: 12px; align-items: flex-start;
+    padding: 12px; background: var(--panel);
+    border-radius: var(--radius); font-size: 14px;
+  }
+  .feature-list li .icon { font-size: 18px; flex-shrink: 0; }
+  .feature-list li strong { display: block; margin-bottom: 2px; }
+  .feature-list li p { color: var(--text-muted); font-size: 13px; margin: 0; }
+
+  @media (max-width: 768px) {
+    .tab-panel.active { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo">SpaceComms<span>Kit</span><span class="logo-tag">915 MHz</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="kit.html">The Kit</a></li>
+    <li><a href="documentation.html">Documentation</a></li>
+    <li><a href="software.html">Software</a></li>
+    <li><a href="pico.html">Pico Project</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="classified.html">⬛ Section 7</a></li>
+    <li><a href="kit.html#buy" class="nav-cta">Buy a Kit</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-inner">
+    <span class="eyebrow">OpenLST Ground Station · Windows · C# .NET 8 · Open Source</span>
+    <h1 class="hero-title">A Ground Station App<br><span>Worth Shipping With the Kit</span></h1>
+    <p class="hero-sub">
+      Most RF development kits ship with a serial terminal or nothing at all.
+      The OpenLST Explorer Kit ships with a full Windows application —
+      professional UI, live telemetry, OTA firmware updates, remote file management,
+      and an open source C# codebase you can fork and extend.
+    </p>
+    <div class="flex gap-16" style="flex-wrap:wrap;">
+      <a href="https://github.com/eor123/spacecommskit/raw/main/installer/OpenLST_Ground_Station_Setup_v1.0.0.exe"
+         class="btn btn-primary">⬇ Download Free →</a>
+      <a href="https://github.com/eor123/spacecommskit/tree/main/ground-station"
+         class="btn btn-outline" target="_blank">View Source on GitHub</a>
+    </div>
+    <div class="stat-bar">
+      <div class="stat"><div class="stat-num">7</div><div class="stat-label">Application Tabs</div></div>
+      <div class="stat"><div class="stat-num">C#</div><div class="stat-label">.NET 8 · Open Source</div></div>
+      <div class="stat"><div class="stat-num">0</div><div class="stat-label">Prerequisites to Install</div></div>
+      <div class="stat"><div class="stat-num">GPLv3</div><div class="stat-label">License</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- App Showcase — Tabbed -->
+<div class="section-panel">
+<div class="section">
+  <span class="eyebrow eyebrow-dark">Application Tour</span>
+  <h2 class="section-title">Every Tab. Every Feature.</h2>
+  <p class="section-lead">Click any tab below to see the application in action with a real connected system.</p>
+
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="showTab('home')">🏠 Home · Telemetry</button>
+    <button class="tab-btn" onclick="showTab('commands')">⌨️ Commands</button>
+    <button class="tab-btn" onclick="showTab('custom')">🔧 Custom Commands</button>
+    <button class="tab-btn" onclick="showTab('files')">📁 Files · SD Card</button>
+    <button class="tab-btn" onclick="showTab('firmware')">⚡ Firmware · OTA Flash</button>
+    <button class="tab-btn" onclick="showTab('provision')">🔑 Provision</button>
+  </div>
+
+  <!-- Home Tab -->
+  <div id="tab-home" class="tab-panel active">
+    <div>
+      <div class="screenshot-frame">
+        <div class="screenshot-titlebar">
+          <div class="titlebar-dot" style="background:#FF5F56;"></div>
+          <div class="titlebar-dot" style="background:#FFBD2E;"></div>
+          <div class="titlebar-dot" style="background:#27C93F;"></div>
+          <span class="titlebar-title">OpenLST Ground Station — Home</span>
+        </div>
+        <img src="images/app_home.jpg" alt="OpenLST Ground Station Home tab showing live telemetry">
+      </div>
+    </div>
+    <div>
+      <h3 style="margin-bottom:8px;">Live Telemetry Dashboard</h3>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">
+        The Home tab gives you a real-time view into your radio's operating state.
+        Connect, click Get Telem, and every panel updates immediately.
+        Auto-poll keeps data fresh every 5 seconds without any manual intervention.
+      </p>
+      <ul class="feature-list">
+        <li>
+          <span class="icon">⏱️</span>
+          <div><strong>Uptime Counter</strong><p>Live seconds since last boot — helps identify unexpected reboots.</p></div>
+        </li>
+        <li>
+          <span class="icon">📶</span>
+          <div><strong>RSSI & LQI</strong><p>Received signal strength and link quality from the last packet received.</p></div>
+        </li>
+        <li>
+          <span class="icon">📊</span>
+          <div><strong>Packet Counters</strong><p>Packets sent, good packets, rejected checksum, UART RX counts — all live.</p></div>
+        </li>
+        <li>
+          <span class="icon">🖥️</span>
+          <div><strong>Color-Coded Log</strong><p>Every TX and RX packet logged with timestamp, raw bytes, and parsed fields.</p></div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Commands Tab -->
+  <div id="tab-commands" class="tab-panel">
+    <div>
+      <div class="screenshot-frame">
+        <div class="screenshot-titlebar">
+          <div class="titlebar-dot" style="background:#FF5F56;"></div>
+          <div class="titlebar-dot" style="background:#FFBD2E;"></div>
+          <div class="titlebar-dot" style="background:#27C93F;"></div>
+          <span class="titlebar-title">OpenLST Ground Station — Commands</span>
+        </div>
+        <img src="images/app_commands.jpg" alt="OpenLST Ground Station Commands tab">
+      </div>
+    </div>
+    <div>
+      <h3 style="margin-bottom:8px;">Standard OpenLST Commands</h3>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">
+        One-click access to all standard OpenLST protocol commands.
+        Set the HWID in the header bar to address any board — board 0001 relays
+        commands to board 0004 over RF automatically.
+      </p>
+      <ul class="feature-list">
+        <li>
+          <span class="icon">📡</span>
+          <div><strong>Get Telem</strong><p>Request and display full telemetry from any addressed board.</p></div>
+        </li>
+        <li>
+          <span class="icon">🔁</span>
+          <div><strong>Reboot</strong><p>Remote reboot any board over RF with one click.</p></div>
+        </li>
+        <li>
+          <span class="icon">🕐</span>
+          <div><strong>Get / Set Time</strong><p>Read and set the onboard RTC clock.</p></div>
+        </li>
+        <li>
+          <span class="icon">📻</span>
+          <div><strong>Callsign</strong><p>Read and write the stored callsign — up to 8 characters.</p></div>
+        </li>
+        <li>
+          <span class="icon">⌨️</span>
+          <div><strong>Raw Command</strong><p>Send any arbitrary command string directly. No opcode knowledge required.</p></div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Custom Commands Tab -->
+  <div id="tab-custom" class="tab-panel">
+    <div>
+      <div class="screenshot-frame">
+        <div class="screenshot-titlebar">
+          <div class="titlebar-dot" style="background:#FF5F56;"></div>
+          <div class="titlebar-dot" style="background:#FFBD2E;"></div>
+          <div class="titlebar-dot" style="background:#27C93F;"></div>
+          <span class="titlebar-title">OpenLST Ground Station — Custom Commands</span>
+        </div>
+        <img src="images/app_custom_commands.jpg" alt="OpenLST Ground Station Custom Commands tab showing Pico commands">
+      </div>
+    </div>
+    <div>
+      <h3 style="margin-bottom:8px;">Extensible Custom Command System</h3>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">
+        The most powerful tab in the application. Define any opcode with any hex payload,
+        save it with a name, and send it with one click. Commands persist between sessions.
+        Pre-loaded with the full Pico imaging command set.
+      </p>
+      <ul class="feature-list">
+        <li>
+          <span class="icon">💾</span>
+          <div><strong>JSON Persistent</strong><p>All commands saved automatically. Your command library is always there when you reopen the app.</p></div>
+        </li>
+        <li>
+          <span class="icon">📷</span>
+          <div><strong>Pico Imaging Commands</strong><p>PING, READ TEMP, SNAP, LIST FILES — all pre-loaded and ready to use with board 0004.</p></div>
+        </li>
+        <li>
+          <span class="icon">🔤</span>
+          <div><strong>Auto-Decoded Responses</strong><p>ASCII responses from the Pico are automatically decoded and displayed. <code style="background:var(--panel);padding:1px 6px;border-radius:4px;">✓ ack → SNAP:OK:snap_001.jpg:4617</code></p></div>
+        </li>
+        <li>
+          <span class="icon">🧩</span>
+          <div><strong>Any Opcode, Any Payload</strong><p>Not limited to pre-defined commands. Enter any hex bytes and send. Perfect for custom firmware development.</p></div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Files Tab -->
+  <div id="tab-files" class="tab-panel">
+    <div>
+      <div class="screenshot-frame">
+        <div class="screenshot-titlebar">
+          <div class="titlebar-dot" style="background:#FF5F56;"></div>
+          <div class="titlebar-dot" style="background:#FFBD2E;"></div>
+          <div class="titlebar-dot" style="background:#27C93F;"></div>
+          <span class="titlebar-title">OpenLST Ground Station — Files</span>
+        </div>
+        <img src="images/app_files.jpg" alt="OpenLST Ground Station Files tab showing SD card file listing">
+      </div>
+    </div>
+    <div>
+      <h3 style="margin-bottom:8px;">Remote SD Card File Manager</h3>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">
+        A complete file manager for the Pico's SD card — over RF.
+        Browse, download, and delete files without touching the remote hardware.
+        Images transfer in 200-byte chunks with progress tracking and automatic retry.
+      </p>
+      <ul class="feature-list">
+        <li>
+          <span class="icon">↺</span>
+          <div><strong>Refresh List</strong><p>Requests file listing from Pico SD card over RF. Populates the file list in under a second.</p></div>
+        </li>
+        <li>
+          <span class="icon">⬇️</span>
+          <div><strong>Get File</strong><p>Chunked transfer — requests file info, then transfers 200 bytes at a time. Progress bar shows every chunk. Auto-opens Images folder on completion.</p></div>
+        </li>
+        <li>
+          <span class="icon">🗑️</span>
+          <div><strong>Delete File</strong><p>Confirmation dialog then remote delete. File removed from SD card without physical access.</p></div>
+        </li>
+        <li>
+          <span class="icon">🔄</span>
+          <div><strong>Retry Logic</strong><p>3 automatic retries per chunk. Handles occasional RF dropouts gracefully without restarting the whole transfer.</p></div>
+        </li>
+      </ul>
+      <div class="notice notice-info" style="margin-top:16px;">
+        <div class="notice-icon">📷</div>
+        <div>
+          <strong>Proven End-to-End</strong>
+          <p>Tested and confirmed — perfect JPEG images transferred from remote Pico SD card to Windows PC over 437MHz RF. See the <a href="pico.html">Pico Project page</a> for the full setup.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firmware Tab -->
+  <div id="tab-firmware" class="tab-panel">
+    <div>
+      <div class="screenshot-frame">
+        <div class="screenshot-titlebar">
+          <div class="titlebar-dot" style="background:#FF5F56;"></div>
+          <div class="titlebar-dot" style="background:#FFBD2E;"></div>
+          <div class="titlebar-dot" style="background:#27C93F;"></div>
+          <span class="titlebar-title">OpenLST Ground Station — Firmware</span>
+        </div>
+        <img src="images/app_firmware.jpg" alt="OpenLST Ground Station Firmware tab with OTA flash">
+      </div>
+    </div>
+    <div>
+      <h3 style="margin-bottom:8px;">Build, Sign & Flash Over The Air</h3>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">
+        The complete firmware development pipeline in one tab.
+        Build your custom CC1110 firmware with SDCC, sign it with your AES key,
+        and flash it to the remote board over RF — without touching the hardware.
+        The same process used for real satellite firmware updates.
+      </p>
+      <ul class="feature-list">
+        <li>
+          <span class="icon">🔨</span>
+          <div><strong>Build / Clean + Build</strong><p>Runs mingw32-make on your OpenLST source tree. Clean button safely removes only radio app build artifacts.</p></div>
+        </li>
+        <li>
+          <span class="icon">🔐</span>
+          <div><strong>AES-CBC-MAC Signing</strong><p>Signs your firmware hex with the board's AES key before flashing. Bootloader verifies signature before accepting the update.</p></div>
+        </li>
+        <li>
+          <span class="icon">📡</span>
+          <div><strong>Flash OTA</strong><p>Sends firmware page-by-page over RF. Retry logic per page. Progress bar tracks every 128-byte page write.</p></div>
+        </li>
+        <li>
+          <span class="icon">⚡</span>
+          <div><strong>Build + Flash</strong><p>One-button workflow — build, sign, and flash in sequence. Fastest path from source code to running firmware.</p></div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Provision Tab -->
+  <div id="tab-provision" class="tab-panel">
+    <div>
+      <div class="screenshot-frame">
+        <div class="screenshot-titlebar">
+          <div class="titlebar-dot" style="background:#FF5F56;"></div>
+          <div class="titlebar-dot" style="background:#FFBD2E;"></div>
+          <div class="titlebar-dot" style="background:#27C93F;"></div>
+          <span class="titlebar-title">OpenLST Ground Station — Provision</span>
+        </div>
+        <img src="images/app_provision.jpg" alt="OpenLST Ground Station Provision tab for bootloader flashing">
+      </div>
+    </div>
+    <div>
+      <h3 style="margin-bottom:8px;">Board Provisioning</h3>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">
+        Flash the bootloader onto fresh CC1110 boards using the TI CC Debugger.
+        Sets the hardware ID, embeds AES signing keys, and programs the bootloader image —
+        all from one interface. This is how every SpaceCommsKit board is prepared before shipping.
+      </p>
+      <ul class="feature-list">
+        <li>
+          <span class="icon">🔑</span>
+          <div><strong>HWID Assignment</strong><p>Assign any hardware ID (e.g. 0001, 0004) that becomes the board's permanent RF address.</p></div>
+        </li>
+        <li>
+          <span class="icon">🔒</span>
+          <div><strong>AES Key Embedding</strong><p>Three 16-byte AES signing keys embedded in the bootloader. Lab keys (all-F) used for development.</p></div>
+        </li>
+        <li>
+          <span class="icon">💾</span>
+          <div><strong>SmartRF Integration</strong><p>Calls TI SmartRF Flash Programmer automatically via CC Debugger to erase, program, and verify the bootloader image.</p></div>
+        </li>
+        <li>
+          <span class="icon">✅</span>
+          <div><strong>Verify After Flash</strong><p>SmartRF verifies the written image byte-for-byte. Board is ready for OTA firmware updates immediately after provisioning.</p></div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- Open Source CTA -->
+<div class="section-dark">
+<div class="section">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;">
+    <div>
+      <span class="eyebrow">Open Source · GPLv3</span>
+      <h2 class="section-title-inv section-title">Fork It. Extend It. Make It Yours.</h2>
+      <p class="section-lead-inv section-lead">
+        The ground station is a Visual Studio 2022 C# .NET 8 WinForms project.
+        Clean architecture — all UI in MainForm.cs, all protocol logic in OpenLstProtocol.cs.
+        Adding a new tab, a new command, or a new protocol feature takes minutes, not days.
+      </p>
+      <div class="flex gap-16" style="flex-wrap:wrap;">
+        <a href="https://github.com/eor123/spacecommskit/tree/main/ground-station"
+           class="btn btn-primary" target="_blank">View Source on GitHub →</a>
+        <a href="documentation.html" class="btn btn-outline">Developer Guide</a>
+      </div>
+    </div>
+    <div>
+      <div class="card card-dark" style="font-family:var(--font-mono);font-size:12px;line-height:1.8;">
+        <div style="color:var(--cyan);margin-bottom:12px;font-size:11px;letter-spacing:1px;text-transform:uppercase;">// Adding a custom command — 10 lines of C#</div>
+        <div style="color:#888;">private async Task <span style="color:var(--blue-lt);">MyCommandAsync</span>()</div>
+        <div style="color:#888;">{</div>
+        <div style="color:#888;padding-left:16px;"><span style="color:#FF7B72;">if</span> (!CheckConnected()) <span style="color:#FF7B72;">return</span>;</div>
+        <div style="color:#888;padding-left:16px;"><span style="color:var(--cyan);">ushort</span> hwid = ActiveHwid;</div>
+        <div style="color:#888;padding-left:16px;"><span style="color:var(--cyan);">ushort</span> seq  = IncSeqNum();</div>
+        <div style="color:#888;padding-left:16px;">FlushRxQueue();</div>
+        <div style="color:#888;padding-left:16px;">WritePacket(OpenLstProtocol</div>
+        <div style="color:#888;padding-left:32px;">.BuildPacket(hwid, seq, <span style="color:#F2CC60;">0x20</span>,</div>
+        <div style="color:#888;padding-left:32px;"><span style="color:#FF7B72;">new byte</span>[] { <span style="color:#F2CC60;">0x01</span> }));</div>
+        <div style="color:#888;padding-left:16px;"><span style="color:#FF7B72;">var</span> pkt = <span style="color:#FF7B72;">await</span> WaitForReply(hwid, seq, <span style="color:#F2CC60;">10000</span>);</div>
+        <div style="color:#888;padding-left:16px;"><span style="color:#FF7B72;">if</span> (pkt?.PicoPayload != <span style="color:#FF7B72;">null</span>)</div>
+        <div style="color:#888;padding-left:32px;">Log($<span style="color:#A5D6FF;">"Result: {pkt.PicoPayload}"</span>, Theme.Green);</div>
+        <div style="color:#888;">}</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- Download CTA -->
+<div class="section text-center">
+  <span class="eyebrow eyebrow-dark">Get Started Today</span>
+  <h2 class="section-title">Free. No Prerequisites. No Strings.</h2>
+  <p class="section-lead" style="margin-left:auto;margin-right:auto;">
+    The ground station application is free to download and use — with or without a kit.
+    Try it out, explore the source code, and see what you'd build with it.
+  </p>
+  <div class="flex gap-16" style="justify-content:center;flex-wrap:wrap;margin-top:8px;">
+    <a href="https://github.com/eor123/spacecommskit/raw/main/installer/OpenLST_Ground_Station_Setup_v1.0.0.exe"
+       class="btn btn-primary">⬇ Download Installer · Free</a>
+    <a href="kit.html#buy" class="btn btn-gold">Buy a Kit →</a>
+  </div>
+  <p class="text-muted mt-16">Windows 10/11 · x64 · Self-contained · ~50MB</p>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="nav-logo" style="color:#fff;">SpaceComms<span style="color:var(--cyan);">Kit</span></div>
+      <p>Flight-heritage RF communications for engineers and researchers. Hand-assembled in Tennessee, USA.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <a href="kit.html">The Kit</a>
+      <a href="kit.html#buy">Buy Now</a>
+    </div>
+    <div class="footer-col">
+      <h4>Resources</h4>
+      <a href="documentation.html">Documentation</a>
+      <a href="software.html">Software</a>
+      <a href="pico.html">Pico Project</a>
+      <a href="https://github.com/eor123/spacecommskit" target="_blank">GitHub</a>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <a href="mailto:info@spacecommskit.com">info@spacecommskit.com</a>
+      <a href="mailto:support@spacecommskit.com">support@spacecommskit.com</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 SpaceCommsKit · Tennessee, USA · Ships to United States only</p>
+    <p>Based on OpenLST by Planet Labs Inc. (GPLv3)</p>
+  </div>
+</footer>
+
+<script>
+function showTab(name) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+
+</body>
+</html>

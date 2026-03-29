@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SpaceCommsKit — Flight-Heritage RF Communications for Engineers</title>
-<meta name="description" content="The OpenLST Explorer Kit brings flight-proven 437MHz RF communications technology to your lab. Hand-assembled in Tennessee. Open source. US only.">
-<meta name="keywords" content="OpenLST, RF communications kit, CC1110, 437MHz, CubeSat radio, amateur radio satellite, ground station software, space communications">
+<title>SpaceCommsKit — OpenLST Explorer Kit for Engineers and Researchers</title>
+<meta name="description" content="The OpenLST Explorer Kit is based on the open-source OpenLST design released by Planet Labs from their Dove satellite program. Hand-assembled in Tennessee. Open source. US only.">
+<meta name="keywords" content="OpenLST, RF communications kit, CC1110, 915MHz, CubeSat radio, ISM band radio, ground station software, space communications">
 <meta property="og:title" content="SpaceCommsKit — OpenLST Explorer Kit">
 <meta property="og:description" content="Flight-heritage RF communications. Now in your lab.">
 <meta property="og:url" content="https://www.spacecommskit.com">
@@ -19,7 +19,7 @@
   "name": "SpaceCommsKit",
   "url": "https://www.spacecommskit.com",
   "email": "info@spacecommskit.com",
-  "description": "OpenLST Explorer Kit — flight-heritage RF communications development kits, hand-assembled in Tennessee.",
+  "description": "OpenLST Explorer Kit — based on the open-source OpenLST design released by Planet Labs, hand-assembled in Tennessee.",
   "areaServed": "US"
 }
 </script>
@@ -30,7 +30,7 @@
 <nav class="nav">
   <a href="index.html" class="nav-logo">
     SpaceComms<span>Kit</span>
-    <span class="logo-tag">437 MHz</span>
+    <span class="logo-tag">915 MHz</span>
   </a>
   <ul class="nav-links">
     <li><a href="index.html" class="active">Home</a></li>
@@ -38,6 +38,7 @@
     <li><a href="documentation.html">Documentation</a></li>
     <li><a href="software.html">Software</a></li>
     <li><a href="pico.html">Pico Project</a></li>
+    <li><a href="groundstation.html">Ground Station</a></li>
     <li><a href="about.html">About</a></li>
     <li><a href="classified.html">⬛ Section 7</a></li>
     <li><a href="kit.html#buy" class="nav-cta">Buy a Kit</a></li>
@@ -47,14 +48,14 @@
 <!-- Hero -->
 <section class="hero">
   <div class="hero-inner">
-    <span class="eyebrow">OpenLST Explorer Kit · 437 MHz · Hand-assembled in Tennessee</span>
+    <span class="eyebrow">OpenLST Explorer Kit · Based on Planet Labs Open-Source Design · Hand-assembled in Tennessee</span>
     <h1 class="hero-title">
-      Flight-Heritage RF<br>Communications.<br>
+      Open-Source RF<br>Communications.<br>
       <span>Now In Your Lab.</span>
     </h1>
     <p class="hero-sub">
-      The same radio design heritage that flew on Planet Labs' Dove satellites —
-      open-source, proven, and now available as a complete development kit for
+      Based on the open-source OpenLST design released by Planet Labs from their Dove satellite program —
+      proven architecture, now available as a complete development kit for
       engineers, researchers, and universities.
     </p>
     <div class="flex gap-16" style="flex-wrap:wrap;">
@@ -67,11 +68,11 @@
         <div class="stat-label">Cumulative Years On-Orbit</div>
       </div>
       <div class="stat">
-        <div class="stat-num">437</div>
-        <div class="stat-label">MHz Operating Frequency</div>
+        <div class="stat-num">915</div>
+        <div class="stat-label">MHz ISM Band · No License</div>
       </div>
       <div class="stat">
-        <div class="stat-num">+30</div>
+        <div class="stat-num">+27</div>
         <div class="stat-label">dBm TX Power (1W)</div>
       </div>
       <div class="stat">
@@ -99,8 +100,8 @@
         <div class="kit-card-price">$500 <span>USD</span></div>
         <p class="kit-card-desc">One OpenLST radio board with antenna, fully provisioned and ready to integrate into your project.</p>
         <ul class="kit-includes">
-          <li>OpenLST radio board (CC1110 · 437MHz)</li>
-          <li>437MHz SMA antenna</li>
+          <li>OpenLST radio board (CC1110 · 915MHz)</li>
+          <li>915MHz SMA antenna</li>
           <li>Bootloader flashed · Lab keys loaded</li>
           <li>HWID assigned (0001 or custom)</li>
           <li>User Guide + Developer Guide PDF</li>
@@ -118,8 +119,8 @@
         <div class="kit-card-price">$750 <span>USD</span></div>
         <p class="kit-card-desc">Complete ground station setup with custom 3D printed stand, power management, and everything needed to start operating immediately.</p>
         <ul class="kit-includes">
-          <li>OpenLST radio board (CC1110 · 437MHz)</li>
-          <li>437MHz SMA antenna</li>
+          <li>OpenLST radio board (CC1110 · 915MHz)</li>
+          <li>915MHz SMA antenna</li>
           <li>Custom 3D printed board stand (OpenLST logo)</li>
           <li>Inline power switch</li>
           <li>5V 3A power adapter</li>
@@ -139,7 +140,7 @@
         <p class="kit-card-desc">The complete two-radio development system. Ground station and remote radio, fully configured and ready for RF link testing, payload experiments, and firmware development.</p>
         <ul class="kit-includes">
           <li>2× OpenLST radio boards (HWID 0001 + 0004)</li>
-          <li>2× 437MHz SMA antennas</li>
+          <li>2× 915MHz SMA antennas</li>
           <li>2× Custom 3D printed board stands</li>
           <li>2× 5V 3A power adapters</li>
           <li>Both boards bootloader flashed · Lab keys</li>
@@ -165,17 +166,18 @@
 <div class="section">
   <div style="display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:center;">
     <div>
-      <span class="eyebrow">Flight Heritage</span>
-      <h2 class="section-title-inv section-title">Inspired by Planet Labs' Dove Satellite</h2>
+      <span class="eyebrow">Planet Labs OpenLST Heritage</span>
+      <h2 class="section-title-inv section-title">Based on Planet Labs' Open-Source OpenLST Design</h2>
       <p class="section-lead-inv section-lead">
-        OpenLST was designed by the engineering team at Planet Labs for their Dove Earth-imaging satellites.
-        The Dove Low-Speed Transceiver (LST) radio accumulated over <strong style="color:var(--cyan)">200 cumulative years of on-orbit data</strong>
-        across more than 150 satellites — making it one of the most flight-proven small satellite radio designs ever open-sourced.
+        In 2018 Planet Labs open-sourced the OpenLST radio design from their Dove Earth-imaging satellite constellation.
+        The Dove Low-Speed Transceiver accumulated over <strong style="color:var(--cyan)">200 cumulative years of on-orbit data</strong>
+        across more than 150 satellites — making it one of the most extensively operated small satellite radio designs ever released to the public.
       </p>
       <p class="section-lead-inv section-lead" style="margin-bottom:32px;">
-        The SpaceCommsKit Explorer Kit board matches the original OpenLST gerbers exactly,
-        with two modern component substitutions for parts availability — both pin-for-pin replacements
-        with no schematic changes required.
+        The SpaceCommsKit Explorer Kit is based on that open-source design with modern component substitutions
+        for parts that are no longer available — both pin-for-pin replacements
+        with no schematic changes required. This is an experimental development kit
+        built on a proven open-source architecture, not a certified flight unit.
       </p>
       <a href="about.html" class="btn btn-outline">Our Story →</a>
     </div>
@@ -204,7 +206,7 @@
       <div class="card card-dark">
         <div class="mono" style="color:var(--cyan);font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">Key Specifications</div>
         <table class="spec-table">
-          <tr><td style="color:var(--text-inv);">Frequency</td><td style="color:var(--text-inv);">437 MHz (amateur 70cm)</td></tr>
+          <tr><td style="color:var(--text-inv);">Frequency</td><td style="color:var(--text-inv);">915 MHz (ISM — no license)</td></tr>
           <tr><td style="color:var(--text-inv);">TX Power</td><td style="color:var(--text-inv);">+30 dBm (1W)</td></tr>
           <tr><td style="color:var(--text-inv);">Data Rate</td><td style="color:var(--text-inv);">7.4 kbaud · 2-FSK + FEC</td></tr>
           <tr><td style="color:var(--text-inv);">Sensitivity</td><td style="color:var(--text-inv);">−112 dBm</td></tr>
@@ -257,6 +259,61 @@
   </div>
 </div>
 
+<!-- App Showcase Teaser -->
+<div class="section">
+  <span class="eyebrow eyebrow-dark">Included Software</span>
+  <h2 class="section-title">A Ground Station App That<br>Actually Ships With the Kit</h2>
+  <p class="section-lead">Most RF dev kits ship with a serial terminal or nothing. We ship a full Windows application — professional UI, live telemetry, OTA firmware updates, remote file management, and open source C# you can fork and extend.</p>
+
+  <div style="margin-top:40px;">
+    <div class="screenshot-preview" style="
+      background:#1A1A2E;border:1px solid #2A2A4A;
+      border-radius:12px;overflow:hidden;
+      box-shadow:0 20px 60px rgba(0,0,0,0.3);
+      margin-bottom:32px;">
+      <div style="background:#111122;padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2A2A4A;">
+        <div style="width:12px;height:12px;border-radius:50%;background:#FF5F56;"></div>
+        <div style="width:12px;height:12px;border-radius:50%;background:#FFBD2E;"></div>
+        <div style="width:12px;height:12px;border-radius:50%;background:#27C93F;"></div>
+        <span style="font-family:var(--font-mono);font-size:12px;color:#666;margin-left:8px;">OpenLST Ground Station — Files Tab · 10 files on SD card</span>
+      </div>
+      <img src="images/app_files.jpg" alt="OpenLST Ground Station Files tab showing remote SD card management over RF"
+           style="width:100%;display:block;">
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:32px;">
+      <div style="text-align:center;padding:20px;background:var(--panel);border-radius:var(--radius);">
+        <div style="font-size:28px;margin-bottom:8px;">📡</div>
+        <strong style="font-size:14px;display:block;margin-bottom:4px;">Live Telemetry</strong>
+        <p style="font-size:12px;color:var(--text-muted);">RSSI, LQI, uptime, packet counters — live every 5 seconds</p>
+      </div>
+      <div style="text-align:center;padding:20px;background:var(--panel);border-radius:var(--radius);">
+        <div style="font-size:28px;margin-bottom:8px;">📁</div>
+        <strong style="font-size:14px;display:block;margin-bottom:4px;">RF File Manager</strong>
+        <p style="font-size:12px;color:var(--text-muted);">Browse, download, delete files on remote SD card over RF</p>
+      </div>
+      <div style="text-align:center;padding:20px;background:var(--panel);border-radius:var(--radius);">
+        <div style="font-size:28px;margin-bottom:8px;">⚡</div>
+        <strong style="font-size:14px;display:block;margin-bottom:4px;">OTA Firmware Flash</strong>
+        <p style="font-size:12px;color:var(--text-muted);">Build, sign, and flash firmware to remote board wirelessly</p>
+      </div>
+      <div style="text-align:center;padding:20px;background:var(--panel);border-radius:var(--radius);">
+        <div style="font-size:28px;margin-bottom:8px;">🔧</div>
+        <strong style="font-size:14px;display:block;margin-bottom:4px;">Custom Commands</strong>
+        <p style="font-size:12px;color:var(--text-muted);">Any opcode, any payload — saved and persistent between sessions</p>
+      </div>
+    </div>
+
+    <div class="flex gap-16" style="flex-wrap:wrap;">
+      <a href="groundstation.html" class="btn btn-primary">Full App Tour →</a>
+      <a href="https://github.com/eor123/spacecommskit/raw/main/installer/OpenLST_Ground_Station_Setup_v1.0.0.exe"
+         class="btn btn-outline" style="border-color:var(--border-lt);color:var(--blue);">
+        ⬇ Free Download
+      </a>
+    </div>
+  </div>
+</div>
+
 <!-- Made in Tennessee -->
 <div class="section-panel">
 <div class="section">
@@ -293,7 +350,7 @@
         <div class="notice-icon">📻</div>
         <div>
           <strong>Licensing Notice</strong>
-          <p>Operation at 437MHz requires compliance with FCC regulations. A Technician class amateur radio license or higher is recommended. Ships to United States only.</p>
+          <p>The Explorer Kit operates in the 915MHz ISM band (902-928MHz) under FCC Part 15.247 — no amateur radio license required. Ships to United States only. Always comply with applicable FCC regulations.</p>
         </div>
       </div>
     </div>
