@@ -18,8 +18,37 @@
   .feature-list li .icon { font-size: 18px; flex-shrink: 0; }
   .feature-list li strong { display: block; margin-bottom: 2px; }
   .feature-list li p { color: var(--text-muted); font-size: 13px; margin: 0; }
+
+  /* Lightbox */
+  .lb-trigger { cursor: zoom-in; }
+  .lb-trigger img { transition: opacity 0.15s; }
+  .lb-trigger:hover img { opacity: 0.9; }
+  .lb-hint {
+    font-family: var(--font-mono); font-size: 11px;
+    color: var(--text-muted); text-align: center;
+    margin-top: 8px; letter-spacing: 0.5px;
+  }
+  .lb-overlay {
+    display: none; position: fixed; inset: 0; z-index: 9999;
+    background: rgba(0,0,0,0.92);
+    align-items: center; justify-content: center;
+    cursor: zoom-out; padding: 24px;
+  }
+  .lb-overlay.open { display: flex; }
+  .lb-overlay img {
+    max-width: 95vw; max-height: 90vh;
+    border-radius: 8px; box-shadow: 0 0 80px rgba(0,0,0,0.8);
+    object-fit: contain;
+  }
+  .lb-close {
+    position: fixed; top: 20px; right: 28px;
+    color: #fff; font-size: 32px; cursor: pointer;
+    line-height: 1; opacity: 0.7;
+  }
+  .lb-close:hover { opacity: 1; }
+
   @media (max-width: 768px) {
-    .app-section { grid-template-columns: 1fr !important; }
+    .app-row { grid-template-columns: 1fr !important; }
   }
 </style>
 </head>
@@ -84,16 +113,18 @@
   </div>
 
   <!-- Home Tab -->
-  <div id="tab-home" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;margin-bottom:64px;">
+  <div id="tab-home" class="app-row" style="display:grid;grid-template-columns:3fr 2fr;gap:40px;align-items:start;margin-bottom:64px;">
     <div>
-      <div style="background:#1A1A2E;border:1px solid #2A2A4A;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+      <div class="lb-trigger" style="background:#1A1A2E;border:1px solid #2A2A4A;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
         <div style="background:#111122;padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2A2A4A;">
           <div style="width:12px;height:12px;border-radius:50%;background:#FF5F56;flex-shrink:0;"></div>
           <div style="width:12px;height:12px;border-radius:50%;background:#FFBD2E;flex-shrink:0;"></div>
           <div style="width:12px;height:12px;border-radius:50%;background:#27C93F;flex-shrink:0;"></div>
           <span style="font-family:var(--font-mono);font-size:12px;color:#666;margin-left:8px;">OpenLST Ground Station — Home</span>
         </div>
-        <img src="images/app_home.jpg" alt="OpenLST Ground Station Home tab showing live telemetry" style="width:100%;height:auto;display:block;">
+        <img src="images/app_home.jpg" alt="OpenLST Ground Station Home tab showing live telemetry" style="width:100%;height:auto;display:block;" onclick="openLB(this)">
+      </div>
+      <p class="lb-hint">🔍 Click to enlarge</p>
       </div>
     </div>
     <div>
@@ -111,16 +142,18 @@
   <hr style="border:none;border-top:1px solid var(--border-lt);margin-bottom:64px;">
 
   <!-- Commands Tab -->
-  <div id="tab-commands" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;margin-bottom:64px;">
+  <div id="tab-commands" class="app-row" style="display:grid;grid-template-columns:3fr 2fr;gap:40px;align-items:start;margin-bottom:64px;">
     <div>
-      <div style="background:#1A1A2E;border:1px solid #2A2A4A;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+      <div class="lb-trigger" style="background:#1A1A2E;border:1px solid #2A2A4A;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
         <div style="background:#111122;padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2A2A4A;">
           <div style="width:12px;height:12px;border-radius:50%;background:#FF5F56;flex-shrink:0;"></div>
           <div style="width:12px;height:12px;border-radius:50%;background:#FFBD2E;flex-shrink:0;"></div>
           <div style="width:12px;height:12px;border-radius:50%;background:#27C93F;flex-shrink:0;"></div>
           <span style="font-family:var(--font-mono);font-size:12px;color:#666;margin-left:8px;">OpenLST Ground Station — Commands</span>
         </div>
-        <img src="images/app_commands.jpg" alt="OpenLST Ground Station Commands tab" style="width:100%;height:auto;display:block;">
+        <img src="images/app_commands.jpg" alt="OpenLST Ground Station Commands tab" style="width:100%;height:auto;display:block;" onclick="openLB(this)">
+      </div>
+      <p class="lb-hint">🔍 Click to enlarge</p>
       </div>
     </div>
     <div>
@@ -139,16 +172,18 @@
   <hr style="border:none;border-top:1px solid var(--border-lt);margin-bottom:64px;">
 
   <!-- Custom Commands Tab -->
-  <div id="tab-custom" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;margin-bottom:64px;">
+  <div id="tab-custom" class="app-row" style="display:grid;grid-template-columns:3fr 2fr;gap:40px;align-items:start;margin-bottom:64px;">
     <div>
-      <div style="background:#1A1A2E;border:1px solid #2A2A4A;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+      <div class="lb-trigger" style="background:#1A1A2E;border:1px solid #2A2A4A;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
         <div style="background:#111122;padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2A2A4A;">
           <div style="width:12px;height:12px;border-radius:50%;background:#FF5F56;flex-shrink:0;"></div>
           <div style="width:12px;height:12px;border-radius:50%;background:#FFBD2E;flex-shrink:0;"></div>
           <div style="width:12px;height:12px;border-radius:50%;background:#27C93F;flex-shrink:0;"></div>
           <span style="font-family:var(--font-mono);font-size:12px;color:#666;margin-left:8px;">OpenLST Ground Station — Custom Commands</span>
         </div>
-        <img src="images/app_custom_commands.jpg" alt="OpenLST Ground Station Custom Commands tab" style="width:100%;height:auto;display:block;">
+        <img src="images/app_custom_commands.jpg" alt="OpenLST Ground Station Custom Commands tab" style="width:100%;height:auto;display:block;" onclick="openLB(this)">
+      </div>
+      <p class="lb-hint">🔍 Click to enlarge</p>
       </div>
     </div>
     <div>
@@ -166,16 +201,18 @@
   <hr style="border:none;border-top:1px solid var(--border-lt);margin-bottom:64px;">
 
   <!-- Files Tab -->
-  <div id="tab-files" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;margin-bottom:64px;">
+  <div id="tab-files" class="app-row" style="display:grid;grid-template-columns:3fr 2fr;gap:40px;align-items:start;margin-bottom:64px;">
     <div>
-      <div style="background:#1A1A2E;border:1px solid #2A2A4A;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+      <div class="lb-trigger" style="background:#1A1A2E;border:1px solid #2A2A4A;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
         <div style="background:#111122;padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2A2A4A;">
           <div style="width:12px;height:12px;border-radius:50%;background:#FF5F56;flex-shrink:0;"></div>
           <div style="width:12px;height:12px;border-radius:50%;background:#FFBD2E;flex-shrink:0;"></div>
           <div style="width:12px;height:12px;border-radius:50%;background:#27C93F;flex-shrink:0;"></div>
           <span style="font-family:var(--font-mono);font-size:12px;color:#666;margin-left:8px;">OpenLST Ground Station — Files</span>
         </div>
-        <img src="images/app_files.jpg" alt="OpenLST Ground Station Files tab showing SD card file listing" style="width:100%;height:auto;display:block;">
+        <img src="images/app_files.jpg" alt="OpenLST Ground Station Files tab showing SD card file listing" style="width:100%;height:auto;display:block;" onclick="openLB(this)">
+      </div>
+      <p class="lb-hint">🔍 Click to enlarge</p>
       </div>
     </div>
     <div>
@@ -193,16 +230,18 @@
   <hr style="border:none;border-top:1px solid var(--border-lt);margin-bottom:64px;">
 
   <!-- Firmware Tab -->
-  <div id="tab-firmware" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;margin-bottom:64px;">
+  <div id="tab-firmware" class="app-row" style="display:grid;grid-template-columns:3fr 2fr;gap:40px;align-items:start;margin-bottom:64px;">
     <div>
-      <div style="background:#1A1A2E;border:1px solid #2A2A4A;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+      <div class="lb-trigger" style="background:#1A1A2E;border:1px solid #2A2A4A;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
         <div style="background:#111122;padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2A2A4A;">
           <div style="width:12px;height:12px;border-radius:50%;background:#FF5F56;flex-shrink:0;"></div>
           <div style="width:12px;height:12px;border-radius:50%;background:#FFBD2E;flex-shrink:0;"></div>
           <div style="width:12px;height:12px;border-radius:50%;background:#27C93F;flex-shrink:0;"></div>
           <span style="font-family:var(--font-mono);font-size:12px;color:#666;margin-left:8px;">OpenLST Ground Station — Firmware</span>
         </div>
-        <img src="images/app_firmware.jpg" alt="OpenLST Ground Station Firmware tab with OTA flash" style="width:100%;height:auto;display:block;">
+        <img src="images/app_firmware.jpg" alt="OpenLST Ground Station Firmware tab with OTA flash" style="width:100%;height:auto;display:block;" onclick="openLB(this)">
+      </div>
+      <p class="lb-hint">🔍 Click to enlarge</p>
       </div>
     </div>
     <div>
@@ -220,16 +259,18 @@
   <hr style="border:none;border-top:1px solid var(--border-lt);margin-bottom:64px;">
 
   <!-- Provision Tab -->
-  <div id="tab-provision" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;margin-bottom:16px;">
+  <div id="tab-provision" class="app-row" style="display:grid;grid-template-columns:3fr 2fr;gap:40px;align-items:start;margin-bottom:16px;">
     <div>
-      <div style="background:#1A1A2E;border:1px solid #2A2A4A;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+      <div class="lb-trigger" style="background:#1A1A2E;border:1px solid #2A2A4A;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
         <div style="background:#111122;padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2A2A4A;">
           <div style="width:12px;height:12px;border-radius:50%;background:#FF5F56;flex-shrink:0;"></div>
           <div style="width:12px;height:12px;border-radius:50%;background:#FFBD2E;flex-shrink:0;"></div>
           <div style="width:12px;height:12px;border-radius:50%;background:#27C93F;flex-shrink:0;"></div>
           <span style="font-family:var(--font-mono);font-size:12px;color:#666;margin-left:8px;">OpenLST Ground Station — Provision</span>
         </div>
-        <img src="images/app_provision.jpg" alt="OpenLST Ground Station Provision tab for bootloader flashing" style="width:100%;height:auto;display:block;">
+        <img src="images/app_provision.jpg" alt="OpenLST Ground Station Provision tab for bootloader flashing" style="width:100%;height:auto;display:block;" onclick="openLB(this)">
+      </div>
+      <p class="lb-hint">🔍 Click to enlarge</p>
       </div>
     </div>
     <div>
@@ -303,6 +344,12 @@
   <p class="text-muted mt-16">Windows 10/11 · x64 · Self-contained · ~50MB</p>
 </div>
 
+<!-- Lightbox overlay -->
+<div class="lb-overlay" id="lb-overlay" onclick="closeLB()">
+  <span class="lb-close" onclick="closeLB()">✕</span>
+  <img id="lb-img" src="" alt="Screenshot fullsize">
+</div>
+
 <footer>
   <div class="footer-inner">
     <div class="footer-brand">
@@ -335,5 +382,19 @@
 
 
 
+<script>
+function openLB(img) {
+  document.getElementById('lb-img').src = img.src;
+  document.getElementById('lb-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLB() {
+  document.getElementById('lb-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeLB();
+});
+</script>
 </body>
 </html>
