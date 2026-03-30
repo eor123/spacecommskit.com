@@ -9,65 +9,6 @@
 <link rel="canonical" href="https://www.spacecommskit.com/groundstation.html">
 <link rel="stylesheet" href="style.css">
 <style>
-  .screenshot-frame {
-    background: #1A1A2E;
-    border: 1px solid #2A2A4A;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-    width: 100%;
-  }
-  .screenshot-titlebar {
-    background: #111122;
-    padding: 10px 16px;
-    display: flex; align-items: center; gap: 8px;
-    border-bottom: 1px solid #2A2A4A;
-    flex-shrink: 0;
-  }
-  .titlebar-dot {
-    width: 12px; height: 12px; border-radius: 50%;
-    flex-shrink: 0;
-  }
-  .titlebar-title {
-    font-family: var(--font-mono); font-size: 12px;
-    color: #666; margin-left: 8px;
-  }
-  .screenshot-frame img {
-    width: 100%;
-    height: auto;
-    display: block;
-    max-width: 100%;
-  }
-  .tab-nav {
-    display: flex; flex-wrap: wrap; gap: 8px;
-    margin-bottom: 32px;
-  }
-  .tab-btn {
-    padding: 8px 16px; border-radius: 8px;
-    font-size: 13px; font-weight: 500;
-    cursor: pointer; border: 1.5px solid var(--border-lt);
-    background: #fff; color: var(--text-muted);
-    transition: all 0.15s; font-family: var(--font-body);
-  }
-  .tab-btn.active, .tab-btn:hover {
-    background: var(--blue); color: #fff;
-    border-color: var(--blue);
-  }
-  .tab-panel {
-    display: none;
-    width: 100%;
-  }
-  .tab-panel.active {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 48px;
-    align-items: start;
-    width: 100%;
-  }
-  .tab-panel.active > div:first-child {
-    min-width: 0;
-    width: 100%;
-  }
   .feature-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
   .feature-list li {
     display: flex; gap: 12px; align-items: flex-start;
@@ -77,9 +18,8 @@
   .feature-list li .icon { font-size: 18px; flex-shrink: 0; }
   .feature-list li strong { display: block; margin-bottom: 2px; }
   .feature-list li p { color: var(--text-muted); font-size: 13px; margin: 0; }
-
   @media (max-width: 768px) {
-    .tab-panel.active { grid-template-columns: 1fr; }
+    .app-section { grid-template-columns: 1fr !important; }
   }
 </style>
 </head>
@@ -126,276 +66,180 @@
   </div>
 </section>
 
-<!-- App Showcase — Tabbed -->
+<!-- App Showcase — No-JS scrollable layout -->
 <div class="section-panel">
 <div class="section">
   <span class="eyebrow eyebrow-dark">Application Tour</span>
   <h2 class="section-title">Every Tab. Every Feature.</h2>
-  <p class="section-lead">Click any tab below to see the application in action with a real connected system.</p>
+  <p class="section-lead">Six tabs. Zero learning curve. Here's what you get out of the box.</p>
 
-  <div class="tab-nav">
-    <button class="tab-btn active" onclick="showTab('home')">🏠 Home · Telemetry</button>
-    <button class="tab-btn" onclick="showTab('commands')">⌨️ Commands</button>
-    <button class="tab-btn" onclick="showTab('custom')">🔧 Custom Commands</button>
-    <button class="tab-btn" onclick="showTab('files')">📁 Files · SD Card</button>
-    <button class="tab-btn" onclick="showTab('firmware')">⚡ Firmware · OTA Flash</button>
-    <button class="tab-btn" onclick="showTab('provision')">🔑 Provision</button>
+  <!-- Quick jump nav -->
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:48px;">
+    <a href="#tab-home" style="padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;border:1.5px solid var(--border-lt);color:var(--text-muted);text-decoration:none;background:#fff;">🏠 Home · Telemetry</a>
+    <a href="#tab-commands" style="padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;border:1.5px solid var(--border-lt);color:var(--text-muted);text-decoration:none;background:#fff;">⌨️ Commands</a>
+    <a href="#tab-custom" style="padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;border:1.5px solid var(--border-lt);color:var(--text-muted);text-decoration:none;background:#fff;">🔧 Custom Commands</a>
+    <a href="#tab-files" style="padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;border:1.5px solid var(--border-lt);color:var(--text-muted);text-decoration:none;background:#fff;">📁 Files · SD Card</a>
+    <a href="#tab-firmware" style="padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;border:1.5px solid var(--border-lt);color:var(--text-muted);text-decoration:none;background:#fff;">⚡ Firmware · OTA</a>
+    <a href="#tab-provision" style="padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;border:1.5px solid var(--border-lt);color:var(--text-muted);text-decoration:none;background:#fff;">🔑 Provision</a>
   </div>
 
   <!-- Home Tab -->
-  <div id="tab-home" class="tab-panel active">
+  <div id="tab-home" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;margin-bottom:64px;">
     <div>
-      <div class="screenshot-frame">
-        <div class="screenshot-titlebar">
-          <div class="titlebar-dot" style="background:#FF5F56;"></div>
-          <div class="titlebar-dot" style="background:#FFBD2E;"></div>
-          <div class="titlebar-dot" style="background:#27C93F;"></div>
-          <span class="titlebar-title">OpenLST Ground Station — Home</span>
+      <div style="background:#1A1A2E;border:1px solid #2A2A4A;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+        <div style="background:#111122;padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2A2A4A;">
+          <div style="width:12px;height:12px;border-radius:50%;background:#FF5F56;flex-shrink:0;"></div>
+          <div style="width:12px;height:12px;border-radius:50%;background:#FFBD2E;flex-shrink:0;"></div>
+          <div style="width:12px;height:12px;border-radius:50%;background:#27C93F;flex-shrink:0;"></div>
+          <span style="font-family:var(--font-mono);font-size:12px;color:#666;margin-left:8px;">OpenLST Ground Station — Home</span>
         </div>
-        <img src="images/app_home.jpg" alt="OpenLST Ground Station Home tab showing live telemetry">
+        <img src="images/app_home.jpg" alt="OpenLST Ground Station Home tab showing live telemetry" style="width:100%;height:auto;display:block;">
       </div>
     </div>
     <div>
       <h3 style="margin-bottom:8px;">Live Telemetry Dashboard</h3>
-      <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">
-        The Home tab gives you a real-time view into your radio's operating state.
-        Connect, click Get Telem, and every panel updates immediately.
-        Auto-poll keeps data fresh every 5 seconds without any manual intervention.
-      </p>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">The Home tab gives you a real-time view into your radio's operating state. Connect, click Get Telem, and every panel updates immediately. Auto-poll keeps data fresh every 5 seconds without any manual intervention.</p>
       <ul class="feature-list">
-        <li>
-          <span class="icon">⏱️</span>
-          <div><strong>Uptime Counter</strong><p>Live seconds since last boot — helps identify unexpected reboots.</p></div>
-        </li>
-        <li>
-          <span class="icon">📶</span>
-          <div><strong>RSSI & LQI</strong><p>Received signal strength and link quality from the last packet received.</p></div>
-        </li>
-        <li>
-          <span class="icon">📊</span>
-          <div><strong>Packet Counters</strong><p>Packets sent, good packets, rejected checksum, UART RX counts — all live.</p></div>
-        </li>
-        <li>
-          <span class="icon">🖥️</span>
-          <div><strong>Color-Coded Log</strong><p>Every TX and RX packet logged with timestamp, raw bytes, and parsed fields.</p></div>
-        </li>
+        <li><span class="icon">⏱️</span><div><strong>Uptime Counter</strong><p>Live seconds since last boot — helps identify unexpected reboots.</p></div></li>
+        <li><span class="icon">📶</span><div><strong>RSSI & LQI</strong><p>Received signal strength and link quality from the last packet received.</p></div></li>
+        <li><span class="icon">📊</span><div><strong>Packet Counters</strong><p>Packets sent, good packets, rejected checksum, UART RX counts — all live.</p></div></li>
+        <li><span class="icon">🖥️</span><div><strong>Color-Coded Log</strong><p>Every TX and RX packet logged with timestamp, raw bytes, and parsed fields.</p></div></li>
       </ul>
     </div>
   </div>
 
+  <hr style="border:none;border-top:1px solid var(--border-lt);margin-bottom:64px;">
+
   <!-- Commands Tab -->
-  <div id="tab-commands" class="tab-panel">
+  <div id="tab-commands" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;margin-bottom:64px;">
     <div>
-      <div class="screenshot-frame">
-        <div class="screenshot-titlebar">
-          <div class="titlebar-dot" style="background:#FF5F56;"></div>
-          <div class="titlebar-dot" style="background:#FFBD2E;"></div>
-          <div class="titlebar-dot" style="background:#27C93F;"></div>
-          <span class="titlebar-title">OpenLST Ground Station — Commands</span>
+      <div style="background:#1A1A2E;border:1px solid #2A2A4A;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+        <div style="background:#111122;padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2A2A4A;">
+          <div style="width:12px;height:12px;border-radius:50%;background:#FF5F56;flex-shrink:0;"></div>
+          <div style="width:12px;height:12px;border-radius:50%;background:#FFBD2E;flex-shrink:0;"></div>
+          <div style="width:12px;height:12px;border-radius:50%;background:#27C93F;flex-shrink:0;"></div>
+          <span style="font-family:var(--font-mono);font-size:12px;color:#666;margin-left:8px;">OpenLST Ground Station — Commands</span>
         </div>
-        <img src="images/app_commands.jpg" alt="OpenLST Ground Station Commands tab">
+        <img src="images/app_commands.jpg" alt="OpenLST Ground Station Commands tab" style="width:100%;height:auto;display:block;">
       </div>
     </div>
     <div>
       <h3 style="margin-bottom:8px;">Standard OpenLST Commands</h3>
-      <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">
-        One-click access to all standard OpenLST protocol commands.
-        Set the HWID in the header bar to address any board — board 0001 relays
-        commands to board 0004 over RF automatically.
-      </p>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">One-click access to all standard OpenLST protocol commands. Set the HWID in the header bar to address any board — board 0001 relays commands to board 0004 over RF automatically.</p>
       <ul class="feature-list">
-        <li>
-          <span class="icon">📡</span>
-          <div><strong>Get Telem</strong><p>Request and display full telemetry from any addressed board.</p></div>
-        </li>
-        <li>
-          <span class="icon">🔁</span>
-          <div><strong>Reboot</strong><p>Remote reboot any board over RF with one click.</p></div>
-        </li>
-        <li>
-          <span class="icon">🕐</span>
-          <div><strong>Get / Set Time</strong><p>Read and set the onboard RTC clock.</p></div>
-        </li>
-        <li>
-          <span class="icon">📻</span>
-          <div><strong>Callsign</strong><p>Read and write the stored callsign — up to 8 characters.</p></div>
-        </li>
-        <li>
-          <span class="icon">⌨️</span>
-          <div><strong>Raw Command</strong><p>Send any arbitrary command string directly. No opcode knowledge required.</p></div>
-        </li>
+        <li><span class="icon">📡</span><div><strong>Get Telem</strong><p>Request and display full telemetry from any addressed board.</p></div></li>
+        <li><span class="icon">🔁</span><div><strong>Reboot</strong><p>Remote reboot any board over RF with one click.</p></div></li>
+        <li><span class="icon">🕐</span><div><strong>Get / Set Time</strong><p>Read and set the onboard RTC clock.</p></div></li>
+        <li><span class="icon">📻</span><div><strong>Callsign</strong><p>Read and write the stored callsign — up to 8 characters.</p></div></li>
+        <li><span class="icon">⌨️</span><div><strong>Raw Command</strong><p>Send any arbitrary command string directly. No opcode knowledge required.</p></div></li>
       </ul>
     </div>
   </div>
 
+  <hr style="border:none;border-top:1px solid var(--border-lt);margin-bottom:64px;">
+
   <!-- Custom Commands Tab -->
-  <div id="tab-custom" class="tab-panel">
+  <div id="tab-custom" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;margin-bottom:64px;">
     <div>
-      <div class="screenshot-frame">
-        <div class="screenshot-titlebar">
-          <div class="titlebar-dot" style="background:#FF5F56;"></div>
-          <div class="titlebar-dot" style="background:#FFBD2E;"></div>
-          <div class="titlebar-dot" style="background:#27C93F;"></div>
-          <span class="titlebar-title">OpenLST Ground Station — Custom Commands</span>
+      <div style="background:#1A1A2E;border:1px solid #2A2A4A;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+        <div style="background:#111122;padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2A2A4A;">
+          <div style="width:12px;height:12px;border-radius:50%;background:#FF5F56;flex-shrink:0;"></div>
+          <div style="width:12px;height:12px;border-radius:50%;background:#FFBD2E;flex-shrink:0;"></div>
+          <div style="width:12px;height:12px;border-radius:50%;background:#27C93F;flex-shrink:0;"></div>
+          <span style="font-family:var(--font-mono);font-size:12px;color:#666;margin-left:8px;">OpenLST Ground Station — Custom Commands</span>
         </div>
-        <img src="images/app_custom_commands.jpg" alt="OpenLST Ground Station Custom Commands tab showing Pico commands">
+        <img src="images/app_custom_commands.jpg" alt="OpenLST Ground Station Custom Commands tab" style="width:100%;height:auto;display:block;">
       </div>
     </div>
     <div>
       <h3 style="margin-bottom:8px;">Extensible Custom Command System</h3>
-      <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">
-        The most powerful tab in the application. Define any opcode with any hex payload,
-        save it with a name, and send it with one click. Commands persist between sessions.
-        Pre-loaded with the full Pico imaging command set.
-      </p>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">The most powerful tab in the application. Define any opcode with any hex payload, save it with a name, and send it with one click. Commands persist between sessions. Pre-loaded with the full Pico imaging command set.</p>
       <ul class="feature-list">
-        <li>
-          <span class="icon">💾</span>
-          <div><strong>JSON Persistent</strong><p>All commands saved automatically. Your command library is always there when you reopen the app.</p></div>
-        </li>
-        <li>
-          <span class="icon">📷</span>
-          <div><strong>Pico Imaging Commands</strong><p>PING, READ TEMP, SNAP, LIST FILES — all pre-loaded and ready to use with board 0004.</p></div>
-        </li>
-        <li>
-          <span class="icon">🔤</span>
-          <div><strong>Auto-Decoded Responses</strong><p>ASCII responses from the Pico are automatically decoded and displayed. <code style="background:var(--panel);padding:1px 6px;border-radius:4px;">✓ ack → SNAP:OK:snap_001.jpg:4617</code></p></div>
-        </li>
-        <li>
-          <span class="icon">🧩</span>
-          <div><strong>Any Opcode, Any Payload</strong><p>Not limited to pre-defined commands. Enter any hex bytes and send. Perfect for custom firmware development.</p></div>
-        </li>
+        <li><span class="icon">💾</span><div><strong>JSON Persistent</strong><p>All commands saved automatically. Your command library is always there when you reopen the app.</p></div></li>
+        <li><span class="icon">📷</span><div><strong>Pico Imaging Commands</strong><p>PING, READ TEMP, SNAP, LIST FILES — all pre-loaded and ready to use with board 0004.</p></div></li>
+        <li><span class="icon">🔤</span><div><strong>Auto-Decoded Responses</strong><p>ASCII responses from the Pico are automatically decoded and displayed.</p></div></li>
+        <li><span class="icon">🧩</span><div><strong>Any Opcode, Any Payload</strong><p>Not limited to pre-defined commands. Enter any hex bytes and send. Perfect for custom firmware development.</p></div></li>
       </ul>
     </div>
   </div>
 
+  <hr style="border:none;border-top:1px solid var(--border-lt);margin-bottom:64px;">
+
   <!-- Files Tab -->
-  <div id="tab-files" class="tab-panel">
+  <div id="tab-files" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;margin-bottom:64px;">
     <div>
-      <div class="screenshot-frame">
-        <div class="screenshot-titlebar">
-          <div class="titlebar-dot" style="background:#FF5F56;"></div>
-          <div class="titlebar-dot" style="background:#FFBD2E;"></div>
-          <div class="titlebar-dot" style="background:#27C93F;"></div>
-          <span class="titlebar-title">OpenLST Ground Station — Files</span>
+      <div style="background:#1A1A2E;border:1px solid #2A2A4A;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+        <div style="background:#111122;padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2A2A4A;">
+          <div style="width:12px;height:12px;border-radius:50%;background:#FF5F56;flex-shrink:0;"></div>
+          <div style="width:12px;height:12px;border-radius:50%;background:#FFBD2E;flex-shrink:0;"></div>
+          <div style="width:12px;height:12px;border-radius:50%;background:#27C93F;flex-shrink:0;"></div>
+          <span style="font-family:var(--font-mono);font-size:12px;color:#666;margin-left:8px;">OpenLST Ground Station — Files</span>
         </div>
-        <img src="images/app_files.jpg" alt="OpenLST Ground Station Files tab showing SD card file listing">
+        <img src="images/app_files.jpg" alt="OpenLST Ground Station Files tab showing SD card file listing" style="width:100%;height:auto;display:block;">
       </div>
     </div>
     <div>
       <h3 style="margin-bottom:8px;">Remote SD Card File Manager</h3>
-      <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">
-        A complete file manager for the Pico's SD card — over RF.
-        Browse, download, and delete files without touching the remote hardware.
-        Images transfer in 200-byte chunks with progress tracking and automatic retry.
-      </p>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">A complete file manager for the Pico's SD card — over RF. Browse, download, and delete files without touching the remote hardware. Images transfer in 200-byte chunks with progress tracking and automatic retry.</p>
       <ul class="feature-list">
-        <li>
-          <span class="icon">↺</span>
-          <div><strong>Refresh List</strong><p>Requests file listing from Pico SD card over RF. Populates the file list in under a second.</p></div>
-        </li>
-        <li>
-          <span class="icon">⬇️</span>
-          <div><strong>Get File</strong><p>Chunked transfer — requests file info, then transfers 200 bytes at a time. Progress bar shows every chunk. Auto-opens Images folder on completion.</p></div>
-        </li>
-        <li>
-          <span class="icon">🗑️</span>
-          <div><strong>Delete File</strong><p>Confirmation dialog then remote delete. File removed from SD card without physical access.</p></div>
-        </li>
-        <li>
-          <span class="icon">🔄</span>
-          <div><strong>Retry Logic</strong><p>3 automatic retries per chunk. Handles occasional RF dropouts gracefully without restarting the whole transfer.</p></div>
-        </li>
+        <li><span class="icon">↺</span><div><strong>Refresh List</strong><p>Requests file listing from Pico SD card over RF. Populates the file list in under a second.</p></div></li>
+        <li><span class="icon">⬇️</span><div><strong>Get File</strong><p>Chunked transfer — 200 bytes at a time. Progress bar shows every chunk. Auto-opens Images folder on completion.</p></div></li>
+        <li><span class="icon">🗑️</span><div><strong>Delete File</strong><p>Confirmation dialog then remote delete. File removed from SD card without physical access.</p></div></li>
+        <li><span class="icon">🔄</span><div><strong>Retry Logic</strong><p>3 automatic retries per chunk. Handles occasional RF dropouts gracefully.</p></div></li>
       </ul>
-      <div class="notice notice-info" style="margin-top:16px;">
-        <div class="notice-icon">📷</div>
-        <div>
-          <strong>Proven End-to-End</strong>
-          <p>Tested and confirmed — perfect JPEG images transferred from remote Pico SD card to Windows PC over RF. See the <a href="pico.html">Pico Project page</a> for the full setup.</p>
-        </div>
-      </div>
     </div>
   </div>
 
+  <hr style="border:none;border-top:1px solid var(--border-lt);margin-bottom:64px;">
+
   <!-- Firmware Tab -->
-  <div id="tab-firmware" class="tab-panel">
+  <div id="tab-firmware" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;margin-bottom:64px;">
     <div>
-      <div class="screenshot-frame">
-        <div class="screenshot-titlebar">
-          <div class="titlebar-dot" style="background:#FF5F56;"></div>
-          <div class="titlebar-dot" style="background:#FFBD2E;"></div>
-          <div class="titlebar-dot" style="background:#27C93F;"></div>
-          <span class="titlebar-title">OpenLST Ground Station — Firmware</span>
+      <div style="background:#1A1A2E;border:1px solid #2A2A4A;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+        <div style="background:#111122;padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2A2A4A;">
+          <div style="width:12px;height:12px;border-radius:50%;background:#FF5F56;flex-shrink:0;"></div>
+          <div style="width:12px;height:12px;border-radius:50%;background:#FFBD2E;flex-shrink:0;"></div>
+          <div style="width:12px;height:12px;border-radius:50%;background:#27C93F;flex-shrink:0;"></div>
+          <span style="font-family:var(--font-mono);font-size:12px;color:#666;margin-left:8px;">OpenLST Ground Station — Firmware</span>
         </div>
-        <img src="images/app_firmware.jpg" alt="OpenLST Ground Station Firmware tab with OTA flash">
+        <img src="images/app_firmware.jpg" alt="OpenLST Ground Station Firmware tab with OTA flash" style="width:100%;height:auto;display:block;">
       </div>
     </div>
     <div>
       <h3 style="margin-bottom:8px;">Build, Sign & Flash Over The Air</h3>
-      <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">
-        The complete firmware development pipeline in one tab.
-        Build your custom CC1110 firmware with SDCC, sign it with your AES key,
-        and flash it to the remote board over RF — without touching the hardware.
-        The same process used for real satellite firmware updates.
-      </p>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">The complete firmware development pipeline in one tab. Build your custom CC1110 firmware with SDCC, sign it with your AES key, and flash it to the remote board over RF — without touching the hardware.</p>
       <ul class="feature-list">
-        <li>
-          <span class="icon">🔨</span>
-          <div><strong>Build / Clean + Build</strong><p>Runs mingw32-make on your OpenLST source tree. Clean button safely removes only radio app build artifacts.</p></div>
-        </li>
-        <li>
-          <span class="icon">🔐</span>
-          <div><strong>AES-CBC-MAC Signing</strong><p>Signs your firmware hex with the board's AES key before flashing. Bootloader verifies signature before accepting the update.</p></div>
-        </li>
-        <li>
-          <span class="icon">📡</span>
-          <div><strong>Flash OTA</strong><p>Sends firmware page-by-page over RF. Retry logic per page. Progress bar tracks every 128-byte page write.</p></div>
-        </li>
-        <li>
-          <span class="icon">⚡</span>
-          <div><strong>Build + Flash</strong><p>One-button workflow — build, sign, and flash in sequence. Fastest path from source code to running firmware.</p></div>
-        </li>
+        <li><span class="icon">🔨</span><div><strong>Build / Clean + Build</strong><p>Runs mingw32-make on your OpenLST source tree. Clean button safely removes only radio app build artifacts.</p></div></li>
+        <li><span class="icon">🔐</span><div><strong>AES-CBC-MAC Signing</strong><p>Signs your firmware hex with the board's AES key before flashing. Bootloader verifies signature before accepting the update.</p></div></li>
+        <li><span class="icon">📡</span><div><strong>Flash OTA</strong><p>Sends firmware page-by-page over RF. Retry logic per page. Progress bar tracks every 128-byte page write.</p></div></li>
+        <li><span class="icon">⚡</span><div><strong>Build + Flash</strong><p>One-button workflow — build, sign, and flash in sequence. Fastest path from source code to running firmware.</p></div></li>
       </ul>
     </div>
   </div>
 
+  <hr style="border:none;border-top:1px solid var(--border-lt);margin-bottom:64px;">
+
   <!-- Provision Tab -->
-  <div id="tab-provision" class="tab-panel">
+  <div id="tab-provision" style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;margin-bottom:16px;">
     <div>
-      <div class="screenshot-frame">
-        <div class="screenshot-titlebar">
-          <div class="titlebar-dot" style="background:#FF5F56;"></div>
-          <div class="titlebar-dot" style="background:#FFBD2E;"></div>
-          <div class="titlebar-dot" style="background:#27C93F;"></div>
-          <span class="titlebar-title">OpenLST Ground Station — Provision</span>
+      <div style="background:#1A1A2E;border:1px solid #2A2A4A;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+        <div style="background:#111122;padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2A2A4A;">
+          <div style="width:12px;height:12px;border-radius:50%;background:#FF5F56;flex-shrink:0;"></div>
+          <div style="width:12px;height:12px;border-radius:50%;background:#FFBD2E;flex-shrink:0;"></div>
+          <div style="width:12px;height:12px;border-radius:50%;background:#27C93F;flex-shrink:0;"></div>
+          <span style="font-family:var(--font-mono);font-size:12px;color:#666;margin-left:8px;">OpenLST Ground Station — Provision</span>
         </div>
-        <img src="images/app_provision.jpg" alt="OpenLST Ground Station Provision tab for bootloader flashing">
+        <img src="images/app_provision.jpg" alt="OpenLST Ground Station Provision tab for bootloader flashing" style="width:100%;height:auto;display:block;">
       </div>
     </div>
     <div>
       <h3 style="margin-bottom:8px;">Board Provisioning</h3>
-      <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">
-        Flash the bootloader onto fresh CC1110 boards using the TI CC Debugger.
-        Sets the hardware ID, embeds AES signing keys, and programs the bootloader image —
-        all from one interface. This is how every SpaceCommsKit board is prepared before shipping.
-      </p>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">Flash the bootloader onto fresh CC1110 boards using the TI CC Debugger. Sets the hardware ID, embeds AES signing keys, and programs the bootloader image — all from one interface.</p>
       <ul class="feature-list">
-        <li>
-          <span class="icon">🔑</span>
-          <div><strong>HWID Assignment</strong><p>Assign any hardware ID (e.g. 0001, 0004) that becomes the board's permanent RF address.</p></div>
-        </li>
-        <li>
-          <span class="icon">🔒</span>
-          <div><strong>AES Key Embedding</strong><p>Three 16-byte AES signing keys embedded in the bootloader. Lab keys (all-F) used for development.</p></div>
-        </li>
-        <li>
-          <span class="icon">💾</span>
-          <div><strong>SmartRF Integration</strong><p>Calls TI SmartRF Flash Programmer automatically via CC Debugger to erase, program, and verify the bootloader image.</p></div>
-        </li>
-        <li>
-          <span class="icon">✅</span>
-          <div><strong>Verify After Flash</strong><p>SmartRF verifies the written image byte-for-byte. Board is ready for OTA firmware updates immediately after provisioning.</p></div>
-        </li>
+        <li><span class="icon">🔑</span><div><strong>HWID Assignment</strong><p>Assign any hardware ID (e.g. 0001, 0004) that becomes the board's permanent RF address.</p></div></li>
+        <li><span class="icon">🔒</span><div><strong>AES Key Embedding</strong><p>Three 16-byte AES signing keys embedded in the bootloader. Lab keys (all-F) used for development.</p></div></li>
+        <li><span class="icon">💾</span><div><strong>SmartRF Integration</strong><p>Calls TI SmartRF Flash Programmer automatically via CC Debugger to erase, program, and verify the bootloader image.</p></div></li>
+        <li><span class="icon">✅</span><div><strong>Verify After Flash</strong><p>SmartRF verifies the written image byte-for-byte. Board is ready for OTA firmware updates immediately after provisioning.</p></div></li>
       </ul>
     </div>
   </div>
@@ -489,14 +333,7 @@
   </div>
 </footer>
 
-<script>
-function showTab(name) {
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
-  event.target.classList.add('active');
-}
-</script>
+
 
 </body>
 </html>
