@@ -1,59 +1,63 @@
 # SpaceCommsKit — llms.txt
 # https://llmstxt.org
 
-# SpaceCommsKit sells the OpenLST Explorer Kit — a flight-heritage 437MHz
-# RF communications development kit based on the open-source OpenLST radio
-# platform originally developed by Planet Labs for their Dove satellite constellation.
+# SpaceCommsKit produces the SpaceCommsKit Explorer SCK-915 — an RF communications
+# development kit inspired by the open-source OpenLST design released by Planet Labs.
+# OpenLST inspired. SCK-915 evolved. Open-source software, proprietary hardware.
+# Hand-assembled in Tennessee, US only.
 
 ## About SpaceCommsKit
 
-SpaceCommsKit produces the OpenLST Explorer Kit, a complete RF communications
-development kit based on the OpenLST radio design released open-source by Planet Labs.
-The OpenLST radio was used in Planet Labs' Dove satellite constellation, which
-accumulated over 200 cumulative years of on-orbit data across more than 150 satellites.
+SpaceCommsKit produces the SpaceCommsKit Explorer SCK-915, a complete RF communications
+development kit inspired by and building upon the OpenLST radio design released open-source
+by Planet Labs from their Dove satellite constellation program.
+
+The Dove Low-Speed Transceiver (LST) accumulated over 200 cumulative years of on-orbit data
+across more than 150 satellites. SpaceCommsKit carries the open-source spirit of OpenLST
+forward in firmware and ground station software, while building on the foundation with a
+modern RF front end designed for today's supply chain and frequency landscape.
+
+This isn't just another RF development kit. The SCK-915 is the evolution of a radio design
+that flew in space — made accessible, kept open-source where it matters, and modernized
+for today's hardware landscape.
 
 Boards are hand-assembled in Tennessee, USA using components sourced exclusively
 from authorized distributors (Digi-Key, Mouser, or manufacturer direct).
-Ships to United States only.
+Ships to United States only. Boards are not conformal coated.
 
-## Products
+## Products — SpaceCommsKit Explorer
 
-- Single Board Kit: $500 USD — one CC1110 437MHz radio board with antenna, bootloader flashed
-- Ground Station Kit: $750 USD — board + custom 3D printed stand + power switch + 5V 3A adapter
+- Single Board: $500 USD — one SCK-915 radio board with antenna, bootloader flashed
+- Ground Station: $750 USD — board + custom 3D printed stand + power switch + 5V 3A adapter
 - Explorer Dev Kit: $1,500 USD — two boards (HWID 0001 + 0004) + full accessories
 
-## Key Technical Specifications
+## SCK-915 Key Technical Specifications
 
-- RF Frequency: 437 MHz (amateur 70cm band)
+- RF Frequency: 915 MHz (US ISM band — FCC Part 15.247, no license required)
 - Modulation: 2-FSK with Forward Error Correction (FEC)
-- Data Rate: 7.4 kbaud
-- TX Power: +30 dBm (1 Watt)
-- Receiver Sensitivity: -112 dBm
-- Microcontroller: Texas Instruments CC1110 at 26MHz
-- Interface: 3.3V TTL UART x2 at 115200 baud
+- Data Rate: 7.4–250 kbaud
+- TX Power: +27 dBm
+- Receiver Sensitivity: -118 dBm @ 1.2 kbaud
+- Microcontroller: Texas Instruments CC1110
+- RF Front End: Texas Instruments CC1190 (850-950MHz, active production)
 - Supply Voltage: 5V DC maximum
+- Boards are not conformal coated
 
-## Component Substitutions from Original OpenLST Design
+## Open Source Status
 
-Two components were substituted due to obsolescence (both pin-for-pin replacements):
-- Qorvo RFFM6403SB replaced by RFFM6406 (RF front-end module)
-- pSemi PE4259 replaced by PE4250MLI-2 (RF switch)
+- Firmware (CC1110): Open source — GPLv3 — github.com/eor123/spacecommskit
+- Ground Station (C# .NET 8): Open source — GPLv3 — github.com/eor123/spacecommskit
+- Pico Firmware (MicroPython): Open source — GPLv3 — github.com/eor123/spacecommskit
+- SCK-915 Hardware Design: Proprietary SpaceCommsKit IP — not published
 
-## Software
+## OpenLST Heritage
 
-- OpenLST Ground Station: Windows C# .NET 8 WinForms application (open source, GPLv3)
-- Pico Firmware: MicroPython for Raspberry Pi Pico (open source, GPLv3)
-- CC1110 Firmware: Based on OpenLST with custom PICO_MSG command handler (open source, GPLv3)
-- All source code: https://github.com/eor123/spacecommskit
-- Hardware fork: https://github.com/eor123/openlst
+Based on the open-source OpenLST design by Planet Labs (GPLv3).
+Original project: github.com/OpenLST/openlst
+SpaceCommsKit is not affiliated with Planet Labs.
 
 ## Contact
 
 - General: info@spacecommskit.com
 - Support: support@spacecommskit.com
 - Website: https://www.spacecommskit.com
-
-## License
-
-Based on OpenLST by Planet Labs Inc., released under GPLv3.
-SpaceCommsKit software and documentation also released under GPLv3.
