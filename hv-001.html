@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HV-001 Marx Generator V1 — Section 7 · SpaceCommsKit</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void: #000000;
+    --deep: #030507;
+    --surface: #070d12;
+    --panel: #0a1219;
+    --arc-blue: #00CFFF;
+    --arc-white: #E8F8FF;
+    --plasma: #7B2FFF;
+    --danger: #FF2200;
+    --warn: #FFB800;
+    --green: #00FF88;
+    --text: #B8CCD8;
+    --dim: #3A4F5C;
+    --mono: 'Share Tech Mono', monospace;
+    --display: 'Bebas Neue', sans-serif;
+    --body: 'Rajdhani', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--void);
+    color: var(--text);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* Scanlines */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 2px,
+      rgba(0,207,255,0.012) 2px, rgba(0,207,255,0.012) 4px
+    );
+  }
+
+  /* ── NAV ── */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    background: rgba(0,0,0,0.95);
+    border-bottom: 1px solid rgba(0,207,255,0.15);
+    padding: 0 5%; height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+    backdrop-filter: blur(20px);
+  }
+  .nav-back {
+    font-family: var(--mono); font-size: 11px; color: var(--dim);
+    text-decoration: none; letter-spacing: 2px;
+    transition: color 0.2s; display: flex; align-items: center; gap: 8px;
+  }
+  .nav-back:hover { color: var(--arc-blue); }
+  .nav-back::before { content: '←'; }
+  .nav-id { font-family: var(--mono); font-size: 11px; color: var(--arc-blue); letter-spacing: 3px; }
+  .nav-tier { font-family: var(--mono); font-size: 10px; color: var(--warn); letter-spacing: 2px;
+    border: 1px solid rgba(255,184,0,0.3); padding: 3px 10px; border-radius: 2px; }
+
+  /* ── DOSSIER HEADER ── */
+  .dossier-header {
+    position: relative; z-index: 1;
+    padding: 100px 5% 60px;
+    border-bottom: 1px solid rgba(0,207,255,0.1);
+    background: linear-gradient(to bottom, rgba(0,207,255,0.03), transparent);
+  }
+
+  .dossier-stamp {
+    display: inline-flex; align-items: center; gap: 12px;
+    margin-bottom: 24px;
+  }
+  .stamp-id {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 3px;
+    background: rgba(0,207,255,0.1); border: 1px solid rgba(0,207,255,0.3);
+    color: var(--arc-blue); padding: 5px 14px;
+  }
+  .stamp-class {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 3px;
+    background: rgba(255,34,0,0.1); border: 1px solid rgba(255,34,0,0.3);
+    color: var(--danger); padding: 5px 14px;
+  }
+  .stamp-tier {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 3px;
+    background: rgba(255,184,0,0.1); border: 1px solid rgba(255,184,0,0.3);
+    color: var(--warn); padding: 5px 14px;
+  }
+
+  .dossier-title {
+    font-family: var(--display);
+    font-size: clamp(48px, 8vw, 100px);
+    line-height: 0.9; letter-spacing: 3px;
+    color: var(--arc-white);
+    text-shadow: 0 0 40px rgba(0,207,255,0.4), 0 0 80px rgba(0,207,255,0.15);
+    margin-bottom: 8px;
+  }
+  .dossier-subtitle {
+    font-family: var(--mono); font-size: 14px; letter-spacing: 4px;
+    color: var(--warn); text-transform: uppercase; margin-bottom: 32px;
+  }
+
+  .dossier-meta {
+    display: flex; gap: 0; flex-wrap: wrap;
+    border: 1px solid rgba(0,207,255,0.15);
+    max-width: 700px;
+  }
+  .meta-item {
+    padding: 12px 20px;
+    border-right: 1px solid rgba(0,207,255,0.1);
+    flex: 1; min-width: 120px;
+  }
+  .meta-item:last-child { border-right: none; }
+  .meta-key {
+    font-family: var(--mono); font-size: 9px; letter-spacing: 2px;
+    color: var(--dim); text-transform: uppercase; display: block; margin-bottom: 4px;
+  }
+  .meta-val {
+    font-family: var(--mono); font-size: 18px;
+    color: var(--arc-blue);
+    text-shadow: 0 0 8px rgba(0,207,255,0.5);
+  }
+
+  /* ── CONTENT LAYOUT ── */
+  .dossier-body {
+    position: relative; z-index: 1;
+    display: grid; grid-template-columns: 1fr 320px;
+    gap: 0; max-width: 1200px; margin: 0 auto;
+    padding: 0 5%;
+  }
+
+  /* Main content */
+  .dossier-main { padding: 60px 48px 60px 0; border-right: 1px solid rgba(0,207,255,0.08); }
+
+  /* Sidebar */
+  .dossier-sidebar { padding: 60px 0 60px 40px; }
+
+  /* ── SECTION BLOCKS ── */
+  .doc-section { margin-bottom: 56px; }
+
+  .doc-section-label {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 4px;
+    color: var(--arc-blue); text-transform: uppercase;
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 20px;
+  }
+  .doc-section-label::after {
+    content: '';
+    flex: 1; height: 1px;
+    background: linear-gradient(to right, rgba(0,207,255,0.3), transparent);
+  }
+
+  .doc-section h2 {
+    font-family: var(--display); font-size: 36px; letter-spacing: 2px;
+    color: var(--arc-white); margin-bottom: 16px;
+  }
+
+  .doc-prose {
+    font-size: 15px; font-weight: 400; line-height: 1.85;
+    color: var(--text); margin-bottom: 16px;
+  }
+  .doc-prose strong { color: var(--arc-white); font-weight: 600; }
+  .doc-prose em { color: var(--arc-blue); font-style: normal; }
+
+  /* Equation block */
+  .equation-block {
+    background: var(--panel);
+    border: 1px solid rgba(0,207,255,0.15);
+    border-left: 3px solid var(--arc-blue);
+    padding: 20px 24px; margin: 20px 0;
+    font-family: var(--mono); font-size: 14px;
+  }
+  .equation-label {
+    font-size: 10px; letter-spacing: 2px; color: var(--dim);
+    text-transform: uppercase; margin-bottom: 8px;
+  }
+  .equation { color: var(--arc-blue); font-size: 16px; margin-bottom: 4px; }
+  .equation-note { font-size: 11px; color: var(--dim); margin-top: 8px; line-height: 1.5; }
+
+  /* Stage diagram */
+  .stage-diagram {
+    background: var(--panel);
+    border: 1px solid rgba(0,207,255,0.1);
+    padding: 24px; margin: 24px 0;
+    font-family: var(--mono); font-size: 12px;
+    overflow-x: auto;
+  }
+  .stage-diagram pre {
+    color: var(--arc-blue); line-height: 1.6;
+    text-shadow: 0 0 4px rgba(0,207,255,0.3);
+    white-space: pre;
+  }
+  .diagram-label {
+    font-size: 10px; letter-spacing: 2px; color: var(--dim);
+    text-transform: uppercase; margin-bottom: 12px;
+  }
+
+  /* Component table */
+  .component-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 13px; }
+  .component-table th {
+    background: rgba(0,207,255,0.08);
+    font-family: var(--mono); font-size: 9px; letter-spacing: 2px;
+    color: var(--arc-blue); padding: 10px 14px; text-align: left;
+    text-transform: uppercase; border-bottom: 1px solid rgba(0,207,255,0.2);
+  }
+  .component-table td {
+    padding: 10px 14px; border-bottom: 1px solid rgba(0,207,255,0.06);
+    font-family: var(--body); font-size: 14px;
+  }
+  .component-table td:first-child { font-family: var(--mono); color: var(--arc-blue); font-size: 12px; }
+  .component-table tr:last-child td { border-bottom: none; }
+  .component-table tr:hover td { background: rgba(0,207,255,0.03); }
+
+  /* Warning callout */
+  .callout {
+    padding: 16px 20px; margin: 20px 0;
+    display: flex; gap: 14px; align-items: flex-start;
+    font-size: 14px; line-height: 1.7;
+    font-family: var(--body);
+  }
+  .callout.danger { background: rgba(255,34,0,0.06); border-left: 3px solid var(--danger); }
+  .callout.warn { background: rgba(255,184,0,0.06); border-left: 3px solid var(--warn); }
+  .callout.info { background: rgba(0,207,255,0.05); border-left: 3px solid var(--arc-blue); }
+  .callout.success { background: rgba(0,255,136,0.05); border-left: 3px solid var(--green); }
+  .callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .callout strong { color: #fff; display: block; margin-bottom: 4px; }
+
+  /* Phase list */
+  .phase-list { list-style: none; display: flex; flex-direction: column; gap: 16px; margin: 20px 0; }
+  .phase-item {
+    display: flex; gap: 16px; align-items: flex-start;
+    padding: 16px 20px;
+    background: var(--panel);
+    border: 1px solid rgba(0,207,255,0.08);
+  }
+  .phase-num {
+    font-family: var(--mono); font-size: 20px; color: var(--arc-blue);
+    flex-shrink: 0; width: 32px; text-align: center;
+    text-shadow: 0 0 8px rgba(0,207,255,0.5);
+  }
+  .phase-content { flex: 1; }
+  .phase-title { font-family: var(--display); font-size: 18px; letter-spacing: 1px;
+    color: var(--arc-white); margin-bottom: 4px; }
+  .phase-desc { font-size: 14px; color: var(--text); line-height: 1.6; }
+
+  /* ── SIDEBAR ── */
+  .sidebar-card {
+    background: var(--panel);
+    border: 1px solid rgba(0,207,255,0.12);
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .sidebar-card-title {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 3px;
+    color: var(--arc-blue); text-transform: uppercase;
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(0,207,255,0.1);
+    background: rgba(0,207,255,0.04);
+  }
+  .sidebar-card-body { padding: 16px; }
+
+  .spec-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 0; border-bottom: 1px solid rgba(0,207,255,0.06);
+    font-size: 13px;
+  }
+  .spec-row:last-child { border-bottom: none; }
+  .spec-label { font-family: var(--mono); font-size: 11px; color: var(--dim); letter-spacing: 1px; }
+  .spec-value { font-family: var(--mono); font-size: 13px; color: var(--arc-blue); }
+
+  .patreon-cta {
+    display: block; text-align: center;
+    background: linear-gradient(135deg, #FF424D, #FF6B35);
+    color: #fff; font-family: var(--mono); font-size: 11px;
+    letter-spacing: 3px; text-transform: uppercase;
+    padding: 14px; text-decoration: none;
+    margin-bottom: 20px;
+    transition: all 0.3s;
+    box-shadow: 0 4px 20px rgba(255,66,77,0.25);
+  }
+  .patreon-cta:hover { box-shadow: 0 4px 30px rgba(255,66,77,0.45); transform: translateY(-2px); }
+
+  .stl-cta {
+    display: block; text-align: center;
+    background: transparent;
+    border: 1px solid rgba(123,47,255,0.4);
+    color: #a78bfa; font-family: var(--mono); font-size: 11px;
+    letter-spacing: 3px; text-transform: uppercase;
+    padding: 12px; text-decoration: none;
+    margin-bottom: 20px;
+    transition: all 0.3s;
+  }
+  .stl-cta:hover { background: rgba(123,47,255,0.1); border-color: var(--plasma); }
+
+  .nav-links-sidebar { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+  .nav-links-sidebar li a {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 16px; font-family: var(--mono); font-size: 11px;
+    color: var(--dim); letter-spacing: 1px;
+    text-decoration: none; transition: all 0.2s;
+    background: var(--panel); border-left: 2px solid transparent;
+  }
+  .nav-links-sidebar li a:hover { color: var(--arc-blue); border-left-color: var(--arc-blue); background: rgba(0,207,255,0.04); }
+  .nav-links-sidebar li a.active { color: var(--arc-blue); border-left-color: var(--arc-blue); background: rgba(0,207,255,0.06); }
+  .nav-links-sidebar li a span { font-size: 9px; color: var(--dim); }
+
+  /* ── FOOTER ── */
+  .dossier-footer {
+    position: relative; z-index: 1;
+    border-top: 1px solid rgba(0,207,255,0.1);
+    padding: 32px 5%;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 16px;
+  }
+  .dossier-footer a { font-family: var(--mono); font-size: 11px; color: var(--arc-blue); text-decoration: none; letter-spacing: 1px; }
+  .dossier-footer .right { font-family: var(--mono); font-size: 10px; color: var(--dim); }
+
+  @media (max-width: 900px) {
+    .dossier-body { grid-template-columns: 1fr; }
+    .dossier-main { padding: 40px 0; border-right: none; border-bottom: 1px solid rgba(0,207,255,0.08); }
+    .dossier-sidebar { padding: 40px 0; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="hv-lab.html" class="nav-back">High Voltage Lab</a>
+  <span class="nav-id">HV-001 // MARX GEN V1</span>
+  <span class="nav-tier">⚡ TIER 2 ACCESS</span>
+</nav>
+
+<!-- Dossier Header -->
+<div class="dossier-header">
+  <div class="dossier-stamp">
+    <span class="stamp-id">HV-001</span>
+    <span class="stamp-class">CLASSIFIED</span>
+    <span class="stamp-tier">PATREON TIER 2+</span>
+  </div>
+  <h1 class="dossier-title">MARX<br>GENERATOR</h1>
+  <div class="dossier-subtitle">Revision 1 · 6-Stage · ~30kV Impulse Output</div>
+  <div class="dossier-meta">
+    <div class="meta-item">
+      <span class="meta-key">Output Voltage</span>
+      <span class="meta-val">~30kV</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-key">Stage Count</span>
+      <span class="meta-val">6</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-key">Charge Voltage</span>
+      <span class="meta-val">5kV</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-key">Output Type</span>
+      <span class="meta-val">Impulse</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-key">Status</span>
+      <span class="meta-val" style="color:var(--green);">Built</span>
+    </div>
+  </div>
+</div>
+
+<!-- Body -->
+<div class="dossier-body">
+
+  <!-- Main Content -->
+  <div class="dossier-main">
+
+    <div class="callout danger">
+      <span class="callout-icon">⚠️</span>
+      <div>
+        <strong>LETHAL VOLTAGE WARNING</strong>
+        This device produces voltages capable of causing immediate cardiac arrest and death.
+        Do not attempt construction without appropriate high-voltage experience, insulated tools rated
+        for the operating voltage, a second person present, and full understanding of capacitor
+        energy storage hazards. Charged capacitors retain lethal energy after power is removed.
+        Always discharge and verify before any physical contact.
+      </div>
+    </div>
+
+    <!-- Theory -->
+    <div class="doc-section">
+      <div class="doc-section-label">01 // Theory of Operation</div>
+      <h2>HOW A MARX GENERATOR WORKS</h2>
+
+      <p class="doc-prose">
+        The Marx generator solves a deceptively simple problem: how do you generate very high
+        voltage when your power supply only produces moderate voltage? The answer, conceived by
+        Erwin Marx in 1924, is as elegant as it is powerful — <strong>charge capacitors in parallel,
+        switch them in series</strong>.
+      </p>
+
+      <p class="doc-prose">
+        During the charging phase, all capacitors charge to the same voltage through resistors.
+        When the first spark gap fires — triggered either by the voltage reaching the breakdown
+        threshold or by an external trigger — it places the first two capacitors in series.
+        This doubled voltage causes the next spark gap to fire, which places three capacitors
+        in series, and so on down the cascade until all stages have fired and the full
+        multiplied voltage appears across the output.
+      </p>
+
+      <div class="equation-block">
+        <div class="equation-label">Peak Output Voltage</div>
+        <div class="equation">V_out = n × V_charge</div>
+        <div class="equation-note">
+          Where n = number of stages, V_charge = charge voltage per capacitor<br>
+          For this build: V_out = 6 × 5,000V = 30,000V theoretical<br>
+          Practical output is typically 70–85% of theoretical due to spark gap losses
+        </div>
+      </div>
+
+      <div class="stage-diagram">
+        <div class="diagram-label">// Marx Generator Stage Schematic (Simplified)</div>
+        <pre>
+  HV+  R1    C1         R3    C3         R5    C5
+   ├───┤├───┤├──┬───────┤├───┤├──┬───────┤├───┤├──┬─── OUTPUT+
+              │  SG1            │  SG2            │  SG3
+              ├─────────────────┘                 │
+   R2    C2   │         R4    C4         R6    C6  │
+   ┤├───┤├────┤  ┬───────┤├───┤├──┬───────┤├───┤├──┘
+              └──┘  SG = SPARK GAP
+  GND ───────────────────────────────────────────── OUTPUT-
+
+  CHARGE: All C charge to V_charge in parallel through R network
+  FIRE:   SG1 breaks down → C1+C2 in series → 2V across SG2
+          SG2 fires → adds C3+C4 → 4V across SG3
+          SG3 fires → all 6 caps in series → ~6V at output</pre>
+      </div>
+
+      <p class="doc-prose">
+        The charging resistors serve two critical functions: they isolate the capacitors during
+        charging so they all charge to the same voltage, and they limit the charging current.
+        The resistance values are a tradeoff — too high and the charging time becomes impractical,
+        too low and the resistors dissipate excessive power and may interfere with the discharge cascade.
+      </p>
+    </div>
+
+    <!-- Build Description -->
+    <div class="doc-section">
+      <div class="doc-section-label">02 // Build Description</div>
+      <h2>HOW WE BUILT IT</h2>
+
+      <p class="doc-prose">
+        V1 started as a proof of concept — can we build a working Marx generator from commercially
+        available components, with a 3D-printed frame, that reliably produces visible arcs?
+        The answer is yes, with some important lessons learned that drove the V2 redesign.
+      </p>
+
+      <ul class="phase-list">
+        <li class="phase-item">
+          <span class="phase-num">01</span>
+          <div class="phase-content">
+            <div class="phase-title">CAPACITOR SELECTION</div>
+            <div class="phase-desc">
+              Each stage uses a high-voltage ceramic or film capacitor rated well above the
+              operating voltage — minimum 2× safety margin on voltage rating.
+              The energy stored per stage is E = ½CV², so capacitance and charge voltage
+              together determine the output energy, not just the voltage. More capacitance
+              means more energy per discharge but also longer charging time.
+            </div>
+          </div>
+        </li>
+        <li class="phase-item">
+          <span class="phase-num">02</span>
+          <div class="phase-content">
+            <div class="phase-title">SPARK GAP CONSTRUCTION</div>
+            <div class="phase-desc">
+              The spark gaps are the critical and most temperamental component. Each gap
+              consists of two rounded electrodes with a precisely set air gap. The gap distance
+              determines the breakdown voltage — too narrow and the gaps pre-fire during charging,
+              too wide and the cascade fails to propagate. We used brass rod turned to rounded
+              tips to minimize field enhancement effects at the electrodes.
+            </div>
+          </div>
+        </li>
+        <li class="phase-item">
+          <span class="phase-num">03</span>
+          <div class="phase-content">
+            <div class="phase-title">CHARGING RESISTORS</div>
+            <div class="phase-desc">
+              High-voltage resistors are not standard components. We used series strings of
+              standard resistors to achieve the required resistance and voltage rating.
+              The resistors must be physically spaced to handle the voltage across them
+              without surface flashover — this is where the 3D-printed frame geometry matters.
+            </div>
+          </div>
+        </li>
+        <li class="phase-item">
+          <span class="phase-num">04</span>
+          <div class="phase-content">
+            <div class="phase-title">3D PRINTED FRAME</div>
+            <div class="phase-desc">
+              The frame was printed in PETG — better temperature resistance than PLA,
+              adequate dielectric properties for this voltage range. The critical design
+              constraint is creepage distance — the surface path length between conductors
+              at different potentials. Rule of thumb: at least 2mm per kV for indoor use
+              in clean conditions. The STL files include the frame geometry with integrated
+              component mounting positions and adequate creepage paths.
+            </div>
+          </div>
+        </li>
+        <li class="phase-item">
+          <span class="phase-num">05</span>
+          <div class="phase-content">
+            <div class="phase-title">POWER SUPPLY INTERFACE</div>
+            <div class="phase-desc">
+              The Marx generator needs a DC high-voltage supply for charging. V1 was tested
+              with a laboratory HV supply. The charging supply must be current-limited —
+              the Marx fires fast and the charging supply must not be damaged by the discharge
+              event propagating back through the charging circuit. A high-value series resistor
+              between the supply and the Marx provides this protection.
+            </div>
+          </div>
+        </li>
+      </ul>
+
+      <div class="callout info">
+        <span class="callout-icon">ℹ️</span>
+        <div>
+          <strong>PATREON CONTENT</strong>
+          The complete build documentation — specific component values, sourcing, assembly
+          photographs, gap adjustment procedure, and full test results with arc photography —
+          is available to Patreon supporters at the High Voltage Lab tier.
+          The 3D printable STL files for the frame are hosted on Google Drive,
+          linked from the Patreon post.
+        </div>
+      </div>
+    </div>
+
+    <!-- Test Results -->
+    <div class="doc-section">
+      <div class="doc-section-label">03 // Test Results</div>
+      <h2>WHAT HAPPENED WHEN WE TURNED IT ON</h2>
+
+      <p class="doc-prose">
+        First fire was at reduced charge voltage — 2kV per stage, targeting ~12kV output.
+        The cascade fired on the third attempt after gap adjustment. The discharge is fast —
+        the arc duration is in the microsecond range, which means you hear it before you
+        see it. The acoustic crack is startling even when you're expecting it.
+      </p>
+
+      <div class="callout success">
+        <span class="callout-icon">✅</span>
+        <div>
+          <strong>CONFIRMED WORKING</strong>
+          Consistent cascade firing achieved after gap distance optimization.
+          Arc length at full charge voltage confirmed in line with theoretical output.
+          Full test documentation including measured output and arc photography
+          available in the Patreon dossier.
+        </div>
+      </div>
+
+      <div class="callout warn">
+        <span class="callout-icon">⚠️</span>
+        <div>
+          <strong>V1 LIMITATIONS — WHY V2 EXISTS</strong>
+          Gap consistency was the primary challenge. Hand-adjusted gaps drift between sessions
+          and require readjustment. Triggering is probabilistic rather than deterministic.
+          The V2 redesign addresses this with improved gap geometry and a more rigid frame
+          that maintains gap distance more reliably. See HV-002 for the full story.
+        </div>
+      </div>
+    </div>
+
+    <!-- What's Next -->
+    <div class="doc-section">
+      <div class="doc-section-label">04 // Next Steps</div>
+      <h2>FROM V1 TO V2</h2>
+      <p class="doc-prose">
+        V1 proved the concept and taught us everything we needed to know to build V2 properly.
+        The lessons from gap geometry, frame rigidity, and component layout are all incorporated
+        into the HV-002 design. V1 remains operational and is a great starting point for
+        anyone new to impulse voltage work — the simpler design is easier to understand
+        and troubleshoot.
+      </p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:24px;">
+        <a href="hv-002.html" style="display:inline-flex;align-items:center;gap:8px;
+          font-family:var(--mono);font-size:11px;letter-spacing:2px;
+          border:1px solid rgba(0,207,255,0.3);color:var(--arc-blue);
+          padding:12px 20px;text-decoration:none;transition:all 0.3s;">
+          → VIEW HV-002 MARX GEN V2
+        </a>
+        <a href="hv-lab.html" style="display:inline-flex;align-items:center;gap:8px;
+          font-family:var(--mono);font-size:11px;letter-spacing:2px;
+          border:1px solid rgba(0,207,255,0.1);color:var(--dim);
+          padding:12px 20px;text-decoration:none;transition:all 0.3s;">
+          ← BACK TO HV LAB
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Sidebar -->
+  <div class="dossier-sidebar">
+
+    <a href="https://www.patreon.com/spacecommskit" target="_blank" class="patreon-cta">
+      🔒 UNLOCK FULL DOSSIER<br>
+      <span style="font-size:9px;letter-spacing:1px;opacity:0.8;">PATREON TIER 2 · $10/MONTH</span>
+    </a>
+
+    <a href="https://www.patreon.com/spacecommskit" target="_blank" class="stl-cta">
+      ⬇ DOWNLOAD STL FILES<br>
+      <span style="font-size:9px;letter-spacing:1px;opacity:0.8;">GOOGLE DRIVE · PATREON EXCLUSIVE</span>
+    </a>
+
+    <!-- Specs card -->
+    <div class="sidebar-card">
+      <div class="sidebar-card-title">// Technical Specifications</div>
+      <div class="sidebar-card-body">
+        <div class="spec-row">
+          <span class="spec-label">TOPOLOGY</span>
+          <span class="spec-value">Marx Bank</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">STAGES</span>
+          <span class="spec-value">6</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">CHARGE VOLTAGE</span>
+          <span class="spec-value">5 kV / stage</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">PEAK OUTPUT</span>
+          <span class="spec-value">~30 kV</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">OUTPUT TYPE</span>
+          <span class="spec-value">Impulse</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">SWITCH TYPE</span>
+          <span class="spec-value">Air Spark Gap</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">FRAME MATERIAL</span>
+          <span class="spec-value">PETG (3D Printed)</span>
+        </div>
+        <div class="spec-row">
+          <span class="spec-label">STL FILES</span>
+          <span class="spec-value" style="color:var(--green);">Available</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Patreon content list -->
+    <div class="sidebar-card">
+      <div class="sidebar-card-title">// Patreon Content Includes</div>
+      <div class="sidebar-card-body">
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;">
+          <li style="font-family:var(--mono);font-size:11px;color:var(--text);display:flex;gap:8px;align-items:flex-start;">
+            <span style="color:var(--arc-blue);">✓</span>Complete component values and sourcing
+          </li>
+          <li style="font-family:var(--mono);font-size:11px;color:var(--text);display:flex;gap:8px;align-items:flex-start;">
+            <span style="color:var(--arc-blue);">✓</span>Assembly photographs step by step
+          </li>
+          <li style="font-family:var(--mono);font-size:11px;color:var(--text);display:flex;gap:8px;align-items:flex-start;">
+            <span style="color:var(--arc-blue);">✓</span>Gap adjustment procedure
+          </li>
+          <li style="font-family:var(--mono);font-size:11px;color:var(--text);display:flex;gap:8px;align-items:flex-start;">
+            <span style="color:var(--arc-blue);">✓</span>Test results and arc photography
+          </li>
+          <li style="font-family:var(--mono);font-size:11px;color:var(--text);display:flex;gap:8px;align-items:flex-start;">
+            <span style="color:var(--arc-blue);">✓</span>Troubleshooting guide
+          </li>
+          <li style="font-family:var(--mono);font-size:11px;color:var(--text);display:flex;gap:8px;align-items:flex-start;">
+            <span style="color:var(--plasma);">⬇</span>3D printable frame STL files
+          </li>
+          <li style="font-family:var(--mono);font-size:11px;color:var(--text);display:flex;gap:8px;align-items:flex-start;">
+            <span style="color:var(--plasma);">⬇</span>Electrode holder STL files
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- HV Lab navigation -->
+    <div class="sidebar-card">
+      <div class="sidebar-card-title">// HV Lab Projects</div>
+      <ul class="nav-links-sidebar">
+        <li><a href="hv-001.html" class="active">HV-001 Marx Gen V1 <span>BUILT</span></a></li>
+        <li><a href="hv-002.html">HV-002 Marx Gen V2 <span>BUILT</span></a></li>
+        <li><a href="hv-003.html">HV-003 HV Multiplier <span>BUILT</span></a></li>
+        <li><a href="hv-004.html">HV-004 HV Transformer <span>IN PROG</span></a></li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="dossier-footer">
+  <div>
+    <a href="hv-lab.html">← HV Lab</a>
+    &nbsp;·&nbsp;
+    <a href="classified.html">Section 7</a>
+    &nbsp;·&nbsp;
+    <a href="index.html">SpaceCommsKit</a>
+  </div>
+  <div class="right">HV-001 // CLASSIFIED // TIER 2 ACCESS REQUIRED</div>
+</footer>
+
+</body>
+</html>

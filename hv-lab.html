@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HIGH VOLTAGE LAB — Section 7 · SpaceCommsKit</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="https://www.spacecommskit.com/hv-lab.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void: #000000;
+    --deep: #030507;
+    --surface: #070d12;
+    --arc-blue: #00CFFF;
+    --arc-white: #E8F8FF;
+    --plasma: #7B2FFF;
+    --danger: #FF2200;
+    --warn: #FFB800;
+    --text: #B8CCD8;
+    --dim: #3A4F5C;
+    --mono: 'Share Tech Mono', monospace;
+    --display: 'Bebas Neue', sans-serif;
+    --body: 'Rajdhani', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--void);
+    color: var(--text);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+
+  /* ── ANIMATED ARC BACKGROUND ─────────────────────────────── */
+  .arc-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  /* Scanlines overlay */
+  .arc-canvas::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,207,255,0.015) 2px,
+      rgba(0,207,255,0.015) 4px
+    );
+    z-index: 10;
+  }
+
+  /* Vignette */
+  .arc-canvas::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.85) 100%);
+    z-index: 11;
+  }
+
+  .arc-bolt {
+    position: absolute;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, var(--arc-blue), var(--arc-white), var(--arc-blue), transparent);
+    opacity: 0;
+    filter: blur(0.5px) drop-shadow(0 0 4px var(--arc-blue)) drop-shadow(0 0 12px var(--arc-blue));
+    animation: bolt-flash var(--dur) var(--delay) infinite;
+    transform-origin: top center;
+  }
+
+  @keyframes bolt-flash {
+    0%, 89%, 100% { opacity: 0; transform: scaleX(1) rotate(var(--rot)); }
+    90% { opacity: 0.9; transform: scaleX(2) rotate(var(--rot)); }
+    91% { opacity: 0; }
+    92% { opacity: 0.6; transform: scaleX(1) rotate(var(--rot)); }
+    93% { opacity: 0; }
+    94% { opacity: 0.4; transform: scaleX(3) rotate(var(--rot)); }
+    95% { opacity: 0; }
+  }
+
+  /* Plasma glow orbs */
+  .plasma-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.15;
+    animation: orb-pulse var(--dur) var(--delay) infinite alternate;
+  }
+
+  @keyframes orb-pulse {
+    from { opacity: 0.08; transform: scale(0.9); }
+    to   { opacity: 0.22; transform: scale(1.1); }
+  }
+
+  /* ── NAVIGATION ────────────────────────────────────────────── */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    background: rgba(0,0,0,0.9);
+    border-bottom: 1px solid rgba(0,207,255,0.15);
+    padding: 0 5%;
+    height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+    backdrop-filter: blur(20px);
+  }
+  .nav-back {
+    font-family: var(--mono); font-size: 11px; color: var(--dim);
+    text-decoration: none; letter-spacing: 2px; text-transform: uppercase;
+    transition: color 0.2s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .nav-back:hover { color: var(--arc-blue); }
+  .nav-back::before { content: '←'; }
+
+  .nav-id {
+    font-family: var(--mono); font-size: 11px; color: var(--arc-blue);
+    letter-spacing: 3px; text-transform: uppercase;
+  }
+
+  .nav-tier {
+    font-family: var(--mono); font-size: 10px;
+    color: var(--warn); letter-spacing: 2px;
+    border: 1px solid rgba(255,184,0,0.3);
+    padding: 3px 10px; border-radius: 2px;
+  }
+
+  /* ── HERO ──────────────────────────────────────────────────── */
+  .hero {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 120px 5% 80px;
+    overflow: hidden;
+  }
+
+  /* Hazard stripes top */
+  .hazard-stripe {
+    position: absolute; left: 0; right: 0;
+    height: 6px;
+    background: repeating-linear-gradient(
+      90deg,
+      var(--warn) 0px, var(--warn) 20px,
+      var(--void) 20px, var(--void) 40px
+    );
+    opacity: 0.7;
+  }
+  .hazard-stripe.top { top: 56px; }
+  .hazard-stripe.bottom { bottom: 0; }
+
+  .hero-warning {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 4px;
+    color: var(--danger); text-transform: uppercase;
+    border: 1px solid rgba(255,34,0,0.4);
+    padding: 6px 20px; border-radius: 2px;
+    margin-bottom: 32px;
+    background: rgba(255,34,0,0.05);
+    animation: warning-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes warning-pulse {
+    0%, 100% { box-shadow: 0 0 0 rgba(255,34,0,0); }
+    50% { box-shadow: 0 0 20px rgba(255,34,0,0.3); }
+  }
+
+  .hero-eyebrow {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 5px;
+    color: var(--arc-blue); text-transform: uppercase;
+    margin-bottom: 16px;
+    opacity: 0.8;
+  }
+
+  .hero-title {
+    font-family: var(--display);
+    font-size: clamp(72px, 14vw, 180px);
+    line-height: 0.9;
+    letter-spacing: 4px;
+    color: var(--arc-white);
+    text-shadow:
+      0 0 20px rgba(0,207,255,0.8),
+      0 0 40px rgba(0,207,255,0.4),
+      0 0 80px rgba(0,207,255,0.2);
+    margin-bottom: 8px;
+    animation: title-flicker 8s ease-in-out infinite;
+  }
+
+  @keyframes title-flicker {
+    0%, 95%, 100% { opacity: 1; }
+    96% { opacity: 0.85; }
+    97% { opacity: 1; }
+    98% { opacity: 0.9; }
+    99% { opacity: 1; }
+  }
+
+  .hero-title-sub {
+    font-family: var(--display);
+    font-size: clamp(36px, 7vw, 90px);
+    line-height: 1;
+    letter-spacing: 8px;
+    color: var(--warn);
+    text-shadow:
+      0 0 15px rgba(255,184,0,0.7),
+      0 0 30px rgba(255,184,0,0.3);
+    margin-bottom: 32px;
+  }
+
+  .hero-divider {
+    width: 200px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--arc-blue), var(--plasma), var(--arc-blue), transparent);
+    margin: 0 auto 32px;
+    position: relative;
+  }
+  .hero-divider::after {
+    content: '⚡';
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 16px;
+    background: var(--void);
+    padding: 0 8px;
+  }
+
+  .hero-desc {
+    max-width: 640px;
+    font-size: 16px; font-weight: 300; line-height: 1.8;
+    color: var(--text);
+    margin: 0 auto 48px;
+    font-family: var(--body);
+  }
+
+  .hero-specs {
+    display: flex; gap: 40px; flex-wrap: wrap; justify-content: center;
+    margin-bottom: 48px;
+  }
+  .hero-spec {
+    text-align: center;
+    font-family: var(--mono);
+  }
+  .hero-spec-val {
+    font-size: clamp(24px, 4vw, 40px);
+    color: var(--arc-blue);
+    display: block;
+    text-shadow: 0 0 10px rgba(0,207,255,0.6);
+  }
+  .hero-spec-label {
+    font-size: 10px; letter-spacing: 2px;
+    color: var(--dim); text-transform: uppercase;
+    display: block; margin-top: 4px;
+  }
+
+  .hero-cta {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: transparent;
+    border: 1px solid var(--arc-blue);
+    color: var(--arc-blue);
+    font-family: var(--mono); font-size: 12px; letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 14px 32px;
+    text-decoration: none;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-cta::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: var(--arc-blue);
+    transform: translateX(-100%);
+    transition: transform 0.3s;
+    z-index: -1;
+  }
+  .hero-cta:hover { color: var(--void); }
+  .hero-cta:hover::before { transform: translateX(0); }
+
+  /* ── ACCESS GATE ───────────────────────────────────────────── */
+  .access-gate {
+    position: relative; z-index: 1;
+    margin: 0 5% 80px;
+    background: rgba(7,13,18,0.95);
+    border: 1px solid rgba(0,207,255,0.2);
+    padding: 40px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 40px;
+    align-items: center;
+    max-width: 900px; margin: 0 auto 80px;
+  }
+  .access-gate::before {
+    content: 'ACCESS CONTROL';
+    position: absolute; top: -10px; left: 24px;
+    font-family: var(--mono); font-size: 10px; letter-spacing: 3px;
+    color: var(--arc-blue); background: var(--void);
+    padding: 0 8px;
+  }
+
+  .access-info h3 {
+    font-family: var(--display); font-size: 32px; letter-spacing: 2px;
+    color: var(--arc-white); margin-bottom: 12px;
+  }
+  .access-info p {
+    font-size: 14px; color: var(--text); line-height: 1.7; margin-bottom: 20px;
+  }
+
+  .access-tiers { display: flex; flex-direction: column; gap: 12px; }
+  .access-tier {
+    display: flex; align-items: center; gap: 16px;
+    padding: 14px 18px;
+    border: 1px solid;
+    font-family: var(--mono); font-size: 12px;
+  }
+  .access-tier.rf {
+    border-color: rgba(0,207,255,0.3);
+    background: rgba(0,207,255,0.04);
+  }
+  .access-tier.hv {
+    border-color: rgba(255,184,0,0.4);
+    background: rgba(255,184,0,0.05);
+  }
+  .access-tier.research {
+    border-color: rgba(123,47,255,0.4);
+    background: rgba(123,47,255,0.05);
+  }
+  .tier-price {
+    font-size: 20px; font-family: var(--display); letter-spacing: 1px;
+    flex-shrink: 0; width: 60px;
+  }
+  .tier-price.rf { color: var(--arc-blue); }
+  .tier-price.hv { color: var(--warn); }
+  .tier-price.research { color: #a78bfa; }
+  .tier-info { flex: 1; }
+  .tier-name { color: var(--arc-white); letter-spacing: 1px; font-size: 13px; }
+  .tier-desc { color: var(--dim); font-size: 10px; letter-spacing: 1px; margin-top: 2px; }
+  .tier-badge {
+    font-size: 9px; padding: 2px 8px; letter-spacing: 1px;
+    border-radius: 2px;
+  }
+  .tier-badge.hv-badge { background: rgba(255,184,0,0.2); color: var(--warn); border: 1px solid rgba(255,184,0,0.3); }
+
+  .patreon-btn {
+    display: block; text-align: center;
+    background: linear-gradient(135deg, #FF424D, #FF6B35);
+    color: #fff; font-family: var(--mono); font-size: 12px;
+    letter-spacing: 3px; text-transform: uppercase;
+    padding: 16px 28px; text-decoration: none;
+    margin-top: 20px;
+    transition: all 0.3s;
+    box-shadow: 0 4px 20px rgba(255,66,77,0.3);
+  }
+  .patreon-btn:hover {
+    box-shadow: 0 4px 30px rgba(255,66,77,0.5);
+    transform: translateY(-2px);
+  }
+
+  /* ── PROJECTS GRID ──────────────────────────────────────────── */
+  .projects-section {
+    position: relative; z-index: 1;
+    padding: 0 5% 120px;
+    max-width: 1100px; margin: 0 auto;
+  }
+
+  .section-header {
+    text-align: center; margin-bottom: 64px;
+  }
+  .section-header .eyebrow {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 5px;
+    color: var(--arc-blue); text-transform: uppercase;
+    display: block; margin-bottom: 12px;
+  }
+  .section-header h2 {
+    font-family: var(--display); font-size: clamp(36px, 6vw, 64px);
+    letter-spacing: 4px; color: var(--arc-white);
+    text-shadow: 0 0 30px rgba(0,207,255,0.3);
+  }
+
+  .projects-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(460px, 1fr));
+    gap: 2px;
+  }
+
+  .project-card {
+    background: var(--surface);
+    border: 1px solid rgba(0,207,255,0.1);
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s;
+    cursor: pointer;
+  }
+  .project-card:hover {
+    border-color: rgba(0,207,255,0.4);
+    transform: translateY(-2px);
+  }
+  .project-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--arc-blue), var(--plasma));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .project-card:hover::before { opacity: 1; }
+
+  /* Arc effect on hover */
+  .project-card::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(0,207,255,0.06) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .project-card:hover::after { opacity: 1; }
+
+  .project-header {
+    padding: 28px 28px 20px;
+    border-bottom: 1px solid rgba(0,207,255,0.08);
+    display: flex; align-items: flex-start; gap: 16px;
+  }
+
+  .project-id-badge {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 2px;
+    background: rgba(0,207,255,0.1);
+    border: 1px solid rgba(0,207,255,0.25);
+    color: var(--arc-blue);
+    padding: 4px 10px;
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+
+  .project-title-block { flex: 1; }
+  .project-designation {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 3px;
+    color: var(--warn); text-transform: uppercase; margin-bottom: 4px;
+  }
+  .project-title {
+    font-family: var(--display); font-size: 28px; letter-spacing: 2px;
+    color: var(--arc-white); line-height: 1;
+  }
+  .project-subtitle {
+    font-family: var(--mono); font-size: 11px; color: var(--dim);
+    letter-spacing: 1px; margin-top: 6px;
+  }
+
+  .project-status {
+    font-family: var(--mono); font-size: 9px; letter-spacing: 2px;
+    padding: 4px 10px; border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .status-live {
+    background: rgba(0,207,255,0.1);
+    border: 1px solid rgba(0,207,255,0.3);
+    color: var(--arc-blue);
+  }
+  .status-soon {
+    background: rgba(255,184,0,0.1);
+    border: 1px solid rgba(255,184,0,0.3);
+    color: var(--warn);
+  }
+
+  .project-body { padding: 20px 28px 24px; }
+
+  .project-specs {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1px; background: rgba(0,207,255,0.06);
+    margin-bottom: 20px;
+  }
+  .project-spec {
+    background: var(--surface);
+    padding: 12px 14px; text-align: center;
+  }
+  .project-spec-val {
+    font-family: var(--mono); font-size: 16px;
+    color: var(--arc-blue); display: block;
+    text-shadow: 0 0 8px rgba(0,207,255,0.5);
+  }
+  .project-spec-key {
+    font-family: var(--mono); font-size: 9px; letter-spacing: 1px;
+    color: var(--dim); text-transform: uppercase;
+    display: block; margin-top: 3px;
+  }
+
+  .project-desc {
+    font-size: 14px; font-weight: 300; line-height: 1.7;
+    color: var(--text); margin-bottom: 20px;
+  }
+
+  .project-includes {
+    list-style: none; display: flex; flex-direction: column; gap: 6px;
+    margin-bottom: 24px;
+  }
+  .project-includes li {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 1px;
+    color: var(--dim); display: flex; gap: 10px; align-items: center;
+  }
+  .project-includes li::before {
+    content: '//';
+    color: rgba(0,207,255,0.3);
+    flex-shrink: 0;
+  }
+  .project-includes li.available { color: var(--text); }
+  .project-includes li.available::before { color: var(--arc-blue); }
+
+  .project-footer {
+    display: flex; gap: 10px; align-items: center;
+    padding-top: 16px;
+    border-top: 1px solid rgba(0,207,255,0.08);
+  }
+
+  .btn-access {
+    flex: 1; text-align: center;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 2px;
+    text-transform: uppercase; padding: 12px 16px;
+    text-decoration: none; transition: all 0.3s;
+    border: 1px solid rgba(0,207,255,0.3);
+    color: var(--arc-blue);
+    background: transparent;
+  }
+  .btn-access:hover {
+    background: rgba(0,207,255,0.08);
+    border-color: var(--arc-blue);
+  }
+  .btn-access.locked {
+    border-color: rgba(255,184,0,0.3);
+    color: var(--warn);
+  }
+  .btn-access.locked:hover {
+    background: rgba(255,184,0,0.06);
+    border-color: var(--warn);
+  }
+
+  .btn-stl {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 2px;
+    padding: 12px 16px;
+    border: 1px solid rgba(123,47,255,0.3);
+    color: #a78bfa; background: transparent;
+    text-decoration: none; transition: all 0.3s;
+    white-space: nowrap;
+  }
+  .btn-stl:hover {
+    background: rgba(123,47,255,0.1);
+    border-color: var(--plasma);
+  }
+
+  /* ── SAFETY SECTION ─────────────────────────────────────────── */
+  .safety-section {
+    position: relative; z-index: 1;
+    margin: 0 5% 80px;
+    max-width: 900px; margin: 0 auto 80px;
+    border: 1px solid rgba(255,34,0,0.3);
+    background: rgba(255,34,0,0.03);
+    padding: 40px;
+  }
+  .safety-section::before {
+    content: '⚠ MANDATORY SAFETY REQUIREMENTS';
+    position: absolute; top: -10px; left: 24px;
+    font-family: var(--mono); font-size: 10px; letter-spacing: 3px;
+    color: var(--danger); background: var(--void);
+    padding: 0 8px;
+  }
+
+  .safety-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px; margin-bottom: 24px;
+  }
+  .safety-item {
+    display: flex; gap: 12px; align-items: flex-start;
+    font-family: var(--body); font-size: 13px; font-weight: 500;
+    color: var(--text);
+  }
+  .safety-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+  .safety-item strong { display: block; color: #fff; margin-bottom: 2px; }
+
+  .safety-disclaimer {
+    font-family: var(--mono); font-size: 11px; line-height: 1.7;
+    color: rgba(255,34,0,0.7); letter-spacing: 0.5px;
+    border-top: 1px solid rgba(255,34,0,0.2);
+    padding-top: 20px;
+    margin-top: 8px;
+  }
+
+  /* ── FOOTER ─────────────────────────────────────────────────── */
+  .hv-footer {
+    position: relative; z-index: 1;
+    border-top: 1px solid rgba(0,207,255,0.1);
+    padding: 40px 5%;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 16px;
+  }
+  .hv-footer-left {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 2px;
+    color: var(--dim);
+  }
+  .hv-footer-left a { color: var(--arc-blue); text-decoration: none; }
+  .hv-footer-right {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 1px;
+    color: rgba(255,34,0,0.5);
+  }
+
+  /* ── RESPONSIVE ─────────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    .access-gate { grid-template-columns: 1fr; }
+    .projects-grid { grid-template-columns: 1fr; }
+    .hero-specs { gap: 24px; }
+    .project-specs { grid-template-columns: repeat(3,1fr); }
+  }
+
+  @media (max-width: 480px) {
+    .project-footer { flex-direction: column; }
+    .btn-access, .btn-stl { width: 100%; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Atmospheric background -->
+<div class="arc-canvas">
+  <!-- Plasma orbs -->
+  <div class="plasma-orb" style="width:600px;height:600px;top:-200px;left:-100px;background:var(--plasma);--dur:7s;--delay:0s;"></div>
+  <div class="plasma-orb" style="width:400px;height:400px;top:30%;right:-100px;background:var(--arc-blue);--dur:9s;--delay:2s;"></div>
+  <div class="plasma-orb" style="width:500px;height:500px;bottom:-150px;left:30%;background:var(--plasma);--dur:11s;--delay:4s;"></div>
+
+  <!-- Arc bolts -->
+  <div class="arc-bolt" style="left:15%;top:10%;height:180px;--dur:6s;--delay:0.5s;--rot:-15deg;"></div>
+  <div class="arc-bolt" style="left:75%;top:5%;height:240px;--dur:8s;--delay:2s;--rot:10deg;"></div>
+  <div class="arc-bolt" style="left:45%;top:20%;height:150px;--dur:5s;--delay:3.5s;--rot:-5deg;"></div>
+  <div class="arc-bolt" style="left:90%;top:40%;height:200px;--dur:7s;--delay:1s;--rot:20deg;"></div>
+  <div class="arc-bolt" style="left:5%;top:60%;height:160px;--dur:9s;--delay:4s;--rot:-12deg;"></div>
+  <div class="arc-bolt" style="left:60%;top:70%;height:180px;--dur:6s;--delay:0s;--rot:8deg;"></div>
+</div>
+
+<!-- Navigation -->
+<nav class="nav">
+  <a href="classified.html" class="nav-back">Return to Section 7</a>
+  <span class="nav-id">SCK // HV-LAB // CLASSIFIED</span>
+  <span class="nav-tier">⚡ TIER 2 ACCESS</span>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hazard-stripe top"></div>
+
+  <div class="hero-warning">⚠ DANGER — HIGH VOLTAGE — AUTHORIZED PERSONNEL ONLY ⚠</div>
+  <div class="hero-eyebrow">Section 7 · High Voltage Research Division</div>
+
+  <h1 class="hero-title">HIGH<br>VOLTAGE</h1>
+  <div class="hero-title-sub">LAB</div>
+
+  <div class="hero-divider"></div>
+
+  <p class="hero-desc">
+    Beyond RF. Beyond communications. This is where we go when the engineers get curious
+    and the voltages stop being polite. Marx generators, voltage multipliers,
+    high-voltage transformers — documented, built, and tested in Tennessee.
+    Full build guides, 3D-printable components, and the honest account of what
+    happened when we turned it on.
+  </p>
+
+  <div class="hero-specs">
+    <div class="hero-spec">
+      <span class="hero-spec-val">100kV+</span>
+      <span class="hero-spec-label">Peak Voltage</span>
+    </div>
+    <div class="hero-spec">
+      <span class="hero-spec-val">4</span>
+      <span class="hero-spec-label">Active Projects</span>
+    </div>
+    <div class="hero-spec">
+      <span class="hero-spec-val">3D</span>
+      <span class="hero-spec-label">STL Downloads</span>
+    </div>
+    <div class="hero-spec">
+      <span class="hero-spec-val">∞</span>
+      <span class="hero-spec-label">Respect for HV</span>
+    </div>
+  </div>
+
+  <a href="#projects" class="hero-cta">⚡ Enter the Lab</a>
+
+  <div class="hazard-stripe bottom"></div>
+</section>
+
+<!-- Access Gate -->
+<div style="position:relative;z-index:1;padding:80px 5%;max-width:1100px;margin:0 auto;">
+<div class="access-gate">
+  <div class="access-info">
+    <h3>PATREON ACCESS REQUIRED</h3>
+    <p>
+      Full build documentation, schematic descriptions, component lists, assembly notes,
+      test results, and 3D-printable STL file downloads are available exclusively
+      to SpaceCommsKit Patreon supporters at the High Voltage Lab tier and above.
+    </p>
+    <p style="font-size:13px;color:var(--dim);margin-bottom:0;">
+      Files are hosted on Google Drive. Patreon posts contain the access links.
+      Your subscription directly funds continued R&D and documentation work.
+    </p>
+  </div>
+  <div>
+    <div class="access-tiers">
+      <div class="access-tier rf">
+        <span class="tier-price rf">$5</span>
+        <div class="tier-info">
+          <div class="tier-name">RF LAB TIER</div>
+          <div class="tier-desc">SCK-2400/5800 ADVANCED SOFTWARE · EARLY ACCESS</div>
+        </div>
+      </div>
+      <div class="access-tier hv">
+        <span class="tier-price hv">$10</span>
+        <div class="tier-info">
+          <div class="tier-name">HIGH VOLTAGE LAB</div>
+          <div class="tier-desc">HV BUILD DOCS · STL DOWNLOADS · EVERYTHING IN TIER 1</div>
+        </div>
+        <span class="tier-badge hv-badge">THIS CONTENT</span>
+      </div>
+      <div class="access-tier research">
+        <span class="tier-price research">$25</span>
+        <div class="tier-info">
+          <div class="tier-name">RESEARCH PARTNER</div>
+          <div class="tier-desc">ROADMAP INPUT · PRIORITY SUPPORT · ALL TIERS</div>
+        </div>
+      </div>
+    </div>
+    <a href="https://www.patreon.com/spacecommskit" target="_blank" class="patreon-btn">
+      BECOME A PATRON → UNLOCK ACCESS
+    </a>
+  </div>
+</div>
+</div>
+
+<!-- Safety Requirements -->
+<div style="position:relative;z-index:1;padding:0 5%;max-width:1100px;margin:0 auto;">
+<div class="safety-section">
+  <div class="safety-grid">
+    <div class="safety-item">
+      <span class="safety-icon">🥽</span>
+      <div><strong>Eye Protection</strong>Arc flash and UV radiation — rated safety glasses minimum, face shield preferred</div>
+    </div>
+    <div class="safety-item">
+      <span class="safety-icon">🧤</span>
+      <div><strong>Insulating Gloves</strong>Rated for the voltage level you are working with. Class 00 minimum for &lt;500V</div>
+    </div>
+    <div class="safety-item">
+      <span class="safety-icon">🚫</span>
+      <div><strong>Never Work Alone</strong>A second person must be present. High voltage cardiac arrest is fast and silent</div>
+    </div>
+    <div class="safety-item">
+      <span class="safety-icon">🔌</span>
+      <div><strong>Discharge First</strong>All capacitors must be fully discharged and verified before any contact</div>
+    </div>
+    <div class="safety-item">
+      <span class="safety-icon">🏥</span>
+      <div><strong>Know Your AED</strong>Know the location of the nearest AED and have emergency services number ready</div>
+    </div>
+    <div class="safety-item">
+      <span class="safety-icon">📏</span>
+      <div><strong>Maintain Distance</strong>Respect the arc gap. High voltage jumps. Always assume energized</div>
+    </div>
+  </div>
+  <div class="safety-disclaimer">
+    DISCLAIMER: These projects involve lethal voltages capable of causing cardiac arrest, severe burns,
+    and death. This content is provided for educational purposes to experienced engineers and builders
+    who understand and accept the risks involved. SpaceCommsKit assumes no liability for injury,
+    death, property damage, or any other consequence arising from the use of this information.
+    If you are not experienced with high voltage electronics, do not attempt these projects.
+    Always consult qualified electrical engineering professionals before proceeding.
+  </div>
+</div>
+</div>
+
+<!-- Projects -->
+<section class="projects-section" id="projects">
+  <div class="section-header">
+    <span class="eyebrow">Classified Build Dossiers · High Voltage Division</span>
+    <h2>ACTIVE PROJECTS</h2>
+  </div>
+
+  <div class="projects-grid">
+
+    <!-- HV-001 Marx Generator V1 -->
+    <div class="project-card">
+      <div class="project-header">
+        <div class="project-id-badge">HV-001</div>
+        <div class="project-title-block">
+          <div class="project-designation">Marx Generator · Revision 1</div>
+          <div class="project-title">MARX GEN V1</div>
+          <div class="project-subtitle">IMPULSE VOLTAGE GENERATOR · STAGE-BY-STAGE CHARGE</div>
+        </div>
+        <span class="project-status status-live">DOCUMENTED</span>
+      </div>
+      <div class="project-body">
+        <div class="project-specs">
+          <div class="project-spec">
+            <span class="project-spec-val">~30kV</span>
+            <span class="project-spec-key">Output</span>
+          </div>
+          <div class="project-spec">
+            <span class="project-spec-val">6</span>
+            <span class="project-spec-key">Stages</span>
+          </div>
+          <div class="project-spec">
+            <span class="project-spec-val">5kV</span>
+            <span class="project-spec-key">Per Stage</span>
+          </div>
+        </div>
+        <p class="project-desc">
+          The Marx generator is an elegant circuit — charge capacitors in parallel at low voltage,
+          switch them in series to multiply. This V1 is a 6-stage design, each stage charged to 5kV,
+          producing approximately 30kV impulse output. Built on a 3D-printed acrylic-like frame
+          with spark gap switches. The complete story from first calculation to first arc.
+        </p>
+        <ul class="project-includes">
+          <li class="available">Theory of operation — how a Marx generator actually works</li>
+          <li class="available">Full build description with component selection rationale</li>
+          <li class="available">Safety considerations specific to impulse generators</li>
+          <li class="available">Test results — measured output, arc photographs</li>
+          <li class="available">3D printable frame — STL files via Patreon Google Drive</li>
+          <li class="available">What we'd change in V2 (spoiler: see HV-002)</li>
+        </ul>
+        <div class="project-footer">
+          <a href="https://www.patreon.com/spacecommskit" target="_blank" class="btn-access locked">
+            🔒 UNLOCK ON PATREON
+          </a>
+          <a href="https://www.patreon.com/spacecommskit" target="_blank" class="btn-stl">
+            ⬇ STL FILES
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- HV-002 Marx Generator V2 -->
+    <div class="project-card">
+      <div class="project-header">
+        <div class="project-id-badge">HV-002</div>
+        <div class="project-title-block">
+          <div class="project-designation">Marx Generator · Revision 2</div>
+          <div class="project-title">MARX GEN V2</div>
+          <div class="project-subtitle">IMPROVED GEOMETRY · HIGHER STAGE COUNT</div>
+        </div>
+        <span class="project-status status-live">DOCUMENTED</span>
+      </div>
+      <div class="project-body">
+        <div class="project-specs">
+          <div class="project-spec">
+            <span class="project-spec-val">~100kV</span>
+            <span class="project-spec-key">Output</span>
+          </div>
+          <div class="project-spec">
+            <span class="project-spec-val">10+</span>
+            <span class="project-spec-key">Stages</span>
+          </div>
+          <div class="project-spec">
+            <span class="project-spec-val">10kV</span>
+            <span class="project-spec-key">Per Stage</span>
+          </div>
+        </div>
+        <p class="project-desc">
+          V2 takes every lesson from the first build and applies it. Higher stage count,
+          improved spark gap geometry for more consistent triggering, better capacitor
+          selection, and a redesigned 3D-printed housing that manages the electric field
+          distribution more effectively. The arc discharge from this one is something else.
+        </p>
+        <ul class="project-includes">
+          <li class="available">What failed in V1 and why V2 was necessary</li>
+          <li class="available">Spark gap geometry — the black art of consistent triggering</li>
+          <li class="available">Capacitor selection — energy storage vs ESR tradeoffs</li>
+          <li class="available">Field management in high-voltage enclosures</li>
+          <li class="available">Redesigned 3D printable housing — improved STL files</li>
+          <li class="available">Side-by-side V1 vs V2 performance comparison</li>
+        </ul>
+        <div class="project-footer">
+          <a href="https://www.patreon.com/spacecommskit" target="_blank" class="btn-access locked">
+            🔒 UNLOCK ON PATREON
+          </a>
+          <a href="https://www.patreon.com/spacecommskit" target="_blank" class="btn-stl">
+            ⬇ STL FILES
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- HV-003 Voltage Multiplier -->
+    <div class="project-card">
+      <div class="project-header">
+        <div class="project-id-badge">HV-003</div>
+        <div class="project-title-block">
+          <div class="project-designation">Cockcroft-Walton Multiplier</div>
+          <div class="project-title">HV MULTIPLIER</div>
+          <div class="project-subtitle">LADDER NETWORK · DC HIGH VOLTAGE SUPPLY</div>
+        </div>
+        <span class="project-status status-live">DOCUMENTED</span>
+      </div>
+      <div class="project-body">
+        <div class="project-specs">
+          <div class="project-spec">
+            <span class="project-spec-val">DC</span>
+            <span class="project-spec-key">Output Type</span>
+          </div>
+          <div class="project-spec">
+            <span class="project-spec-val">12+</span>
+            <span class="project-spec-key">Stages</span>
+          </div>
+          <div class="project-spec">
+            <span class="project-spec-val">Low I</span>
+            <span class="project-spec-key">Current</span>
+          </div>
+        </div>
+        <p class="project-desc">
+          Where the Marx generator produces impulses, the Cockcroft-Walton multiplier
+          produces steady DC at high voltage. A cascade of diodes and capacitors,
+          each stage adding voltage on top of the last. The physics are elegant.
+          The assembly is meditative. The output will make your hair stand up —
+          literally.
+        </p>
+        <ul class="project-includes">
+          <li class="available">Cockcroft-Walton topology — the math made accessible</li>
+          <li class="available">Diode and capacitor selection for HV ladder networks</li>
+          <li class="available">Voltage regulation and ripple considerations</li>
+          <li class="available">PCB layout for high-voltage creepage and clearance</li>
+          <li class="available">3D printed enclosure and component holders — STL files</li>
+          <li class="available">Safe measurement techniques for DC HV outputs</li>
+        </ul>
+        <div class="project-footer">
+          <a href="https://www.patreon.com/spacecommskit" target="_blank" class="btn-access locked">
+            🔒 UNLOCK ON PATREON
+          </a>
+          <a href="https://www.patreon.com/spacecommskit" target="_blank" class="btn-stl">
+            ⬇ STL FILES
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- HV-004 High Voltage Transformer -->
+    <div class="project-card">
+      <div class="project-header">
+        <div class="project-id-badge">HV-004</div>
+        <div class="project-title-block">
+          <div class="project-designation">High Voltage Transformer</div>
+          <div class="project-title">HV TRANSFORMER</div>
+          <div class="project-subtitle">CUSTOM WOUND · RESONANT DRIVE</div>
+        </div>
+        <span class="project-status status-soon">IN PROGRESS</span>
+      </div>
+      <div class="project-body">
+        <div class="project-specs">
+          <div class="project-spec">
+            <span class="project-spec-val">AC</span>
+            <span class="project-spec-key">Output Type</span>
+          </div>
+          <div class="project-spec">
+            <span class="project-spec-val">Custom</span>
+            <span class="project-spec-key">Winding</span>
+          </div>
+          <div class="project-spec">
+            <span class="project-spec-val">Resonant</span>
+            <span class="project-spec-key">Drive</span>
+          </div>
+        </div>
+        <p class="project-desc">
+          A hand-wound high-voltage transformer — the foundation of Tesla coils,
+          HVAC power supplies, and plasma devices. This dossier covers transformer
+          design from first principles: turns ratio, core selection, insulation,
+          winding technique, and resonant drive circuits. Getting the resonant
+          frequency right is where the magic happens.
+        </p>
+        <ul class="project-includes">
+          <li>Transformer design fundamentals — turns ratio, coupling, leakage inductance</li>
+          <li>Core material selection for HV applications</li>
+          <li>Hand-winding technique — layer insulation, progressive winding</li>
+          <li>Resonant drive circuit design</li>
+          <li>3D printed winding forms and bobbin — STL files</li>
+          <li>Integration with Marx Gen V2 and HV Multiplier</li>
+        </ul>
+        <div class="project-footer">
+          <a href="https://www.patreon.com/spacecommskit" target="_blank" class="btn-access locked">
+            🔒 COMING SOON
+          </a>
+          <a href="https://www.patreon.com/spacecommskit" target="_blank" class="btn-stl">
+            ⬇ STL SOON
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="hv-footer">
+  <div class="hv-footer-left">
+    <a href="index.html">SpaceCommsKit</a> · <a href="classified.html">Section 7</a> · HV-LAB // CLASSIFIED
+  </div>
+  <div class="hv-footer-right">
+    ⚠ HIGH VOLTAGE CONTENT · AUTHORIZED PERSONNEL ONLY · PATREON TIER 2+
+  </div>
+</footer>
+
+</body>
+</html>
