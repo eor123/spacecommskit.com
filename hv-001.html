@@ -8,706 +8,1020 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --void: #000000;
-    --deep: #030507;
-    --surface: #070d12;
-    --panel: #0a1219;
-    --arc-blue: #00CFFF;
-    --arc-white: #E8F8FF;
-    --plasma: #7B2FFF;
-    --danger: #FF2200;
-    --warn: #FFB800;
-    --green: #00FF88;
-    --text: #B8CCD8;
-    --dim: #3A4F5C;
-    --mono: 'Share Tech Mono', monospace;
-    --display: 'Bebas Neue', sans-serif;
-    --body: 'Rajdhani', sans-serif;
-  }
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-  body {
-    background: var(--void);
-    color: var(--text);
-    font-family: var(--body);
-    font-size: 16px;
-    line-height: 1.6;
-    overflow-x: hidden;
-  }
-
-  /* Scanlines */
-  body::before {
-    content: '';
-    position: fixed; inset: 0; z-index: 0; pointer-events: none;
-    background: repeating-linear-gradient(
-      0deg, transparent, transparent 2px,
-      rgba(0,207,255,0.012) 2px, rgba(0,207,255,0.012) 4px
-    );
-  }
-
-  /* ── NAV ── */
-  .nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-    background: rgba(0,0,0,0.95);
-    border-bottom: 1px solid rgba(0,207,255,0.15);
-    padding: 0 5%; height: 56px;
-    display: flex; align-items: center; justify-content: space-between;
-    backdrop-filter: blur(20px);
-  }
-  .nav-back {
-    font-family: var(--mono); font-size: 11px; color: var(--dim);
-    text-decoration: none; letter-spacing: 2px;
-    transition: color 0.2s; display: flex; align-items: center; gap: 8px;
-  }
-  .nav-back:hover { color: var(--arc-blue); }
-  .nav-back::before { content: '←'; }
-  .nav-id { font-family: var(--mono); font-size: 11px; color: var(--arc-blue); letter-spacing: 3px; }
-  .nav-tier { font-family: var(--mono); font-size: 10px; color: var(--warn); letter-spacing: 2px;
-    border: 1px solid rgba(255,184,0,0.3); padding: 3px 10px; border-radius: 2px; }
-
-  /* ── DOSSIER HEADER ── */
-  .dossier-header {
-    position: relative; z-index: 1;
-    padding: 100px 5% 60px;
-    border-bottom: 1px solid rgba(0,207,255,0.1);
-    background: linear-gradient(to bottom, rgba(0,207,255,0.03), transparent);
-  }
-
-  .dossier-stamp {
-    display: inline-flex; align-items: center; gap: 12px;
-    margin-bottom: 24px;
-  }
-  .stamp-id {
-    font-family: var(--mono); font-size: 11px; letter-spacing: 3px;
-    background: rgba(0,207,255,0.1); border: 1px solid rgba(0,207,255,0.3);
-    color: var(--arc-blue); padding: 5px 14px;
-  }
-  .stamp-class {
-    font-family: var(--mono); font-size: 11px; letter-spacing: 3px;
-    background: rgba(255,34,0,0.1); border: 1px solid rgba(255,34,0,0.3);
-    color: var(--danger); padding: 5px 14px;
-  }
-  .stamp-tier {
-    font-family: var(--mono); font-size: 11px; letter-spacing: 3px;
-    background: rgba(255,184,0,0.1); border: 1px solid rgba(255,184,0,0.3);
-    color: var(--warn); padding: 5px 14px;
-  }
-
-  .dossier-title {
-    font-family: var(--display);
-    font-size: clamp(48px, 8vw, 100px);
-    line-height: 0.9; letter-spacing: 3px;
-    color: var(--arc-white);
-    text-shadow: 0 0 40px rgba(0,207,255,0.4), 0 0 80px rgba(0,207,255,0.15);
-    margin-bottom: 8px;
-  }
-  .dossier-subtitle {
-    font-family: var(--mono); font-size: 14px; letter-spacing: 4px;
-    color: var(--warn); text-transform: uppercase; margin-bottom: 32px;
-  }
-
-  .dossier-meta {
-    display: flex; gap: 0; flex-wrap: wrap;
-    border: 1px solid rgba(0,207,255,0.15);
-    max-width: 700px;
-  }
-  .meta-item {
-    padding: 12px 20px;
-    border-right: 1px solid rgba(0,207,255,0.1);
-    flex: 1; min-width: 120px;
-  }
-  .meta-item:last-child { border-right: none; }
-  .meta-key {
-    font-family: var(--mono); font-size: 9px; letter-spacing: 2px;
-    color: var(--dim); text-transform: uppercase; display: block; margin-bottom: 4px;
-  }
-  .meta-val {
-    font-family: var(--mono); font-size: 18px;
-    color: var(--arc-blue);
-    text-shadow: 0 0 8px rgba(0,207,255,0.5);
-  }
-
-  /* ── CONTENT LAYOUT ── */
-  .dossier-body {
-    position: relative; z-index: 1;
-    display: grid; grid-template-columns: 1fr 320px;
-    gap: 0; max-width: 1200px; margin: 0 auto;
-    padding: 0 5%;
-  }
-
-  /* Main content */
-  .dossier-main { padding: 60px 48px 60px 0; border-right: 1px solid rgba(0,207,255,0.08); }
-
-  /* Sidebar */
-  .dossier-sidebar { padding: 60px 0 60px 40px; }
-
-  /* ── SECTION BLOCKS ── */
-  .doc-section { margin-bottom: 56px; }
-
-  .doc-section-label {
-    font-family: var(--mono); font-size: 10px; letter-spacing: 4px;
-    color: var(--arc-blue); text-transform: uppercase;
-    display: flex; align-items: center; gap: 12px;
-    margin-bottom: 20px;
-  }
-  .doc-section-label::after {
-    content: '';
-    flex: 1; height: 1px;
-    background: linear-gradient(to right, rgba(0,207,255,0.3), transparent);
-  }
-
-  .doc-section h2 {
-    font-family: var(--display); font-size: 36px; letter-spacing: 2px;
-    color: var(--arc-white); margin-bottom: 16px;
-  }
-
-  .doc-prose {
-    font-size: 15px; font-weight: 400; line-height: 1.85;
-    color: var(--text); margin-bottom: 16px;
-  }
-  .doc-prose strong { color: var(--arc-white); font-weight: 600; }
-  .doc-prose em { color: var(--arc-blue); font-style: normal; }
-
-  /* Equation block */
-  .equation-block {
-    background: var(--panel);
-    border: 1px solid rgba(0,207,255,0.15);
-    border-left: 3px solid var(--arc-blue);
-    padding: 20px 24px; margin: 20px 0;
-    font-family: var(--mono); font-size: 14px;
-  }
-  .equation-label {
-    font-size: 10px; letter-spacing: 2px; color: var(--dim);
-    text-transform: uppercase; margin-bottom: 8px;
-  }
-  .equation { color: var(--arc-blue); font-size: 16px; margin-bottom: 4px; }
-  .equation-note { font-size: 11px; color: var(--dim); margin-top: 8px; line-height: 1.5; }
-
-  /* Stage diagram */
-  .stage-diagram {
-    background: var(--panel);
-    border: 1px solid rgba(0,207,255,0.1);
-    padding: 24px; margin: 24px 0;
-    font-family: var(--mono); font-size: 12px;
-    overflow-x: auto;
-  }
-  .stage-diagram pre {
-    color: var(--arc-blue); line-height: 1.6;
-    text-shadow: 0 0 4px rgba(0,207,255,0.3);
-    white-space: pre;
-  }
-  .diagram-label {
-    font-size: 10px; letter-spacing: 2px; color: var(--dim);
-    text-transform: uppercase; margin-bottom: 12px;
-  }
-
-  /* Component table */
-  .component-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 13px; }
-  .component-table th {
-    background: rgba(0,207,255,0.08);
-    font-family: var(--mono); font-size: 9px; letter-spacing: 2px;
-    color: var(--arc-blue); padding: 10px 14px; text-align: left;
-    text-transform: uppercase; border-bottom: 1px solid rgba(0,207,255,0.2);
-  }
-  .component-table td {
-    padding: 10px 14px; border-bottom: 1px solid rgba(0,207,255,0.06);
-    font-family: var(--body); font-size: 14px;
-  }
-  .component-table td:first-child { font-family: var(--mono); color: var(--arc-blue); font-size: 12px; }
-  .component-table tr:last-child td { border-bottom: none; }
-  .component-table tr:hover td { background: rgba(0,207,255,0.03); }
-
-  /* Warning callout */
-  .callout {
-    padding: 16px 20px; margin: 20px 0;
-    display: flex; gap: 14px; align-items: flex-start;
-    font-size: 14px; line-height: 1.7;
-    font-family: var(--body);
-  }
-  .callout.danger { background: rgba(255,34,0,0.06); border-left: 3px solid var(--danger); }
-  .callout.warn { background: rgba(255,184,0,0.06); border-left: 3px solid var(--warn); }
-  .callout.info { background: rgba(0,207,255,0.05); border-left: 3px solid var(--arc-blue); }
-  .callout.success { background: rgba(0,255,136,0.05); border-left: 3px solid var(--green); }
-  .callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
-  .callout strong { color: #fff; display: block; margin-bottom: 4px; }
-
-  /* Phase list */
-  .phase-list { list-style: none; display: flex; flex-direction: column; gap: 16px; margin: 20px 0; }
-  .phase-item {
-    display: flex; gap: 16px; align-items: flex-start;
-    padding: 16px 20px;
-    background: var(--panel);
-    border: 1px solid rgba(0,207,255,0.08);
-  }
-  .phase-num {
-    font-family: var(--mono); font-size: 20px; color: var(--arc-blue);
-    flex-shrink: 0; width: 32px; text-align: center;
-    text-shadow: 0 0 8px rgba(0,207,255,0.5);
-  }
-  .phase-content { flex: 1; }
-  .phase-title { font-family: var(--display); font-size: 18px; letter-spacing: 1px;
-    color: var(--arc-white); margin-bottom: 4px; }
-  .phase-desc { font-size: 14px; color: var(--text); line-height: 1.6; }
-
-  /* ── SIDEBAR ── */
-  .sidebar-card {
-    background: var(--panel);
-    border: 1px solid rgba(0,207,255,0.12);
-    margin-bottom: 20px;
-    position: relative;
-  }
-  .sidebar-card-title {
-    font-family: var(--mono); font-size: 10px; letter-spacing: 3px;
-    color: var(--arc-blue); text-transform: uppercase;
-    padding: 12px 16px;
-    border-bottom: 1px solid rgba(0,207,255,0.1);
-    background: rgba(0,207,255,0.04);
-  }
-  .sidebar-card-body { padding: 16px; }
-
-  .spec-row {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 8px 0; border-bottom: 1px solid rgba(0,207,255,0.06);
-    font-size: 13px;
-  }
-  .spec-row:last-child { border-bottom: none; }
-  .spec-label { font-family: var(--mono); font-size: 11px; color: var(--dim); letter-spacing: 1px; }
-  .spec-value { font-family: var(--mono); font-size: 13px; color: var(--arc-blue); }
-
-  .patreon-cta {
-    display: block; text-align: center;
-    background: linear-gradient(135deg, #FF424D, #FF6B35);
-    color: #fff; font-family: var(--mono); font-size: 11px;
-    letter-spacing: 3px; text-transform: uppercase;
-    padding: 14px; text-decoration: none;
-    margin-bottom: 20px;
-    transition: all 0.3s;
-    box-shadow: 0 4px 20px rgba(255,66,77,0.25);
-  }
-  .patreon-cta:hover { box-shadow: 0 4px 30px rgba(255,66,77,0.45); transform: translateY(-2px); }
-
-  .stl-cta {
-    display: block; text-align: center;
-    background: transparent;
-    border: 1px solid rgba(123,47,255,0.4);
-    color: #a78bfa; font-family: var(--mono); font-size: 11px;
-    letter-spacing: 3px; text-transform: uppercase;
-    padding: 12px; text-decoration: none;
-    margin-bottom: 20px;
-    transition: all 0.3s;
-  }
-  .stl-cta:hover { background: rgba(123,47,255,0.1); border-color: var(--plasma); }
-
-  .nav-links-sidebar { list-style: none; display: flex; flex-direction: column; gap: 2px; }
-  .nav-links-sidebar li a {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 10px 16px; font-family: var(--mono); font-size: 11px;
-    color: var(--dim); letter-spacing: 1px;
-    text-decoration: none; transition: all 0.2s;
-    background: var(--panel); border-left: 2px solid transparent;
-  }
-  .nav-links-sidebar li a:hover { color: var(--arc-blue); border-left-color: var(--arc-blue); background: rgba(0,207,255,0.04); }
-  .nav-links-sidebar li a.active { color: var(--arc-blue); border-left-color: var(--arc-blue); background: rgba(0,207,255,0.06); }
-  .nav-links-sidebar li a span { font-size: 9px; color: var(--dim); }
-
-  /* ── FOOTER ── */
-  .dossier-footer {
-    position: relative; z-index: 1;
-    border-top: 1px solid rgba(0,207,255,0.1);
-    padding: 32px 5%;
-    display: flex; justify-content: space-between; align-items: center;
-    flex-wrap: wrap; gap: 16px;
-  }
-  .dossier-footer a { font-family: var(--mono); font-size: 11px; color: var(--arc-blue); text-decoration: none; letter-spacing: 1px; }
-  .dossier-footer .right { font-family: var(--mono); font-size: 10px; color: var(--dim); }
-
-  @media (max-width: 900px) {
-    .dossier-body { grid-template-columns: 1fr; }
-    .dossier-main { padding: 40px 0; border-right: none; border-bottom: 1px solid rgba(0,207,255,0.08); }
-    .dossier-sidebar { padding: 40px 0; }
-  }
+:root{--void:#000;--surface:#070d12;--panel:#0a1219;--arc:#00CFFF;--arc2:#E8F8FF;--plasma:#7B2FFF;--danger:#FF2200;--warn:#FFB800;--green:#00FF88;--text:#B8CCD8;--dim:#3A4F5C;--mono:'Share Tech Mono',monospace;--display:'Bebas Neue',sans-serif;--body:'Rajdhani',sans-serif;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--void);color:var(--text);font-family:var(--body);font-size:16px;line-height:1.7;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,207,255,.012) 2px,rgba(0,207,255,.012) 4px);}
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(0,0,0,.96);border-bottom:1px solid rgba(0,207,255,.15);padding:0 5%;height:56px;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);}
+.nav-back{font-family:var(--mono);font-size:11px;color:var(--dim);text-decoration:none;letter-spacing:2px;transition:color .2s;}
+.nav-back:hover{color:var(--arc);}
+.nav-back::before{content:'← ';}
+.nav-id{font-family:var(--mono);font-size:11px;color:var(--arc);letter-spacing:3px;}
+.nav-tier{font-family:var(--mono);font-size:10px;color:var(--warn);letter-spacing:2px;border:1px solid rgba(255,184,0,.3);padding:3px 10px;border-radius:2px;}
+/* Header */
+.dossier-header{position:relative;z-index:1;padding:100px 5% 56px;background:linear-gradient(to bottom,rgba(0,207,255,.04),rgba(255,34,0,.02),transparent);border-bottom:1px solid rgba(0,207,255,.1);}
+.stamp-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px;}
+.stamp{font-family:var(--mono);font-size:10px;letter-spacing:3px;padding:5px 14px;}
+.stamp-id{background:rgba(0,207,255,.1);border:1px solid rgba(0,207,255,.3);color:var(--arc);}
+.stamp-class{background:rgba(255,34,0,.1);border:1px solid rgba(255,34,0,.3);color:var(--danger);}
+.stamp-tier{background:rgba(255,184,0,.1);border:1px solid rgba(255,184,0,.3);color:var(--warn);}
+.stamp-rev{background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.3);color:var(--green);}
+.dossier-title{font-family:var(--display);font-size:clamp(56px,9vw,120px);line-height:.9;letter-spacing:3px;color:var(--arc2);text-shadow:0 0 40px rgba(0,207,255,.4),0 0 80px rgba(0,207,255,.15);margin-bottom:6px;}
+.dossier-subtitle{font-family:var(--mono);font-size:14px;letter-spacing:4px;color:var(--warn);text-transform:uppercase;margin-bottom:8px;}
+.dossier-tagline{font-size:16px;font-weight:300;color:var(--text);max-width:680px;margin-bottom:32px;line-height:1.7;}
+.meta-bar{display:flex;flex-wrap:wrap;border:1px solid rgba(0,207,255,.15);max-width:860px;}
+.mc{padding:12px 20px;border-right:1px solid rgba(0,207,255,.1);flex:1;min-width:100px;}
+.mc:last-child{border-right:none;}
+.mk{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--dim);text-transform:uppercase;display:block;margin-bottom:4px;}
+.mv{font-family:var(--mono);font-size:17px;color:var(--arc);text-shadow:0 0 8px rgba(0,207,255,.5);}
+/* TOC */
+.toc-wrap{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:48px 5% 0;}
+.toc-panel{background:var(--panel);border:1px solid rgba(0,207,255,.12);padding:24px 28px;position:relative;}
+.toc-panel::before{content:'// DOSSIER INDEX';position:absolute;top:-10px;left:20px;font-family:var(--mono);font-size:10px;letter-spacing:3px;color:var(--arc);background:var(--void);padding:0 8px;}
+.toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px 28px;}
+.ti{display:flex;gap:10px;font-family:var(--mono);font-size:12px;letter-spacing:1px;padding:7px 0;border-bottom:1px solid rgba(0,207,255,.05);}
+.ti:last-child{border-bottom:none;}
+.tn{color:var(--arc);width:24px;flex-shrink:0;}
+.ti a{color:var(--text);text-decoration:none;transition:color .2s;}
+.ti a:hover{color:var(--arc);}
+/* Layout */
+.db{display:grid;grid-template-columns:1fr 300px;max-width:1200px;margin:0 auto;padding:0 5%;}
+.dm{padding:56px 44px 80px 0;border-right:1px solid rgba(0,207,255,.08);}
+.ds{padding:56px 0 80px 36px;}
+/* Sections */
+.doc-sec{margin-bottom:60px;}
+.sl{font-family:var(--mono);font-size:10px;letter-spacing:4px;color:var(--arc);text-transform:uppercase;display:flex;align-items:center;gap:12px;margin-bottom:18px;}
+.sl::after{content:'';flex:1;height:1px;background:linear-gradient(to right,rgba(0,207,255,.3),transparent);}
+.sl .sn{background:rgba(0,207,255,.1);border:1px solid rgba(0,207,255,.2);padding:2px 8px;font-size:9px;}
+.h2{font-family:var(--display);font-size:clamp(28px,3vw,44px);letter-spacing:2px;color:var(--arc2);margin-bottom:18px;line-height:1;}
+.h3{font-family:var(--display);font-size:24px;letter-spacing:2px;color:var(--arc);margin:28px 0 12px;}
+.h4{font-family:var(--mono);font-size:12px;letter-spacing:2px;color:var(--warn);text-transform:uppercase;margin:20px 0 8px;padding-bottom:5px;border-bottom:1px solid rgba(255,184,0,.15);}
+.prose{font-size:15px;font-weight:400;line-height:1.85;color:var(--text);margin-bottom:14px;}
+.prose strong{color:var(--arc2);font-weight:600;}
+.prose em{color:var(--arc);font-style:normal;}
+.prose a{color:var(--arc);border-bottom:1px dotted rgba(0,207,255,.4);text-decoration:none;}
+/* Callouts */
+.co{padding:15px 18px;margin:16px 0;display:flex;gap:12px;align-items:flex-start;font-size:14px;line-height:1.7;}
+.co.danger{background:rgba(255,34,0,.06);border-left:3px solid var(--danger);}
+.co.warn{background:rgba(255,184,0,.06);border-left:3px solid var(--warn);}
+.co.info{background:rgba(0,207,255,.05);border-left:3px solid var(--arc);}
+.co.success{background:rgba(0,255,136,.05);border-left:3px solid var(--green);}
+.co.philo{background:rgba(123,47,255,.06);border-left:3px solid var(--plasma);}
+.ci{font-size:18px;flex-shrink:0;margin-top:2px;}
+.co strong{color:#fff;display:block;margin-bottom:3px;}
+/* Equations */
+.eq-block{background:var(--panel);border:1px solid rgba(0,207,255,.15);border-left:3px solid var(--arc);padding:18px 22px;margin:18px 0;font-family:var(--mono);}
+.eq-lbl{font-size:9px;letter-spacing:3px;color:var(--dim);text-transform:uppercase;margin-bottom:8px;}
+.eq{font-size:18px;color:var(--arc);text-shadow:0 0 8px rgba(0,207,255,.4);margin-bottom:6px;}
+.eq-note{font-size:12px;color:var(--dim);line-height:1.7;margin-top:8px;padding-top:8px;border-top:1px solid rgba(0,207,255,.1);}
+.eq-ex{font-size:13px;color:var(--text);margin-top:6px;}
+.eq-ex span{color:var(--green);}
+/* Circuit */
+.ckt{background:var(--panel);border:1px solid rgba(0,207,255,.12);padding:20px;margin:20px 0;overflow-x:auto;}
+.ckt-lbl{font-family:var(--mono);font-size:9px;letter-spacing:3px;color:var(--dim);text-transform:uppercase;margin-bottom:12px;}
+.ckt pre{font-family:var(--mono);font-size:12px;color:var(--arc);line-height:1.6;text-shadow:0 0 4px rgba(0,207,255,.2);white-space:pre;}
+/* Tables */
+.dt{width:100%;border-collapse:collapse;margin:16px 0;font-size:13px;}
+.dt th{background:rgba(0,207,255,.08);font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--arc);padding:9px 13px;text-align:left;text-transform:uppercase;border-bottom:1px solid rgba(0,207,255,.2);}
+.dt td{padding:9px 13px;border-bottom:1px solid rgba(0,207,255,.06);font-size:14px;}
+.dt td:first-child{font-family:var(--mono);color:var(--arc);font-size:12px;}
+.dt tr:hover td{background:rgba(0,207,255,.02);}
+.dt .good{color:var(--green);}
+.dt .bad{color:var(--danger);}
+.dt .wt{color:var(--warn);}
+.dt.bom td:first-child{font-family:var(--body);color:var(--text);}
+.dt.bom td:last-child{font-family:var(--mono);color:var(--green);font-size:12px;}
+/* Phase list */
+.pl{list-style:none;display:flex;flex-direction:column;gap:12px;margin:16px 0;}
+.pi{display:flex;gap:14px;align-items:flex-start;padding:14px 18px;background:var(--panel);border:1px solid rgba(0,207,255,.08);transition:border-color .2s;}
+.pi:hover{border-color:rgba(0,207,255,.2);}
+.pn{font-family:var(--mono);font-size:22px;color:var(--arc);flex-shrink:0;width:30px;text-align:center;text-shadow:0 0 8px rgba(0,207,255,.5);margin-top:2px;}
+.pt{font-family:var(--display);font-size:19px;letter-spacing:1px;color:var(--arc2);margin-bottom:5px;}
+.pd{font-size:14px;color:var(--text);line-height:1.7;}
+.pd strong{color:var(--arc);}
+/* PSU cards */
+.psu-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0;}
+.psu{background:var(--panel);border:1px solid rgba(0,207,255,.1);padding:16px;position:relative;}
+.psu.rec{border-color:rgba(0,255,136,.3);background:rgba(0,255,136,.02);}
+.psu.fail{border-color:rgba(255,34,0,.2);opacity:.88;}
+.pbadge{position:absolute;top:-1px;right:12px;font-family:var(--mono);font-size:9px;letter-spacing:2px;padding:3px 10px;}
+.pb-rec{background:var(--green);color:var(--void);}
+.pb-fail{background:var(--danger);color:#fff;}
+.pname{font-family:var(--display);font-size:18px;letter-spacing:1px;color:var(--arc2);margin-bottom:8px;}
+.pspec{font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:1px;margin-bottom:10px;}
+.pres{list-style:none;display:flex;flex-direction:column;gap:5px;}
+.pres li{font-size:13px;display:flex;gap:7px;align-items:flex-start;line-height:1.5;}
+.pres .p{color:var(--green);flex-shrink:0;}
+.pres .f{color:var(--danger);flex-shrink:0;}
+.pverdict{margin-top:10px;padding-top:8px;border-top:1px solid rgba(0,207,255,.08);font-family:var(--mono);font-size:11px;letter-spacing:1px;}
+.psu.rec .pverdict{color:var(--green);}
+.psu.fail .pverdict{color:var(--danger);}
+/* Trouble table */
+.tt{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px;}
+.tt th{background:rgba(255,34,0,.08);font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--danger);padding:9px 13px;text-align:left;border-bottom:1px solid rgba(255,34,0,.2);}
+.tt td{padding:9px 13px;border-bottom:1px solid rgba(0,207,255,.05);vertical-align:top;line-height:1.5;}
+.tt td:first-child{font-family:var(--mono);font-size:12px;color:var(--warn);}
+/* Test points */
+.tp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0;}
+.tpc{background:var(--panel);border:1px solid rgba(0,207,255,.1);padding:12px;}
+.tpid{font-family:var(--mono);font-size:20px;color:var(--arc);text-shadow:0 0 8px rgba(0,207,255,.5);}
+.tploc{font-size:12px;font-weight:600;color:var(--arc2);margin:3px 0;}
+.tpval{font-family:var(--mono);font-size:11px;color:var(--green);}
+/* Sidebar */
+.sc{background:var(--panel);border:1px solid rgba(0,207,255,.12);margin-bottom:16px;}
+.st{font-family:var(--mono);font-size:10px;letter-spacing:3px;color:var(--arc);padding:11px 15px;border-bottom:1px solid rgba(0,207,255,.1);background:rgba(0,207,255,.04);}
+.sb{padding:14px;}
+.sr{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(0,207,255,.06);}
+.sr:last-child{border-bottom:none;}
+.sk{font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:1px;}
+.sv{font-family:var(--mono);font-size:13px;color:var(--arc);}
+.pb{display:block;text-align:center;background:linear-gradient(135deg,#FF424D,#FF6B35);color:#fff;font-family:var(--mono);font-size:11px;letter-spacing:3px;padding:13px;text-decoration:none;margin-bottom:12px;transition:all .3s;box-shadow:0 4px 20px rgba(255,66,77,.25);}
+.pb:hover{box-shadow:0 4px 30px rgba(255,66,77,.45);transform:translateY(-2px);}
+.stlb{display:block;text-align:center;border:1px solid rgba(123,47,255,.4);color:#a78bfa;font-family:var(--mono);font-size:11px;letter-spacing:3px;padding:11px;text-decoration:none;margin-bottom:12px;transition:all .3s;}
+.stlb:hover{background:rgba(123,47,255,.1);border-color:var(--plasma);}
+.navs{list-style:none;display:flex;flex-direction:column;gap:2px;}
+.navs li a{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:1px;text-decoration:none;transition:all .2s;background:var(--panel);border-left:2px solid transparent;}
+.navs li a:hover,.navs li a.active{color:var(--arc);border-left-color:var(--arc);background:rgba(0,207,255,.05);}
+.navs li a span{font-size:9px;color:var(--dim);}
+/* Footer */
+.df{position:relative;z-index:1;border-top:1px solid rgba(0,207,255,.1);padding:28px 5%;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;}
+.df a{font-family:var(--mono);font-size:11px;color:var(--arc);text-decoration:none;letter-spacing:1px;}
+.df .right{font-family:var(--mono);font-size:10px;color:var(--dim);}
+/* List helpers */
+.hv-list{list-style:none;display:flex;flex-direction:column;gap:8px;margin:12px 0 18px;}
+.hv-list li{font-size:14px;display:flex;gap:10px;align-items:flex-start;}
+.hv-list li .ic{color:var(--arc);flex-shrink:0;margin-top:2px;}
+.hv-list li .ic.d{color:var(--danger);}
+.hv-list li .ic.w{color:var(--warn);}
+.hv-list li .ic.g{color:var(--green);}
+.checklist{list-style:none;display:flex;flex-direction:column;gap:7px;margin:12px 0;}
+.checklist li{font-size:14px;font-family:var(--mono);display:flex;gap:10px;}
+.checklist li span{color:var(--arc);}
+.ol-steps{display:flex;flex-direction:column;gap:8px;margin:14px 0;padding-left:0;list-style:none;}
+.ol-steps li{font-size:14px;display:flex;gap:10px;}
+.ol-steps li .step-n{font-family:var(--mono);color:var(--arc);width:24px;flex-shrink:0;font-size:13px;}
+/* Ref items */
+.ref-item{background:var(--panel);border:1px solid rgba(0,207,255,.1);padding:13px 16px;margin-bottom:8px;}
+.ref-item a{color:var(--arc);font-family:var(--mono);font-size:11px;letter-spacing:1px;display:block;margin-bottom:5px;}
+.ref-item p{font-size:13px;color:var(--text);}
+.ref-item.adv{background:rgba(123,47,255,.04);border-color:rgba(123,47,255,.15);}
+.ref-item.adv a{color:#a78bfa;}
+.book-item{font-size:14px;padding:11px 14px;background:var(--panel);border:1px solid rgba(0,207,255,.08);margin-bottom:6px;}
+.book-item strong{color:var(--arc2);}
+.book-item span{font-size:13px;color:var(--dim);}
+/* End stamp */
+.end-stamp{text-align:center;padding:32px 0;font-family:var(--mono);border-top:1px solid rgba(0,207,255,.1);margin-top:32px;}
+@media(max-width:900px){.db{grid-template-columns:1fr;}.dm{padding:40px 0;border-right:none;border-bottom:1px solid rgba(0,207,255,.08);}.ds{padding:40px 0;}.psu-grid{grid-template-columns:1fr;}.toc-grid{grid-template-columns:1fr;}.tp-grid{grid-template-columns:1fr 1fr;}}
 </style>
 </head>
 <body>
 
 <nav class="nav">
   <a href="hv-lab.html" class="nav-back">High Voltage Lab</a>
-  <span class="nav-id">HV-001 // MARX GEN V1</span>
+  <span class="nav-id">HV-001 // MARX GEN V1 // CHAPTER 1</span>
   <span class="nav-tier">⚡ TIER 2 ACCESS</span>
 </nav>
 
-<!-- Dossier Header -->
 <div class="dossier-header">
-  <div class="dossier-stamp">
-    <span class="stamp-id">HV-001</span>
-    <span class="stamp-class">CLASSIFIED</span>
-    <span class="stamp-tier">PATREON TIER 2+</span>
+  <div class="stamp-row">
+    <span class="stamp stamp-id">HV-001</span>
+    <span class="stamp stamp-class">CLASSIFIED</span>
+    <span class="stamp stamp-tier">PATREON TIER 2+</span>
+    <span class="stamp stamp-rev">REV 1.0 · OCT 2025</span>
   </div>
-  <h1 class="dossier-title">MARX<br>GENERATOR</h1>
-  <div class="dossier-subtitle">Revision 1 · 6-Stage · ~30kV Impulse Output</div>
-  <div class="dossier-meta">
-    <div class="meta-item">
-      <span class="meta-key">Output Voltage</span>
-      <span class="meta-val">~30kV</span>
-    </div>
-    <div class="meta-item">
-      <span class="meta-key">Stage Count</span>
-      <span class="meta-val">6</span>
-    </div>
-    <div class="meta-item">
-      <span class="meta-key">Charge Voltage</span>
-      <span class="meta-val">5kV</span>
-    </div>
-    <div class="meta-item">
-      <span class="meta-key">Output Type</span>
-      <span class="meta-val">Impulse</span>
-    </div>
-    <div class="meta-item">
-      <span class="meta-key">Status</span>
-      <span class="meta-val" style="color:var(--green);">Built</span>
+  <div class="dossier-title">MARX<br>GENERATOR</div>
+  <div class="dossier-subtitle">Chapter 1 · Design, Construction &amp; Operation · 14-Stage · ~100–120kV Impulse</div>
+  <p class="dossier-tagline">
+    A comprehensive documentation of a 14-stage Marx impulse generator — from first principles through power supply selection,
+    mechanical construction, commissioning, and troubleshooting. Four power supplies were destroyed getting the design right.
+    That story is in this document, exactly as it happened.
+  </p>
+  <div class="meta-bar">
+    <div class="mc"><span class="mk">Stages</span><span class="mv">14</span></div>
+    <div class="mc"><span class="mk">Theoretical V</span><span class="mv">140kV</span></div>
+    <div class="mc"><span class="mk">Actual V</span><span class="mv">~100–120kV</span></div>
+    <div class="mc"><span class="mk">Stored Energy</span><span class="mv">0.55 J</span></div>
+    <div class="mc"><span class="mk">Charge Time τ</span><span class="mv">~1.6 sec</span></div>
+    <div class="mc"><span class="mk">Build Cost</span><span class="mv">$451–685</span></div>
+    <div class="mc"><span class="mk">STL Files</span><span class="mv" style="color:var(--green)">Available</span></div>
+  </div>
+</div>
+
+<div class="toc-wrap">
+  <div class="toc-panel">
+    <div class="toc-grid">
+      <div class="ti"><span class="tn">1.1</span><a href="#s1">Introduction and Scope</a></div>
+      <div class="ti"><span class="tn">1.2</span><a href="#s2">Comprehensive Safety Framework</a></div>
+      <div class="ti"><span class="tn">1.3</span><a href="#s3">Theoretical Foundation</a></div>
+      <div class="ti"><span class="tn">1.4</span><a href="#s4">Power Supply — 4 Approaches Tested</a></div>
+      <div class="ti"><span class="tn">1.5</span><a href="#s5">High-Voltage Stack Design</a></div>
+      <div class="ti"><span class="tn">1.6</span><a href="#s6">Mechanical Construction</a></div>
+      <div class="ti"><span class="tn">1.7</span><a href="#s7">Commissioning and Testing</a></div>
+      <div class="ti"><span class="tn">1.8</span><a href="#s8">Troubleshooting Guide</a></div>
+      <div class="ti"><span class="tn">1.9</span><a href="#s9">Bill of Materials</a></div>
+      <div class="ti"><span class="tn">1.10</span><a href="#s10">References and Further Reading</a></div>
     </div>
   </div>
 </div>
 
-<!-- Body -->
-<div class="dossier-body">
+<div class="db">
+<div class="dm">
 
-  <!-- Main Content -->
-  <div class="dossier-main">
+<!-- 1.1 INTRO -->
+<div class="doc-sec" id="s1">
+  <div class="sl"><span class="sn">1.1</span> Introduction and Scope</div>
+  <div class="h2">INTRODUCTION</div>
 
-    <div class="callout danger">
-      <span class="callout-icon">⚠️</span>
-      <div>
-        <strong>LETHAL VOLTAGE WARNING</strong>
-        This device produces voltages capable of causing immediate cardiac arrest and death.
-        Do not attempt construction without appropriate high-voltage experience, insulated tools rated
-        for the operating voltage, a second person present, and full understanding of capacitor
-        energy storage hazards. Charged capacitors retain lethal energy after power is removed.
-        Always discharge and verify before any physical contact.
-      </div>
-    </div>
-
-    <!-- Theory -->
-    <div class="doc-section">
-      <div class="doc-section-label">01 // Theory of Operation</div>
-      <h2>HOW A MARX GENERATOR WORKS</h2>
-
-      <p class="doc-prose">
-        The Marx generator solves a deceptively simple problem: how do you generate very high
-        voltage when your power supply only produces moderate voltage? The answer, conceived by
-        Erwin Marx in 1924, is as elegant as it is powerful — <strong>charge capacitors in parallel,
-        switch them in series</strong>.
-      </p>
-
-      <p class="doc-prose">
-        During the charging phase, all capacitors charge to the same voltage through resistors.
-        When the first spark gap fires — triggered either by the voltage reaching the breakdown
-        threshold or by an external trigger — it places the first two capacitors in series.
-        This doubled voltage causes the next spark gap to fire, which places three capacitors
-        in series, and so on down the cascade until all stages have fired and the full
-        multiplied voltage appears across the output.
-      </p>
-
-      <div class="equation-block">
-        <div class="equation-label">Peak Output Voltage</div>
-        <div class="equation">V_out = n × V_charge</div>
-        <div class="equation-note">
-          Where n = number of stages, V_charge = charge voltage per capacitor<br>
-          For this build: V_out = 6 × 5,000V = 30,000V theoretical<br>
-          Practical output is typically 70–85% of theoretical due to spark gap losses
-        </div>
-      </div>
-
-      <div class="stage-diagram">
-        <div class="diagram-label">// Marx Generator Stage Schematic (Simplified)</div>
-        <pre>
-  HV+  R1    C1         R3    C3         R5    C5
-   ├───┤├───┤├──┬───────┤├───┤├──┬───────┤├───┤├──┬─── OUTPUT+
-              │  SG1            │  SG2            │  SG3
-              ├─────────────────┘                 │
-   R2    C2   │         R4    C4         R6    C6  │
-   ┤├───┤├────┤  ┬───────┤├───┤├──┬───────┤├───┤├──┘
-              └──┘  SG = SPARK GAP
-  GND ───────────────────────────────────────────── OUTPUT-
-
-  CHARGE: All C charge to V_charge in parallel through R network
-  FIRE:   SG1 breaks down → C1+C2 in series → 2V across SG2
-          SG2 fires → adds C3+C4 → 4V across SG3
-          SG3 fires → all 6 caps in series → ~6V at output</pre>
-      </div>
-
-      <p class="doc-prose">
-        The charging resistors serve two critical functions: they isolate the capacitors during
-        charging so they all charge to the same voltage, and they limit the charging current.
-        The resistance values are a tradeoff — too high and the charging time becomes impractical,
-        too low and the resistors dissipate excessive power and may interfere with the discharge cascade.
-      </p>
-    </div>
-
-    <!-- Build Description -->
-    <div class="doc-section">
-      <div class="doc-section-label">02 // Build Description</div>
-      <h2>HOW WE BUILT IT</h2>
-
-      <p class="doc-prose">
-        V1 started as a proof of concept — can we build a working Marx generator from commercially
-        available components, with a 3D-printed frame, that reliably produces visible arcs?
-        The answer is yes, with some important lessons learned that drove the V2 redesign.
-      </p>
-
-      <ul class="phase-list">
-        <li class="phase-item">
-          <span class="phase-num">01</span>
-          <div class="phase-content">
-            <div class="phase-title">CAPACITOR SELECTION</div>
-            <div class="phase-desc">
-              Each stage uses a high-voltage ceramic or film capacitor rated well above the
-              operating voltage — minimum 2× safety margin on voltage rating.
-              The energy stored per stage is E = ½CV², so capacitance and charge voltage
-              together determine the output energy, not just the voltage. More capacitance
-              means more energy per discharge but also longer charging time.
-            </div>
-          </div>
-        </li>
-        <li class="phase-item">
-          <span class="phase-num">02</span>
-          <div class="phase-content">
-            <div class="phase-title">SPARK GAP CONSTRUCTION</div>
-            <div class="phase-desc">
-              The spark gaps are the critical and most temperamental component. Each gap
-              consists of two rounded electrodes with a precisely set air gap. The gap distance
-              determines the breakdown voltage — too narrow and the gaps pre-fire during charging,
-              too wide and the cascade fails to propagate. We used brass rod turned to rounded
-              tips to minimize field enhancement effects at the electrodes.
-            </div>
-          </div>
-        </li>
-        <li class="phase-item">
-          <span class="phase-num">03</span>
-          <div class="phase-content">
-            <div class="phase-title">CHARGING RESISTORS</div>
-            <div class="phase-desc">
-              High-voltage resistors are not standard components. We used series strings of
-              standard resistors to achieve the required resistance and voltage rating.
-              The resistors must be physically spaced to handle the voltage across them
-              without surface flashover — this is where the 3D-printed frame geometry matters.
-            </div>
-          </div>
-        </li>
-        <li class="phase-item">
-          <span class="phase-num">04</span>
-          <div class="phase-content">
-            <div class="phase-title">3D PRINTED FRAME</div>
-            <div class="phase-desc">
-              The frame was printed in PETG — better temperature resistance than PLA,
-              adequate dielectric properties for this voltage range. The critical design
-              constraint is creepage distance — the surface path length between conductors
-              at different potentials. Rule of thumb: at least 2mm per kV for indoor use
-              in clean conditions. The STL files include the frame geometry with integrated
-              component mounting positions and adequate creepage paths.
-            </div>
-          </div>
-        </li>
-        <li class="phase-item">
-          <span class="phase-num">05</span>
-          <div class="phase-content">
-            <div class="phase-title">POWER SUPPLY INTERFACE</div>
-            <div class="phase-desc">
-              The Marx generator needs a DC high-voltage supply for charging. V1 was tested
-              with a laboratory HV supply. The charging supply must be current-limited —
-              the Marx fires fast and the charging supply must not be damaged by the discharge
-              event propagating back through the charging circuit. A high-value series resistor
-              between the supply and the Marx provides this protection.
-            </div>
-          </div>
-        </li>
-      </ul>
-
-      <div class="callout info">
-        <span class="callout-icon">ℹ️</span>
-        <div>
-          <strong>PATREON CONTENT</strong>
-          The complete build documentation — specific component values, sourcing, assembly
-          photographs, gap adjustment procedure, and full test results with arc photography —
-          is available to Patreon supporters at the High Voltage Lab tier.
-          The 3D printable STL files for the frame are hosted on Google Drive,
-          linked from the Patreon post.
-        </div>
-      </div>
-    </div>
-
-    <!-- Test Results -->
-    <div class="doc-section">
-      <div class="doc-section-label">03 // Test Results</div>
-      <h2>WHAT HAPPENED WHEN WE TURNED IT ON</h2>
-
-      <p class="doc-prose">
-        First fire was at reduced charge voltage — 2kV per stage, targeting ~12kV output.
-        The cascade fired on the third attempt after gap adjustment. The discharge is fast —
-        the arc duration is in the microsecond range, which means you hear it before you
-        see it. The acoustic crack is startling even when you're expecting it.
-      </p>
-
-      <div class="callout success">
-        <span class="callout-icon">✅</span>
-        <div>
-          <strong>CONFIRMED WORKING</strong>
-          Consistent cascade firing achieved after gap distance optimization.
-          Arc length at full charge voltage confirmed in line with theoretical output.
-          Full test documentation including measured output and arc photography
-          available in the Patreon dossier.
-        </div>
-      </div>
-
-      <div class="callout warn">
-        <span class="callout-icon">⚠️</span>
-        <div>
-          <strong>V1 LIMITATIONS — WHY V2 EXISTS</strong>
-          Gap consistency was the primary challenge. Hand-adjusted gaps drift between sessions
-          and require readjustment. Triggering is probabilistic rather than deterministic.
-          The V2 redesign addresses this with improved gap geometry and a more rigid frame
-          that maintains gap distance more reliably. See HV-002 for the full story.
-        </div>
-      </div>
-    </div>
-
-    <!-- What's Next -->
-    <div class="doc-section">
-      <div class="doc-section-label">04 // Next Steps</div>
-      <h2>FROM V1 TO V2</h2>
-      <p class="doc-prose">
-        V1 proved the concept and taught us everything we needed to know to build V2 properly.
-        The lessons from gap geometry, frame rigidity, and component layout are all incorporated
-        into the HV-002 design. V1 remains operational and is a great starting point for
-        anyone new to impulse voltage work — the simpler design is easier to understand
-        and troubleshoot.
-      </p>
-      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:24px;">
-        <a href="hv-002.html" style="display:inline-flex;align-items:center;gap:8px;
-          font-family:var(--mono);font-size:11px;letter-spacing:2px;
-          border:1px solid rgba(0,207,255,0.3);color:var(--arc-blue);
-          padding:12px 20px;text-decoration:none;transition:all 0.3s;">
-          → VIEW HV-002 MARX GEN V2
-        </a>
-        <a href="hv-lab.html" style="display:inline-flex;align-items:center;gap:8px;
-          font-family:var(--mono);font-size:11px;letter-spacing:2px;
-          border:1px solid rgba(0,207,255,0.1);color:var(--dim);
-          padding:12px 20px;text-decoration:none;transition:all 0.3s;">
-          ← BACK TO HV LAB
-        </a>
-      </div>
-    </div>
-
+  <div class="co danger">
+    <span class="ci">⚠️</span>
+    <div><strong>LETHAL VOLTAGE — MANDATORY SAFETY WARNING</strong>
+    This document describes construction of equipment producing voltages exceeding 100,000 volts.
+    Current as low as 10–20 milliamps across the heart causes ventricular fibrillation.
+    High-voltage arcs jump significant distances through air. Capacitors retain lethal charge after power removal.
+    Secondary X-ray generation may occur above 15kV. Read Section 1.2 in full before proceeding.
+    The author and SpaceCommsKit assume no liability for injury, death, or property damage.
+    <strong>YOU PROCEED ENTIRELY AT YOUR OWN RISK.</strong></div>
   </div>
 
-  <!-- Sidebar -->
-  <div class="dossier-sidebar">
+  <p class="prose">
+    This chapter presents a comprehensive guide to the design, construction, and operation of Marx impulse generators —
+    devices capable of generating extremely high-voltage electrical pulses from relatively modest DC power sources.
+    Named after German physicist <strong>Erwin Marx</strong> who developed the concept in 1924, these circuits have found
+    applications ranging from EMP testing and materials research to advanced physics experiments.
+  </p>
+  <p class="prose">
+    The design documented here is a 14-stage implementation producing pulses in excess of 100 kilovolts.
+    Sufficient technical detail is provided to enable a knowledgeable practitioner to replicate the design —
+    including the complete account of why four different power supplies were destroyed in the process,
+    and what finally worked.
+  </p>
 
-    <a href="https://www.patreon.com/spacecommskit" target="_blank" class="patreon-cta">
-      🔒 UNLOCK FULL DOSSIER<br>
-      <span style="font-size:9px;letter-spacing:1px;opacity:0.8;">PATREON TIER 2 · $10/MONTH</span>
-    </a>
+  <div class="co philo">
+    <span class="ci">📖</span>
+    <div><strong>DOCUMENT PHILOSOPHY</strong>
+    <em>"My only hope would be to make as few mistakes as possible and to describe my outcomes as specifically as possible.
+    There is no good or bad outcome, there is only an outcome with as much detail in the process and observations
+    as one can give with the setting and equipment they have at their disposal."</em>
+    Readers are encouraged to verify all claims through independent testing and contribute findings back to the community.</div>
+  </div>
 
-    <a href="https://www.patreon.com/spacecommskit" target="_blank" class="stl-cta">
-      ⬇ DOWNLOAD STL FILES<br>
-      <span style="font-size:9px;letter-spacing:1px;opacity:0.8;">GOOGLE DRIVE · PATREON EXCLUSIVE</span>
-    </a>
+  <div class="h3">Applications and Motivation</div>
+  <ul class="hv-list">
+    <li><span class="ic">⚡</span><div><strong>EMP Testing</strong> — Simulating electromagnetic pulse effects on electronic systems and shielding</div></li>
+    <li><span class="ic">⚡</span><div><strong>Materials Research</strong> — Dielectric breakdown studies in insulators, polymers, and novel composites</div></li>
+    <li><span class="ic">⚡</span><div><strong>Plasma Generation</strong> — High-energy plasma creation for spectroscopy and surface treatment</div></li>
+    <li><span class="ic">⚡</span><div><strong>Advanced Physics</strong> — Investigation of impulse-related phenomena including Podkletnov gravity modification hypotheses</div></li>
+    <li><span class="ic">⚡</span><div><strong>HV Engineering Education</strong> — Demonstration of charge multiplication, Paschen's Law, and pulsed power systems</div></li>
+  </ul>
 
-    <!-- Specs card -->
-    <div class="sidebar-card">
-      <div class="sidebar-card-title">// Technical Specifications</div>
-      <div class="sidebar-card-body">
-        <div class="spec-row">
-          <span class="spec-label">TOPOLOGY</span>
-          <span class="spec-value">Marx Bank</span>
-        </div>
-        <div class="spec-row">
-          <span class="spec-label">STAGES</span>
-          <span class="spec-value">6</span>
-        </div>
-        <div class="spec-row">
-          <span class="spec-label">CHARGE VOLTAGE</span>
-          <span class="spec-value">5 kV / stage</span>
-        </div>
-        <div class="spec-row">
-          <span class="spec-label">PEAK OUTPUT</span>
-          <span class="spec-value">~30 kV</span>
-        </div>
-        <div class="spec-row">
-          <span class="spec-label">OUTPUT TYPE</span>
-          <span class="spec-value">Impulse</span>
-        </div>
-        <div class="spec-row">
-          <span class="spec-label">SWITCH TYPE</span>
-          <span class="spec-value">Air Spark Gap</span>
-        </div>
-        <div class="spec-row">
-          <span class="spec-label">FRAME MATERIAL</span>
-          <span class="spec-value">PETG (3D Printed)</span>
-        </div>
-        <div class="spec-row">
-          <span class="spec-label">STL FILES</span>
-          <span class="spec-value" style="color:var(--green);">Available</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Patreon content list -->
-    <div class="sidebar-card">
-      <div class="sidebar-card-title">// Patreon Content Includes</div>
-      <div class="sidebar-card-body">
-        <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;">
-          <li style="font-family:var(--mono);font-size:11px;color:var(--text);display:flex;gap:8px;align-items:flex-start;">
-            <span style="color:var(--arc-blue);">✓</span>Complete component values and sourcing
-          </li>
-          <li style="font-family:var(--mono);font-size:11px;color:var(--text);display:flex;gap:8px;align-items:flex-start;">
-            <span style="color:var(--arc-blue);">✓</span>Assembly photographs step by step
-          </li>
-          <li style="font-family:var(--mono);font-size:11px;color:var(--text);display:flex;gap:8px;align-items:flex-start;">
-            <span style="color:var(--arc-blue);">✓</span>Gap adjustment procedure
-          </li>
-          <li style="font-family:var(--mono);font-size:11px;color:var(--text);display:flex;gap:8px;align-items:flex-start;">
-            <span style="color:var(--arc-blue);">✓</span>Test results and arc photography
-          </li>
-          <li style="font-family:var(--mono);font-size:11px;color:var(--text);display:flex;gap:8px;align-items:flex-start;">
-            <span style="color:var(--arc-blue);">✓</span>Troubleshooting guide
-          </li>
-          <li style="font-family:var(--mono);font-size:11px;color:var(--text);display:flex;gap:8px;align-items:flex-start;">
-            <span style="color:var(--plasma);">⬇</span>3D printable frame STL files
-          </li>
-          <li style="font-family:var(--mono);font-size:11px;color:var(--text);display:flex;gap:8px;align-items:flex-start;">
-            <span style="color:var(--plasma);">⬇</span>Electrode holder STL files
-          </li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- HV Lab navigation -->
-    <div class="sidebar-card">
-      <div class="sidebar-card-title">// HV Lab Projects</div>
-      <ul class="nav-links-sidebar">
-        <li><a href="hv-001.html" class="active">HV-001 Marx Gen V1 <span>BUILT</span></a></li>
-        <li><a href="hv-002.html">HV-002 Marx Gen V2 <span>BUILT</span></a></li>
-        <li><a href="hv-003.html">HV-003 HV Multiplier <span>BUILT</span></a></li>
-        <li><a href="hv-004.html">HV-004 HV Transformer <span>IN PROG</span></a></li>
-      </ul>
-    </div>
-
+  <div class="co info">
+    <span class="ci">🔬</span>
+    <div><strong>RESEARCH CONTEXT</strong>
+    Several researchers have explored the relationship between high-voltage pulsed systems and gravitational effects —
+    including Eugene Podkletnov's impulse gravity generator and replications by Tony Robertson and Dr. Chance Glenn.
+    These claims remain controversial in mainstream physics but represent a genuinely interesting avenue for
+    well-equipped experimental investigation. The advanced physics connection is documented in Section 1.10.</div>
   </div>
 </div>
 
-<!-- Footer -->
-<footer class="dossier-footer">
-  <div>
-    <a href="hv-lab.html">← HV Lab</a>
-    &nbsp;·&nbsp;
-    <a href="classified.html">Section 7</a>
-    &nbsp;·&nbsp;
-    <a href="index.html">SpaceCommsKit</a>
+<!-- 1.2 SAFETY -->
+<div class="doc-sec" id="s2">
+  <div class="sl"><span class="sn">1.2</span> Comprehensive Safety Framework</div>
+  <div class="h2">SAFETY</div>
+
+  <div class="co danger">
+    <span class="ci">☠️</span>
+    <div><strong>READ THIS ENTIRE SECTION BEFORE ANY CONSTRUCTION BEGINS</strong>
+    High voltage does not warn you. The following protocols are not suggestions — they are the minimum
+    requirements for surviving this project.</div>
   </div>
-  <div class="right">HV-001 // CLASSIFIED // TIER 2 ACCESS REQUIRED</div>
+
+  <div class="h3">Workspace Requirements</div>
+  <ul class="hv-list">
+    <li><span class="ic d">▸</span><div><strong>Dedicated, isolated workspace</strong> — away from living areas, children, and pets</div></li>
+    <li><span class="ic d">▸</span><div><strong>Non-conductive flooring</strong> — rubber mats minimum; dedicated insulated floor preferred</div></li>
+    <li><span class="ic d">▸</span><div><strong>Minimum 3-foot clearance</strong> on all sides of the generator during energized operation</div></li>
+    <li><span class="ic d">▸</span><div><strong>CO₂ or ABC fire extinguisher</strong> — accessible without approaching the generator</div></li>
+    <li><span class="ic d">▸</span><div><strong>Emergency shutoff within reach</strong> — never require approach to the generator to cut power</div></li>
+    <li><span class="ic d">▸</span><div><strong>Ventilation</strong> — ozone from sustained arcing is a respiratory hazard</div></li>
+    <li><span class="ic d">▸</span><div><strong>Bright overhead lighting</strong> — clearly see all connections and potential hazards</div></li>
+  </ul>
+
+  <div class="h3">Personal Protective Equipment</div>
+  <table class="dt">
+    <thead><tr><th>Equipment</th><th>Specification</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td>Safety Glasses</td><td>ANSI Z87.1+ rated</td><td>Arc flash and debris</td></tr>
+      <tr><td>Face Shield</td><td>Full face, polycarbonate</td><td>Arc flash protection — worn over glasses</td></tr>
+      <tr><td>Insulating Gloves</td><td>Class 2, 17kV rated minimum</td><td>Electrical insulation during testing</td></tr>
+      <tr><td>Footwear</td><td>Rubber-soled, closed-toe, non-conductive</td><td>Floor insulation</td></tr>
+      <tr><td>Respirator</td><td>P100 or equivalent</td><td>Ozone and combustion products</td></tr>
+    </tbody>
+  </table>
+
+  <div class="h3">Capacitor Discharge Protocol — Non-Negotiable</div>
+  <div class="co danger">
+    <span class="ci">🔋</span>
+    <div><strong>HIGH-VOLTAGE CAPACITORS RETAIN LETHAL CHARGE FOR HOURS AFTER POWER REMOVAL</strong>
+    Treat every capacitor as charged until you have personally discharged and verified it with a calibrated HV probe.
+    Installing shorting jumpers before physical contact is mandatory.</div>
+  </div>
+  <ol class="ol-steps">
+    <li><span class="step-n">01</span>Remove all power. Wait minimum 5 minutes.</li>
+    <li><span class="step-n">02</span>Use a 1MΩ, 10W resistor on an insulated handle — short each capacitor terminal to ground through it.</li>
+    <li><span class="step-n">03</span>Verify zero voltage with calibrated HV probe at every capacitor terminal.</li>
+    <li><span class="step-n">04</span>Install shorting jumpers on all capacitors before any physical approach.</li>
+    <li><span class="step-n">05</span>Never touch terminals directly even after discharge. Make this a reflex, not a decision.</li>
+  </ol>
+
+  <div class="h3">Emergency Procedures</div>
+  <div class="co danger">
+    <span class="ci">🚨</span>
+    <div><strong>ELECTRICAL SHOCK RESPONSE</strong>
+    <strong>DO NOT TOUCH THE VICTIM</strong> until power is confirmed off. Cut power immediately via emergency shutoff.
+    Call 911. Begin CPR only after power is confirmed off. Even an apparently unharmed victim must receive
+    immediate medical evaluation — high-voltage shock can cause delayed cardiac and tissue damage.</div>
+  </div>
+  <div class="co warn">
+    <span class="ci">⚠️</span>
+    <div><strong>BERYLLIUM HAZARD — MICROWAVE MAGNETRONS</strong>
+    Magnetrons contain beryllium ceramic components. If damaged, beryllium dust causes fatal progressive lung disease.
+    Never break, grind, or damage magnetrons. If breakage occurs, evacuate and consult hazmat disposal procedures.</div>
+  </div>
+  <div class="co warn">
+    <span class="ci">⚡</span>
+    <div><strong>GROUNDING ISOLATION — CRITICAL</strong>
+    The Marx ground pipe must NOT connect to building ground, water pipes, or any grounded structure.
+    It is a floating reference for the HV circuit only. Connection to building ground creates dangerous ground loops
+    and potential damage to household electronics and medical devices in adjacent spaces.</div>
+  </div>
+</div>
+
+<!-- 1.3 THEORY -->
+<div class="doc-sec" id="s3">
+  <div class="sl"><span class="sn">1.3</span> Theoretical Foundation</div>
+  <div class="h2">THEORY</div>
+
+  <p class="prose">
+    The Marx generator solves a problem with profound elegance: how do you generate very high voltage when your
+    power supply only produces moderate voltage? Erwin Marx's 1924 answer —
+    <strong>charge capacitors in parallel at low voltage, then switch them into series to multiply</strong> — remains
+    one of the most beautiful circuits in electrical engineering. The physics is simple. The construction is not.
+  </p>
+
+  <ul class="pl">
+    <li class="pi">
+      <span class="pn">01</span>
+      <div><div class="pt">CHARGING PHASE — PARALLEL CONFIGURATION</div>
+      <div class="pd">All capacitors charge in parallel through the charging resistors. Each capacitor charges to the input voltage V<sub>in</sub>. The resistors ensure all capacitors reach the same voltage while limiting charging current. During this phase, the circuit is deceptively quiet — all the energy accumulation is invisible, stored in electric fields inside ceramic dielectric layers.</div></div>
+    </li>
+    <li class="pi">
+      <span class="pn">02</span>
+      <div><div class="pt">DISCHARGE — CASCADE SERIES SWITCHING</div>
+      <div class="pd">When the first spark gap reaches its breakdown voltage, it conducts and applies approximately 2V<sub>in</sub> across the second gap, triggering it. The cascade propagates through all stages in microseconds — far faster than any mechanical switch. All capacitors are suddenly in series. The CRACK you hear is this event: a microsecond pulse of ~100kV arc energy.</div></div>
+    </li>
+  </ul>
+
+  <div class="eq-block">
+    <div class="eq-lbl">// Peak Output Voltage</div>
+    <div class="eq">V<sub>out</sub> = n × V<sub>in</sub></div>
+    <div class="eq-note">n = number of stages &nbsp;|&nbsp; V<sub>in</sub> = charge voltage per stage<br>Practical output ≈ 0.70–0.85 × theoretical (spark gap and resistive losses)</div>
+    <div class="eq-ex">This build: n=14, V<sub>in</sub>=10kV → <span>V<sub>out</sub>(theoretical) = 140kV &nbsp;|&nbsp; V<sub>out</sub>(actual) ≈ 100–120kV</span></div>
+  </div>
+
+  <div class="eq-block">
+    <div class="eq-lbl">// Energy Stored Per Stage</div>
+    <div class="eq">E = ½CV²</div>
+    <div class="eq-note">C = capacitance (Farads) &nbsp;|&nbsp; V = charge voltage (Volts)</div>
+    <div class="eq-ex">780pF @ 10kV: E = ½ × 780×10⁻¹² × (10,000)² = <span>0.039 joules per stage</span><br>
+    Total: 14 × 0.039J = <span>0.546 joules — enough to be lethal many times over</span></div>
+  </div>
+
+  <div class="ckt">
+    <div class="ckt-lbl">// Marx Generator Cascade — Simplified to 3 of 14 Stages</div>
+    <pre>
+  HV IN    R₁         R₃         R₅
+  (+)──┬───┤├──┬───────┤├──┬───────┤├──┬── ... ── OUTPUT(+) ~100-140kV
+       │       │            │            │
+      [C₁]   SG₁           [C₂]        SG₂       ... × 14 stages
+       │       │            │            │
+  (-)──┴───────┴────────────┴────────────┴── ... ── OUTPUT(-) = GND PIPE
+
+  CHARGE:  C₁...C₁₄ all charge to V_in=10kV in parallel via R network
+  FIRE:    SG₁ breaks at ~10kV → C₁+C₂ = ~20kV across SG₂
+           SG₂ fires instantly → C₁+C₂+C₃ = ~30kV across SG₃
+           Cascade continues — all 14 stages fire in microseconds
+  OUTPUT:  14 × 10kV = 140kV theoretical | ~100-120kV practical
+  τ_charge = R×C ≈ 2MΩ × 780pF × 14 ≈ 1.6 seconds (RC time constant)</pre>
+  </div>
+
+  <div class="h3">Spark Gap Physics — Paschen's Law</div>
+  <p class="prose">
+    The breakdown voltage of an air gap is not a fixed material constant — it depends on gap geometry,
+    electrode surface condition, humidity, and UV illumination. For small gaps in clean dry air at
+    atmospheric pressure, <strong>Paschen's Law</strong> gives the practical approximation:
+  </p>
+  <div class="eq-block">
+    <div class="eq-lbl">// Approximate Air Breakdown Voltage (Small Gaps)</div>
+    <div class="eq">V<sub>breakdown</sub> ≈ 30 kV/cm × gap (cm)</div>
+    <div class="eq-note">Valid for gaps &lt;10mm | Spherical electrodes improve uniformity and reduce field enhancement<br>
+    Humidity, contamination, electrode oxidation, UV, and electrode geometry all shift the actual threshold</div>
+  </div>
+
+  <table class="dt">
+    <thead><tr><th>Gap Distance</th><th>Breakdown Voltage</th><th>Use in This Design</th></tr></thead>
+    <tbody>
+      <tr><td>2 mm</td><td>~6 kV</td><td>Conservative setting — reliable but lower output</td></tr>
+      <tr><td>3 mm</td><td>~9 kV</td><td>Typical operating gap — matched to 10kV charge voltage</td></tr>
+      <tr><td>4 mm</td><td>~12 kV</td><td>Higher voltage operation — erratic firing if humidity changes</td></tr>
+      <tr><td>5 mm</td><td>~15 kV</td><td>Maximum practical — cascade reliability decreases</td></tr>
+    </tbody>
+  </table>
+
+  <div class="co info">
+    <span class="ci">📐</span>
+    <div><strong>DIELECTRIC STRENGTH OF AIR</strong>
+    ~3 kV/mm for uniform electric fields. Drops dramatically near sharp edges (corona), on contaminated surfaces,
+    and with elevated humidity. Always design to a 2–3× safety factor. A component rated 10kV should be
+    operating at no more than 3.3–5kV in practice for reliable, long-term performance.</div>
+  </div>
+
+  <div class="h3">Insulation Material Selection</div>
+  <table class="dt">
+    <thead><tr><th>Material</th><th>Dielectric Strength</th><th>Practical Notes for HV</th></tr></thead>
+    <tbody>
+      <tr><td>Polycarbonate</td><td>~15–20 kV/mm</td><td>Excellent but can become conductive when contaminated. May distort when cut.</td></tr>
+      <tr><td>PVC (thick wall)</td><td>~12–16 kV/mm</td><td>Better shape retention after cutting. Easier to source in large diameters.</td></tr>
+      <tr><td>Phenolic (Garolite)</td><td>~12–20 kV/mm</td><td>Traditional HV material. Excellent arc resistance. Less accessible.</td></tr>
+      <tr><td>PETG (3D printed)</td><td>~10–15 kV/mm</td><td>Adequate for structural mounting fixtures. Not primary HV insulation.</td></tr>
+      <tr><td>FR4 PCB substrate</td><td>~15 kV/mm dry</td><td class="bad">Avoid at HV nodes — moisture absorption degrades performance severely.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 1.4 POWER SUPPLY -->
+<div class="doc-sec" id="s4">
+  <div class="sl"><span class="sn">1.4</span> Power Supply Design and Selection</div>
+  <div class="h2">POWER SUPPLY</div>
+
+  <p class="prose">
+    The power supply proved to be the most critical and most humbling subsystem. An ideal Marx generator supply
+    provides 10–25kV DC output, 15–20mA current minimum, immunity to EMI from its own discharge events, and
+    current limiting for component protection. Getting all four simultaneously took four attempts and cost three
+    destroyed supplies. Here is the complete, unedited record.
+  </p>
+
+  <div class="h3">Power Supply Requirements</div>
+  <ul class="hv-list">
+    <li><span class="ic">▸</span><div>Output voltage: <strong>10–25 kV DC</strong> (pulsating DC acceptable)</div></li>
+    <li><span class="ic">▸</span><div>Current capability: <strong>15–20 mA minimum</strong> for reasonable charging times</div></li>
+    <li><span class="ic">▸</span><div>EMI compatibility: Must tolerate broadband RF from Marx discharge without resetting</div></li>
+    <li><span class="ic">▸</span><div>Current limiting: Protects against component failure and arc-over events</div></li>
+  </ul>
+
+  <div class="h3">The Four Approaches — Complete Results</div>
+  <div class="psu-grid">
+    <div class="psu fail">
+      <span class="pbadge pb-fail">FAILED</span>
+      <div class="pname">Variable Bench PSU</div>
+      <div class="pspec">0–30V / 0–10A / 300W — switchmode with digital control panel</div>
+      <ul class="pres">
+        <li><span class="p">✓</span> Allowed voltage and current optimization during setup</li>
+        <li><span class="f">✗</span> Reset after every Marx discharge when placed nearby</li>
+        <li><span class="f">✗</span> EMI coupling through control circuitry — unstable operation</li>
+        <li><span class="f">✗</span> Required minimum 2m separation to function at all</li>
+        <li><span class="f">✗</span> Risk of permanent microcontroller damage from repeated EMI</li>
+      </ul>
+      <div class="pverdict">// VERDICT: Usable only at significant distance. Not practical for an integrated design.</div>
+    </div>
+    <div class="psu fail">
+      <span class="pbadge pb-fail">DESTROYED</span>
+      <div class="pname">Shielded Switching PSU</div>
+      <div class="pspec">24V DC / 15A / metal chassis with grounding and EMI filter</div>
+      <ul class="pres">
+        <li><span class="p">✓</span> Better EMI resistance than bench supply</li>
+        <li><span class="f">✗</span> Random resets when mounted to Marx base plate</li>
+        <li><span class="f">✗</span> Voltage fluctuations during EMI events damaged flyback transformer</li>
+        <li><span class="f">✗</span> Complete system failure after extended testing session</li>
+      </ul>
+      <div class="pverdict">// VERDICT: Metal shielding insufficient for pulsed operation. Voltage instability was destructive.</div>
+    </div>
+    <div class="psu fail">
+      <span class="pbadge pb-fail">THERMAL FAILURE</span>
+      <div class="pname">Transformer + Rectifier</div>
+      <div class="pspec">24V AC salvaged transformer + full-wave bridge rectifier, unregulated</div>
+      <ul class="pres">
+        <li><span class="p">✓✓</span> Completely immune to EMI — no digital control to disrupt</li>
+        <li><span class="p">✓</span> Stable operation during discharges — right architecture</li>
+        <li><span class="f">✗</span> Transformer undersized for continuous 15A load</li>
+        <li><span class="f">✗</span> After 60s: transformer → rectifier → flyback cascade thermal failure</li>
+        <li><span class="f">✗</span> Complete system loss before power could be cut</li>
+      </ul>
+      <div class="pverdict">// VERDICT: Correct approach, wrong implementation. Proved the architecture. Proved we needed a bigger transformer.</div>
+    </div>
+    <div class="psu rec">
+      <span class="pbadge pb-rec">RECOMMENDED ✓</span>
+      <div class="pname">Rewound MOT</div>
+      <div class="pspec">Microwave Oven Transformer · 15V custom secondary · 35A / 200V bridge rectifier</div>
+      <ul class="pres">
+        <li><span class="p">✓✓</span> Completely EMI immune — iron, copper, and ceramic only in the signal path</li>
+        <li><span class="p">✓✓</span> Massively overbuilt — designed for continuous microwave magnetron operation</li>
+        <li><span class="p">✓✓</span> Free or near-free — from discarded microwaves</li>
+        <li><span class="p">✓</span> Custom rewindable — exact voltage and current to specification</li>
+        <li><span class="p">✓</span> Runs warm but well within safe temperature after extended continuous operation</li>
+      </ul>
+      <div class="pverdict">// VERDICT: Zero failures through all testing. This is the one.</div>
+    </div>
+  </div>
+
+  <div class="h3">MOT Rewinding Specifications</div>
+  <p class="prose">
+    Choose a microwave that feels unexpectedly heavy when you lift it — these contain traditional laminated iron-core
+    transformers rather than the lighter ferrite-core or switching-mode designs found in modern microwave ovens.
+    The weight is the tell. Remove the original secondary winding (typically wound with fine wire to ~2kV) and
+    replace it with a new secondary per the following specification:
+  </p>
+  <table class="dt">
+    <thead><tr><th>Parameter</th><th>Specification</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>Primary</td><td>115V AC (unchanged)</td><td>Retain original primary winding — do not touch it</td></tr>
+      <tr><td>Secondary Voltage</td><td>15–20V AC</td><td>After rectification: ~21–28V DC unregulated</td></tr>
+      <tr><td>Wire Gauge</td><td>#12 AWG stranded</td><td>Good for 20+ amps continuous. Do not use smaller gauge.</td></tr>
+      <tr><td>Turns Count</td><td>8–12 turns</td><td>Depends on core geometry — verify with measurement</td></tr>
+      <tr><td>Bridge Rectifier Rating</td><td>35A, 200V</td><td>Large margin for thermal headroom and reliability</td></tr>
+      <tr><td>Final HV Output</td><td>~10kV pulsating DC</td><td>Via ZVS driver + flyback transformer stage</td></tr>
+    </tbody>
+  </table>
+
+  <div class="h3">Salvageable Microwave Components</div>
+  <p class="prose">Every discarded microwave is a complete parts kit. Save all of these:</p>
+  <table class="dt">
+    <thead><tr><th>Component</th><th>Specification</th><th>Use in HV Work</th></tr></thead>
+    <tbody>
+      <tr><td>MOT (Transformer)</td><td>1–1.5kVA, laminated iron core</td><td>Primary target — rewind for custom HV power supply</td></tr>
+      <tr><td>Magnetron</td><td>2.45 GHz, ~1kW output</td><td>RF generation, radar experiments, NMR research</td></tr>
+      <tr><td>HV Capacitor</td><td>0.9–1.2µF at 2000V</td><td>Useful in power supply and pulse circuit applications</td></tr>
+      <tr><td>HV Diode</td><td>12–15kV rated</td><td>High-voltage rectifier for custom supplies</td></tr>
+      <tr><td>Waveguide sections</td><td>Precision machined aluminum</td><td>Microwave coupling experiments</td></tr>
+    </tbody>
+  </table>
+  <div class="co danger">
+    <span class="ci">⚠️</span>
+    <div><strong>CAPACITOR DISCHARGE MANDATORY BEFORE ANY DISASSEMBLY</strong>
+    Short the HV capacitor terminals together using an insulated screwdriver before removing any components.
+    The capacitor retains lethal charge indefinitely after the microwave is unplugged.
+    Treat every microwave as if the capacitor is charged until you have personally discharged it.</div>
+  </div>
+</div>
+
+<!-- 1.5 HV STACK -->
+<div class="doc-sec" id="s5">
+  <div class="sl"><span class="sn">1.5</span> High-Voltage Stack Design</div>
+  <div class="h2">HV STACK</div>
+
+  <div class="h3">Complete Stack Specifications — 14 Stages</div>
+  <table class="dt">
+    <thead><tr><th>Parameter</th><th>Value</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>Stage Count</td><td>14</td><td>Each: 1 capacitor + 2 resistors + 1 spark gap</td></tr>
+      <tr><td>Capacitor</td><td>780 pF, 30kV doorknob ceramic</td><td>1 per stage — threaded terminal for ring terminal mount</td></tr>
+      <tr><td>Charging Resistors</td><td>1MΩ each, HV rated, 2 per stage</td><td>30 total — cover all with heat shrink tubing</td></tr>
+      <tr><td>Spark Gaps</td><td>Brass sphere electrodes, 2–5mm adjustable</td><td>M3 threaded brass balls, 12AWG copper support arms</td></tr>
+      <tr><td>Total Series Capacitance</td><td>~56 pF</td><td>14 caps in series: C_total = C_stage / n</td></tr>
+      <tr><td>Total Charging Resistance</td><td>28 MΩ</td><td>Sets RC time constant for charging cycle</td></tr>
+      <tr><td>Charge Time Constant τ</td><td>~1.6 seconds</td><td>Determines maximum practical pulse repetition rate</td></tr>
+      <tr><td>Total Stored Energy</td><td>~0.55 joules</td><td>14 × ½ × 780pF × (10,000V)² — <span class="bad">lethal magnitude</span></td></tr>
+      <tr><td>Theoretical Peak Output</td><td>140 kV</td><td>14 × 10kV per stage</td></tr>
+      <tr><td>Actual Measured Output</td><td>100–120 kV</td><td>70–85% efficiency — spark gap and resistive losses</td></tr>
+      <tr><td>Backbone Tube</td><td>3" OD polycarbonate, 39" length</td><td>35" longitudinal cutout exposes spark gaps</td></tr>
+    </tbody>
+  </table>
+
+  <div class="h3">Why Doorknob Capacitors?</div>
+  <p class="prose">
+    <strong>Doorknob capacitors</strong> — named for their shape — are ceramic high-voltage pulse capacitors.
+    The ceramic dielectric provides very low equivalent series resistance (ESR), enabling the fast, high-current
+    discharge pulse the Marx generator demands. The physically robust ceramic body withstands mechanical shock
+    from repeated discharge events. The threaded metal terminal stud simplifies mounting to ring terminals —
+    a repeatable, reliable mechanical and electrical connection.
+  </p>
+  <p class="prose">
+    For this design: 780 pF at 30kV from Surplus Sales of Nebraska.
+    The 30kV voltage rating provides a 3× safety factor over the 10kV operating charge voltage.
+    This margin is real engineering, not conservatism — transient overvoltages during cascade firing
+    briefly exceed steady-state values.
+  </p>
+
+  <div class="h3">Spark Gap Construction and Electrode Physics</div>
+  <p class="prose">
+    Each gap consists of two M3-threaded brass ball electrodes on 12 AWG solid copper support arms.
+    Brass is preferred over steel: brass erodes more slowly and maintains a smoother spherical surface
+    that ensures consistent electric field distribution and more repeatable breakdown voltage across
+    hundreds of discharge events. Steel electrodes develop pits and irregular surfaces that degrade
+    cascade consistency within tens of pulses.
+  </p>
+  <div class="co info">
+    <span class="ci">⚙️</span>
+    <div><strong>GAP UNIFORMITY IS THE SINGLE MOST CRITICAL VARIABLE IN THIS DESIGN</strong>
+    All 14 gaps must be set to identical spacing using feeler gauges. A variation of even 0.5mm between stages
+    can stall the cascade — the next gap won't receive enough overvoltage to fire, and the discharge stops
+    mid-stack. This causes partial energy release, elevated stress on already-fired stages, and erratic output.
+    Equalize gaps every session.</div>
+  </div>
+
+  <div class="h3">3D Printed Components — STL Files Available via Patreon</div>
+  <p class="prose">
+    All printed parts are PETG for improved temperature resistance over PLA. These are structural components
+    providing mounting and positioning — they do not form the primary high-voltage insulation path.
+    All STL files available to Patreon Tier 2 subscribers via Google Drive link in the Patreon post.
+  </p>
+  <table class="dt">
+    <thead><tr><th>Component</th><th>Material</th><th>Qty</th><th>Print Time</th><th>Function</th></tr></thead>
+    <tbody>
+      <tr><td>Capacitor Mounting Frame</td><td>PETG</td><td>14</td><td>~20 min ea.</td><td>U-shaped mount — holds doorknob cap to backbone tube</td></tr>
+      <tr><td>Base Mount Disc</td><td>PETG</td><td>1</td><td>~45 min</td><td>80mm×60mm disc — mounts polycarbonate tube to base plate via ¼-20 bolt</td></tr>
+      <tr><td>Tube Cap</td><td>PETG</td><td>1</td><td>~30 min</td><td>Top cap — base for output electrode assembly</td></tr>
+      <tr><td>Electrode Arm Part 1</td><td>PETG</td><td>1</td><td>~25 min</td><td>Vertical adjustment arm for output electrode position</td></tr>
+      <tr><td>Electrode Arm Part 2</td><td>PETG</td><td>1</td><td>~20 min</td><td>Electrode arm mount bracket</td></tr>
+      <tr><td>Ground Pipe Support Block</td><td>PLA</td><td>1</td><td>~30 min</td><td>Far-end stabilizer for copper ground pipe</td></tr>
+    </tbody>
+  </table>
+
+  <div class="h3">Grounding System — Isolated Copper Pipe</div>
+  <p class="prose">
+    A ½-inch copper plumbing pipe runs parallel to the stack, mounted vertically on the base plate via a
+    plumbing stub-out fitting and bent copper strap. All 14 spark gap lower terminals connect to this pipe
+    via 14 AWG copper wire. It provides the low-resistance return path for the fast, high-current discharge pulse.
+    A 3D-printed support block stabilizes the far end.
+  </p>
+  <div class="co danger">
+    <span class="ci">⚡</span>
+    <div><strong>THIS PIPE MUST REMAIN COMPLETELY ISOLATED FROM BUILDING GROUND</strong>
+    Floating ground reference for the Marx circuit only. Connection to building electrical ground, water pipes,
+    or any grounded structure creates unexpected current paths, damages household electronics, trips GFCIs,
+    and introduces hazards that are not present in the isolated design.</div>
+  </div>
+</div>
+
+<!-- 1.6 MECHANICAL -->
+<div class="doc-sec" id="s6">
+  <div class="sl"><span class="sn">1.6</span> Mechanical Construction</div>
+  <div class="h2">CONSTRUCTION</div>
+
+  <div class="h3">Base Plate</div>
+  <table class="dt">
+    <thead><tr><th>Parameter</th><th>Specification</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>Material</td><td>¼" polycarbonate or ½" plywood</td><td>Polycarbonate preferred for insulation; plywood cheaper and adequate</td></tr>
+      <tr><td>Minimum Size</td><td>24" × 18"</td><td>Provides adequate clearance around all components</td></tr>
+      <tr><td>Mounting</td><td>Pre-drilled, countersunk holes</td><td>Prevents stress concentrations at fastener locations</td></tr>
+      <tr><td>Feet</td><td>Rubber or cork pads</td><td>Elevates base, provides non-slip surface and additional insulation</td></tr>
+    </tbody>
+  </table>
+
+  <div class="h3">Complete System Layout — Bottom to Top</div>
+  <ul class="pl">
+    <li class="pi"><span class="pn">1</span><div><div class="pt">BASE LEVEL — POWER SUPPLY</div><div class="pd">Rewound MOT + 35A bridge rectifier, input terminal block, safety ground connections. ZVS driver module and flyback transformer mounted here. HV output from flyback to Marx stack input via 18 AWG HV wire.</div></div></li>
+    <li class="pi"><span class="pn">2</span><div><div class="pt">STACK BASE — FIRST STAGE</div><div class="pd">First-stage capacitor, input charging resistors, lower electrode. 3D-printed base mount disc secures polycarbonate tube via ¼-20 bolt. Sheet metal screws secure tube to disc. Ground pipe base mount at this level.</div></div></li>
+    <li class="pi"><span class="pn">3</span><div><div class="pt">STACK BODY — 39 INCHES, 14 STAGES</div><div class="pd">14 stages — capacitor mounts bolted through polycarbonate tube wall. All resistors covered in heat shrink. Spark gap arms extend outward from tube toward ground pipe. 35" longitudinal cutout exposes spark gaps for visibility and adjustment.</div></div></li>
+    <li class="pi"><span class="pn">4</span><div><div class="pt">STACK TOP — OUTPUT ELECTRODE ASSEMBLY</div><div class="pd">3D-printed tube cap hosts electrode arm assembly. ¼-20 threaded rod provides vertical height adjustment. Phenolic tube houses 10 AWG stranded wire from final capacitor to output. Large brass ball electrode minimizes corona discharge.</div></div></li>
+    <li class="pi"><span class="pn">5</span><div><div class="pt">GROUND RAIL — COPPER PIPE</div><div class="pd">½" copper pipe parallel to stack. Stub-out fitting and bent copper strap at base. 3D-printed support block at far end. All 14 spark gap lower terminals connect via 14 AWG wire. Provides low-resistance return path for the discharge pulse current.</div></div></li>
+  </ul>
+
+  <div class="h3">Pre-Operation Alignment Checklist</div>
+  <ul class="checklist">
+    <li><span>□</span> Spark gaps measured and equalized with feeler gauges — all identical spacing</li>
+    <li><span>□</span> All capacitors perpendicular to backbone, terminals accessible</li>
+    <li><span>□</span> Ground rail continuity verified — &lt;1Ω total resistance</li>
+    <li><span>□</span> All resistors covered with heat shrink — no exposed resistor bodies</li>
+    <li><span>□</span> No conductive objects within minimum clearance distances</li>
+    <li><span>□</span> Mechanical stability — shake test, no loose components or rattling hardware</li>
+    <li><span>□</span> Emergency shutoff tested and accessible</li>
+    <li><span>□</span> PPE in good condition and within arm's reach</li>
+    <li><span>□</span> Fire extinguisher accessible without approaching the generator</li>
+    <li><span>□</span> Second person present — never operate alone</li>
+  </ul>
+  <div class="co warn">
+    <span class="ci">⚠️</span>
+    <div><strong>POLYCARBONATE DISTORTION NOTE</strong>
+    Polycarbonate tube frequently collapses slightly inward when the longitudinal cutout is made, due to residual
+    extrusion stress. Thick-wall PVC pipe maintains shape better after cutting and is easier to source in 3" diameter.
+    If using polycarbonate, cut slowly and allow the material to relax before mounting components.</div>
+  </div>
+</div>
+
+<!-- 1.7 COMMISSIONING -->
+<div class="doc-sec" id="s7">
+  <div class="sl"><span class="sn">1.7</span> Commissioning and Testing</div>
+  <div class="h2">COMMISSIONING</div>
+
+  <div class="co danger">
+    <span class="ci">🚨</span>
+    <div><strong>FIRST POWER-ON PROTOCOL — NO DEVIATIONS PERMITTED</strong>
+    The first energization is the most dangerous moment in this build. Unknown construction errors only reveal
+    themselves under voltage. Clear all personnel to 10 feet minimum. Don full PPE.
+    Verify emergency shutoff is in your hand. Announce "POWERING HIGH VOLTAGE" loudly.
+    Apply power via remote switch. Retreat immediately. Observe for 30 seconds before approaching.</div>
+  </div>
+
+  <div class="h3">Progressive Power-On Sequence</div>
+  <ul class="pl">
+    <li class="pi"><span class="pn">1</span><div><div class="pt">MOT ONLY — LOW VOLTAGE VALIDATION</div><div class="pd">Power MOT without ZVS/flyback connected. Verify rectifier output: 21–28V DC. Check for excessive heat, abnormal sounds, or burning smell. Run 60 seconds, monitor current draw. Stable → proceed to Stage 2.</div></div></li>
+    <li class="pi"><span class="pn">2</span><div><div class="pt">HV GENERATION — FLYBACK ONLY, NO MARX</div><div class="pd">Connect ZVS + flyback to power supply. Marx stack disconnected. Power on. Observe HV output with 6+ inch air gap for safety. Listen for ZVS oscillation. Observe corona or spark at HV terminal (~10kV expected). Run 30 seconds, monitor for component heating. Stable → proceed to Stage 3.</div></div></li>
+    <li class="pi"><span class="pn">3</span><div><div class="pt">MARX CHARGING — SPARK GAPS AT MAXIMUM SPACING</div><div class="pd">Connect flyback to Marx input. Set ALL spark gaps to maximum spacing — no discharge expected. Power for 10 seconds. Immediately power off and discharge all capacitors via the standard procedure. Verify capacitors charged by measuring voltage at several stages. This confirms charging works without triggering a discharge.</div></div></li>
+    <li class="pi"><span class="pn">4</span><div><div class="pt">FIRST FULL DISCHARGE — THE MOMENT OF TRUTH</div><div class="pd">Set spark gaps to operating distance (3–4mm typical). Clear area. Full PPE. Verify emergency shutoff. Power on and step back. After several seconds: expect a loud CRACK, bright arc flash, possible EMI effects (lights flickering, radio static). Allow a single discharge. Power off immediately. Wait 5 minutes. Discharge capacitors. Inspect carefully. Congratulations — welcome to pulsed power research.</div></div></li>
+  </ul>
+
+  <div class="h3">Output Voltage Measurement Methods</div>
+  <table class="dt">
+    <thead><tr><th>Method</th><th>Equipment Required</th><th>Accuracy</th></tr></thead>
+    <tbody>
+      <tr><td>Spark Gap Method</td><td>Calibrated brass sphere electrodes at known spacing</td><td>±15% — affected by humidity and electrode condition</td></tr>
+      <tr><td>HV Probe + Oscilloscope</td><td>1000:1 or 10000:1 divider probe</td><td>±5% — best practical method for the bench</td></tr>
+      <tr><td>Arc Length Estimate</td><td>Ruler — measure max arc to grounded target</td><td>±20% — V ≈ 30kV/cm × arc length (cm)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="h3">Operating Limits</div>
+  <table class="dt">
+    <thead><tr><th>Parameter</th><th>Maximum</th><th>Reason</th></tr></thead>
+    <tbody>
+      <tr><td>Continuous Operation</td><td>60 seconds</td><td>MOT thermal capacity limit</td></tr>
+      <tr><td>Pulses per Session</td><td>30–40 pulses</td><td>Spark gap electrode erosion monitoring</td></tr>
+      <tr><td>Daily Run Time</td><td>15 minutes cumulative</td><td>Prevents accelerated component aging</td></tr>
+      <tr><td>Ambient Temperature</td><td>&lt;30°C (86°F)</td><td>Higher temps reduce cooling effectiveness</td></tr>
+      <tr><td>Rest Between Sessions</td><td>30 minutes minimum</td><td>Full thermal recovery</td></tr>
+    </tbody>
+  </table>
+
+  <div class="co info">
+    <span class="ci">📊</span>
+    <div><strong>BREAK-IN PERIOD — EXPECT FIRST 10–20 DISCHARGES TO VARY</strong>
+    Output voltage typically increases as spark gaps stabilize and brass electrodes develop optimal surface texture.
+    Weak connections or components may fail during break-in — this is expected and far preferable to failure during
+    a critical experiment session. After break-in, performance stabilizes. Document every session in a test log:
+    date, temperature, humidity, gap settings, arc length, pulse count, anomalies.</div>
+  </div>
+</div>
+
+<!-- 1.8 TROUBLESHOOTING -->
+<div class="doc-sec" id="s8">
+  <div class="sl"><span class="sn">1.8</span> Troubleshooting Guide</div>
+  <div class="h2">TROUBLESHOOTING</div>
+
+  <div class="h3">Power Supply Problems</div>
+  <table class="tt">
+    <thead><tr><th>Symptom</th><th>Probable Cause</th><th>Solution</th></tr></thead>
+    <tbody>
+      <tr><td>No HV output from flyback</td><td>ZVS driver not oscillating</td><td>Check input voltage (12–30V DC required). Verify MOSFET gates. Check feedback network continuity.</td></tr>
+      <tr><td>Flyback arcing internally</td><td>Internal insulation failure</td><td>Replace flyback transformer. Verify input voltage within rated limits.</td></tr>
+      <tr><td>PSU resets on Marx discharge</td><td>EMI into control circuitry</td><td>Switch to transformer-based supply (MOT). Increase separation. This is the Supply #1 and #2 problem.</td></tr>
+      <tr><td>Transformer overheating</td><td>Undersized for continuous load</td><td>Reduce duty cycle. Upgrade to larger MOT. Verify #12 AWG secondary winding wire.</td></tr>
+      <tr><td>Output voltage drops under load</td><td>Insufficient current capability</td><td>Check wire gauge. Verify rectifier rating. Upgrade transformer if needed.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="h3">Discharge Problems</div>
+  <table class="tt">
+    <thead><tr><th>Symptom</th><th>Probable Cause</th><th>Solution</th></tr></thead>
+    <tbody>
+      <tr><td>No discharge occurs</td><td>Spark gaps too wide</td><td>Reduce gap spacing 0.5mm at a time until cascade fires. This is almost always the first issue encountered.</td></tr>
+      <tr><td>Only some stages discharge</td><td>Non-uniform gap spacing</td><td>Measure every gap with feeler gauges. Equalize precisely. The most common operational problem.</td></tr>
+      <tr><td>Weak output arc</td><td>Partial charging or stage failure</td><td>Increase charge time. Check for surface tracking on insulation. Test each stage individually.</td></tr>
+      <tr><td>Erratic firing pattern</td><td>Contaminated spark gaps</td><td>Clean brass spheres with fine abrasive. Remove oxidation. Low humidity environment helps significantly.</td></tr>
+      <tr><td>Discharge to ground pipe instead of electrode</td><td>Insufficient clearance</td><td>Increase separation between stack and ground pipe. Adjust output electrode height.</td></tr>
+      <tr><td>Component arcing over</td><td>Insufficient creepage distance</td><td>Increase spacing. Check for sharp metal edges. Verify no copper traces in the field path.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="h3">EMI and Interference</div>
+  <table class="dt">
+    <thead><tr><th>Effect Observed</th><th>Severity</th><th>Response</th></tr></thead>
+    <tbody>
+      <tr><td>Radio or TV static during discharge</td><td class="good">Normal</td><td>Marx is a broadband RF source. Expected and unavoidable.</td></tr>
+      <tr><td>Fluorescent lights flickering</td><td class="good">Normal</td><td>Confirms successful discharge. Consider it a performance indicator.</td></tr>
+      <tr><td>Nearby electronics resetting</td><td class="wt">Investigate</td><td>Increase separation. Add ferrite beads on nearby power cables.</td></tr>
+      <tr><td>Ground fault interrupters tripping</td><td class="wt">Investigate</td><td>Verify Marx ground is fully isolated from building ground. Check for unintended ground connections.</td></tr>
+      <tr><td>Neighbor electronics affected</td><td class="bad">Limit operation</td><td>Avoid operating near medical equipment. Inform neighbors of test schedule.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="h3">Diagnostic Test Points — Power OFF, All Caps Discharged</div>
+  <div class="tp-grid">
+    <div class="tpc"><div class="tpid">TP1</div><div class="tploc">MOT Primary Input</div><div class="tpval">120V AC</div></div>
+    <div class="tpc"><div class="tpid">TP2</div><div class="tploc">MOT Secondary Output</div><div class="tpval">15–20V AC</div></div>
+    <div class="tpc"><div class="tpid">TP3</div><div class="tploc">After Bridge Rectifier</div><div class="tpval">21–28V DC</div></div>
+    <div class="tpc"><div class="tpid">TP4</div><div class="tploc">ZVS Driver Input</div><div class="tpval">Matches TP3</div></div>
+    <div class="tpc"><div class="tpid">TP5</div><div class="tploc">Flyback HV Output</div><div class="tpval">~10kV DC</div></div>
+    <div class="tpc"><div class="tpid">TP6</div><div class="tploc">Capacitor 1 (Top Terminal)</div><div class="tpval">Matches TP5 after charge</div></div>
+    <div class="tpc"><div class="tpid">TP7</div><div class="tploc">Each Subsequent Cap</div><div class="tpval">Verify charging</div></div>
+    <div class="tpc"><div class="tpid">TP8</div><div class="tploc">Output Electrode</div><div class="tpval">Highest voltage point</div></div>
+    <div class="tpc"><div class="tpid">TP9</div><div class="tploc">Ground Rail to All Gaps</div><div class="tpval">&lt;1Ω continuity</div></div>
+  </div>
+</div>
+
+<!-- 1.9 BOM -->
+<div class="doc-sec" id="s9">
+  <div class="sl"><span class="sn">1.9</span> Bill of Materials</div>
+  <div class="h2">BILL OF MATERIALS</div>
+  <p class="prose">Complete parts list for the 14-stage Marx generator. Prices approximate and subject to change. Salvage where possible — especially the MOT.</p>
+
+  <div class="h4">// High-Voltage Components</div>
+  <table class="dt bom">
+    <thead><tr><th>Item</th><th>Specification</th><th>Qty</th><th>Source</th><th>Est. Cost</th></tr></thead>
+    <tbody>
+      <tr><td>Doorknob Capacitor</td><td>780 pF, 30kV ceramic</td><td>14</td><td><a href="https://www.surplussales.com" target="_blank" style="color:var(--arc);">surplussales.com</a></td><td>$140–200</td></tr>
+      <tr><td>Charging Resistor</td><td>1MΩ, HV rated</td><td>30</td><td>eBay / electronics suppliers</td><td>$30–50</td></tr>
+      <tr><td>Brass Electrode Balls</td><td>M3 threaded, 8–10mm</td><td>28</td><td><a href="https://www.amazon.com/dp/B0C1Y97R11" target="_blank" style="color:var(--arc);">Amazon B0C1Y97R11</a></td><td>$15–20</td></tr>
+      <tr><td>Copper Wire (spark gaps)</td><td>12 AWG solid bare</td><td>50 ft</td><td>Hardware store</td><td>$15–25</td></tr>
+      <tr><td>HV Output Wire</td><td>10–18 AWG, HV insulation rated</td><td>25 ft</td><td>Electronics supplier</td><td>$20–30</td></tr>
+    </tbody>
+  </table>
+
+  <div class="h4">// Power Supply Components</div>
+  <table class="dt bom">
+    <thead><tr><th>Item</th><th>Specification</th><th>Qty</th><th>Source</th><th>Est. Cost</th></tr></thead>
+    <tbody>
+      <tr><td>ZVS Driver + Flyback Combo</td><td>12–30V input, ~10kV output</td><td>1</td><td>Amazon</td><td>$20–30</td></tr>
+      <tr><td>Microwave Oven Transformer</td><td>1–1.5kVA heavy iron-core</td><td>1</td><td>Salvage / thrift stores</td><td>$0–15</td></tr>
+      <tr><td>Bridge Rectifier</td><td>35A, 200V rated</td><td>1</td><td>Electronics supplier</td><td>$5–10</td></tr>
+      <tr><td>Secondary Winding Wire</td><td>#12 AWG stranded</td><td>20 ft</td><td>Hardware store</td><td>$10–15</td></tr>
+      <tr><td>AC Flyback (alternate)</td><td>25kV AC output</td><td>1 (opt)</td><td><a href="https://www.hv-experimental.com" target="_blank" style="color:var(--arc);">hv-experimental.com</a></td><td>$30–50</td></tr>
+    </tbody>
+  </table>
+
+  <div class="h4">// Structural and Hardware</div>
+  <table class="dt bom">
+    <thead><tr><th>Item</th><th>Specification</th><th>Qty</th><th>Source</th><th>Est. Cost</th></tr></thead>
+    <tbody>
+      <tr><td>Polycarbonate Tube</td><td>3" OD, 39" minimum length</td><td>1</td><td><a href="https://www.amazon.com/dp/B09LFQ5PL6" target="_blank" style="color:var(--arc);">Amazon B09LFQ5PL6</a></td><td>$30–50</td></tr>
+      <tr><td>Base Plate</td><td>¼" polycarbonate, 24"×18"</td><td>1</td><td>Plastics supplier / hardware</td><td>$20–35</td></tr>
+      <tr><td>Copper Pipe (ground rail)</td><td>½" diameter, 42" length</td><td>1</td><td>Hardware / plumbing</td><td>$8–15</td></tr>
+      <tr><td>Plumbing Stub-Out Fitting</td><td>½" copper</td><td>1</td><td>Hardware store</td><td>$5–8</td></tr>
+      <tr><td>Ring Terminal Assortment</td><td>Insulated, multiple sizes</td><td>1 pkg</td><td><a href="https://www.amazon.com/gp/product/B0CP5Q2PJP" target="_blank" style="color:var(--arc);">Amazon B0CP5Q2PJP</a></td><td>$10–15</td></tr>
+      <tr><td>Heat Shrink Tubing</td><td>Assorted sizes, 2:1 ratio</td><td>1 kit</td><td>Electronics supplier</td><td>$10–15</td></tr>
+    </tbody>
+  </table>
+
+  <div class="h4">// Total Project Cost</div>
+  <table class="dt">
+    <thead><tr><th>Category</th><th>Cost Range</th></tr></thead>
+    <tbody>
+      <tr><td>High-Voltage Components</td><td class="wt">$220–325</td></tr>
+      <tr><td>Power Supply Components</td><td class="wt">$65–100</td></tr>
+      <tr><td>Structural Components</td><td class="wt">$85–135</td></tr>
+      <tr><td>Hardware and Fasteners</td><td class="wt">$60–95</td></tr>
+      <tr><td>3D Printed Components (filament)</td><td class="wt">$21–30</td></tr>
+      <tr><td style="font-family:var(--display);font-size:18px;letter-spacing:1px;color:var(--arc2);">TOTAL — MATERIALS ONLY</td><td style="font-family:var(--mono);font-size:18px;color:var(--green);">$451–685</td></tr>
+    </tbody>
+  </table>
+  <p class="prose" style="font-size:13px;color:var(--dim);margin-top:8px;">
+    Costs can be reduced significantly by salvaging components (MOT from a discarded microwave is free, copper wire
+    and hardware from hardware stores). Many builders complete similar projects under $300 through judicious sourcing.
+    The MOT is the single most expensive-to-buy but easiest-to-find-free component in the design.
+  </p>
+</div>
+
+<!-- 1.10 REFERENCES -->
+<div class="doc-sec" id="s10">
+  <div class="sl"><span class="sn">1.10</span> References and Further Reading</div>
+  <div class="h2">REFERENCES</div>
+
+  <div class="h3">Essential Video Resources</div>
+  <div class="ref-item"><a href="https://www.youtube.com/watch?v=dje7uhyW23o" target="_blank">ELECTRICAL SAFETY DEMONSTRATION →</a><p>Humorous but instructive. Every "ouch" represents a circumstance that could have been fatal. Required viewing before beginning any high-voltage work. Watch it twice.</p></div>
+  <div class="ref-item"><a href="https://www.youtube.com/watch?v=USIW2xFOSFg" target="_blank">MARX GENERATOR THEORY AND OPERATION →</a><p>Comprehensive explanation of circuit topology, operating principles, and design considerations. Good for all levels.</p></div>
+  <div class="ref-item"><a href="https://www.youtube.com/watch?v=3eSXXnKOW5k" target="_blank">COMPLETE MOT REWINDING TUTORIAL →</a><p>Step-by-step guide to removing the MOT secondary and installing a custom winding. Watch before attempting the rewind.</p></div>
+  <div class="ref-item"><a href="https://www.youtube.com/watch?v=OBQTBgFjFsQ" target="_blank">BUILDING A 6kV POWER SUPPLY FROM A SINGLE MOT →</a><p>Demonstrates building a high-voltage power supply directly from a rewound MOT for Marx generator applications.</p></div>
+  <div class="ref-item"><a href="https://www.youtube.com/watch?v=DkhpuuPljS4" target="_blank">CUSTOM HV TRANSFORMER — SHATTERS ALL VOLTAGE RECORDS →</a><p>Advanced techniques for building ultra-high-voltage transformers from scratch. Relevant to HV-004.</p></div>
+
+  <div class="h3">Advanced Physics and Research Connections</div>
+  <div class="ref-item adv"><a href="https://medium.com/predict/eugene-podkletnovs-impulse-gravity-generator-8749bbdc8378" target="_blank">PODKLETNOV'S IMPULSE GRAVITY GENERATOR →</a><p>Discussion of the theoretical connection between high-voltage impulse generators and gravitational effects. Controversial but experimentally interesting — the kind of thing Section 7 exists to explore.</p></div>
+  <div class="ref-item adv"><a href="https://www.youtube.com/watch?v=kQm2WNWZSWM" target="_blank">TONY ROBERTSON — PODKLETNOV REPLICATION WORK →</a><p>Practical implementation and testing of impulse gravity modification experiments. Small scale but methodical.</p></div>
+  <div class="ref-item adv"><a href="https://www.youtube.com/watch?v=mRcWhQKC5Pw" target="_blank">DR. CHANCE GLENN — SMALL-SCALE GRAVITATIONAL ANOMALY TESTING →</a><p>Careful small-scale testing of gravitational anomalies in high-voltage impulse systems.</p></div>
+  <div class="ref-item adv"><a href="https://patents.google.com/patent/US20170313446A1/en" target="_blank">PAIS PATENTS — US20170313446A1 →</a><p>US Patent describing high-frequency gravitational wave generation concepts using electromagnetic fields. Describes similar principles in modern patent terminology.</p></div>
+  <div class="ref-item adv"><a href="https://www.amazon.com/GRAVITY-CONTROL-Present-Technology-Frederick/dp/1548293156" target="_blank">ALZOFON — GRAVITY CONTROL WITH PRESENT TECHNOLOGY →</a><p>ISBN: 9781548293154. Theoretical framework for gravity modification using electromagnetic fields including radar and microwave systems.</p></div>
+
+  <div class="h3">Component Sources</div>
+  <table class="dt bom">
+    <thead><tr><th>Component</th><th>Supplier</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>HV Doorknob Capacitors</td><td><a href="https://www.surplussales.com" target="_blank" style="color:var(--arc);">surplussales.com</a></td><td>Surplus Sales of Nebraska — excellent HV component source, well-priced</td></tr>
+      <tr><td>AC Flyback Transformer (25kV)</td><td><a href="https://www.hv-experimental.com" target="_blank" style="color:var(--arc);">hv-experimental.com</a></td><td>Purpose-built for serious high-voltage work</td></tr>
+      <tr><td>M3 Brass Electrode Balls</td><td><a href="https://www.amazon.com/dp/B0C1Y97R11" target="_blank" style="color:var(--arc);">Amazon B0C1Y97R11</a></td><td>Threaded brass spheres ideal for spark gap electrodes</td></tr>
+      <tr><td>Insulated Ring Terminals</td><td><a href="https://www.amazon.com/gp/product/B0CP5Q2PJP" target="_blank" style="color:var(--arc);">Amazon B0CP5Q2PJP</a></td><td>Assorted sizes for all connection points</td></tr>
+      <tr><td>3" Polycarbonate Tube</td><td><a href="https://www.amazon.com/dp/B09LFQ5PL6" target="_blank" style="color:var(--arc);">Amazon B09LFQ5PL6</a></td><td>Clear polycarbonate tube for backbone structure</td></tr>
+    </tbody>
+  </table>
+
+  <div class="h3">Books and Textbooks</div>
+  <div class="book-item"><strong>Foundations of Pulsed Power Technology</strong> — Shipman et al. <br><span>The authoritative textbook on pulse power systems. Comprehensive treatment of Marx generators, energy storage, and switching. Essential for serious practitioners.</span></div>
+  <div class="book-item"><strong>High Voltage Engineering Fundamentals</strong> — Kuffel and Zaengl <br><span>Classic reference covering Paschen's Law, dielectric breakdown, insulation coordination, and testing methodology. Standard reference for HV design.</span></div>
+  <div class="book-item"><strong>Pulsed Power</strong> — Guenther and Kristiansen <br><span>Advanced treatment of Marx generators, pulse-forming networks, and high-power switching. Graduate-level technical depth.</span></div>
+
+  <div class="h3">Standards and Safety References</div>
+  <ul class="hv-list">
+    <li><span class="ic">▸</span><div><strong>NFPA 70E</strong> — Electrical Safety in the Workplace — arc flash hazard analysis methodology</div></li>
+    <li><span class="ic">▸</span><div><strong>IEEE 1584</strong> — Guide for Performing Arc-Flash Hazard Calculations</div></li>
+    <li><span class="ic">▸</span><div><strong>IEC 60664-1</strong> — Insulation Coordination for Equipment within Low-Voltage Systems</div></li>
+  </ul>
+
+  <div class="h3">Communities</div>
+  <ul class="hv-list">
+    <li><span class="ic">▸</span><div><strong>4HV.org</strong> — The high-voltage community forum. Decades of collective knowledge from experienced builders worldwide.</div></li>
+    <li><span class="ic">▸</span><div><strong>r/highvoltage</strong> — Reddit community for HV enthusiasts of all levels</div></li>
+    <li><span class="ic">▸</span><div><strong>Physics Forums</strong> — High Energy Physics and Theory sections for academic depth and peer review</div></li>
+    <li><span class="ic">▸</span><div><strong>Hackaday.io</strong> — High voltage project documentation, active community</div></li>
+  </ul>
+
+  <div class="h3">Acknowledgments</div>
+  <p class="prose">
+    This chapter builds on decades of work by countless engineers, physicists, and amateur experimenters.
+    Special acknowledgment to <strong>Erwin Marx</strong> for the original circuit topology (1924) —
+    one of the most elegant solutions in electrical engineering. To the high-voltage amateur community
+    for open sharing of designs and hard-won experience. To YouTube educators who make complex topics accessible.
+    And to surplus electronics dealers who keep obsolete but irreplaceable components available.
+  </p>
+
+  <div class="co danger">
+    <span class="ci">⚠️</span>
+    <div><strong>FINAL LEGAL DISCLAIMER</strong>
+    The information in this document is provided for educational and research purposes only.
+    The author, SpaceCommsKit, and associated parties make no warranties regarding accuracy, completeness,
+    or suitability of this information, and assume no liability for injury, death, property damage,
+    or any other loss resulting from its use. Do not proceed without appropriate training, equipment,
+    insurance, and legal authority. <strong>YOU PROCEED ENTIRELY AT YOUR OWN RISK.</strong></div>
+  </div>
+
+  <div class="end-stamp">
+    <div style="font-size:10px;letter-spacing:4px;color:var(--dim);">// END OF CHAPTER 1</div>
+    <div style="font-family:var(--display);font-size:40px;letter-spacing:4px;color:var(--arc);margin:8px 0;text-shadow:0 0 20px rgba(0,207,255,.4);">MARX GENERATOR V1</div>
+    <div style="font-size:11px;letter-spacing:2px;color:var(--dim);">HV-001 · PUBLICATION VERSION 1.0 · OCTOBER 2025 · SPACECOMMSKIT · TENNESSEE, USA</div>
+  </div>
+</div>
+
+</div><!-- end main -->
+
+<div class="ds">
+  <a href="https://www.patreon.com/spacecommskit" target="_blank" class="pb">⚡ UNLOCK FULL BUILD DOCS<br><span style="font-size:9px;letter-spacing:1px;opacity:.8;">PATREON TIER 2 · $10/MONTH</span></a>
+  <a href="https://www.patreon.com/spacecommskit" target="_blank" class="stlb">⬇ DOWNLOAD STL FILES<br><span style="font-size:9px;letter-spacing:1px;opacity:.8;">GOOGLE DRIVE · PATREON EXCLUSIVE</span></a>
+
+  <div class="sc"><div class="st">// Quick Specs</div><div class="sb">
+    <div class="sr"><span class="sk">TOPOLOGY</span><span class="sv">Marx Bank</span></div>
+    <div class="sr"><span class="sk">STAGES</span><span class="sv">14</span></div>
+    <div class="sr"><span class="sk">CAPACITOR</span><span class="sv">780pF / 30kV</span></div>
+    <div class="sr"><span class="sk">CHARGE VOLTAGE</span><span class="sv">10kV / stage</span></div>
+    <div class="sr"><span class="sk">THEORETICAL V</span><span class="sv">140 kV</span></div>
+    <div class="sr"><span class="sk">ACTUAL V</span><span class="sv">100–120 kV</span></div>
+    <div class="sr"><span class="sk">STORED ENERGY</span><span class="sv">0.55 J</span></div>
+    <div class="sr"><span class="sk">CHARGE TIME τ</span><span class="sv">~1.6 sec</span></div>
+    <div class="sr"><span class="sk">BACKBONE</span><span class="sv">3" Poly tube</span></div>
+    <div class="sr"><span class="sk">PSU</span><span class="sv">Rewound MOT</span></div>
+    <div class="sr"><span class="sk">FRAME MATERIAL</span><span class="sv">PETG 3D Print</span></div>
+    <div class="sr"><span class="sk">BUILD COST</span><span class="sv">$451–685</span></div>
+  </div></div>
+
+  <div class="sc"><div class="st">// Patreon Content</div><div class="sb">
+    <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;">
+      <li style="font-family:var(--mono);font-size:11px;color:var(--text);display:flex;gap:8px;"><span style="color:var(--arc);">✓</span>Full assembly photographs</li>
+      <li style="font-family:var(--mono);font-size:11px;color:var(--text);display:flex;gap:8px;"><span style="color:var(--arc);">✓</span>Exact component values and wiring</li>
+      <li style="font-family:var(--mono);font-size:11px;color:var(--text);display:flex;gap:8px;"><span style="color:var(--arc);">✓</span>Gap adjustment procedure in detail</li>
+      <li style="font-family:var(--mono);font-size:11px;color:var(--text);display:flex;gap:8px;"><span style="color:var(--arc);">✓</span>Test results and arc photographs</li>
+      <li style="font-family:var(--mono);font-size:11px;color:var(--text);display:flex;gap:8px;"><span style="color:var(--arc);">✓</span>Complete BOM with exact sourcing</li>
+      <li style="font-family:var(--mono);font-size:11px;color:var(--text);display:flex;gap:8px;"><span style="color:var(--plasma);">⬇</span>Capacitor mount frame STL</li>
+      <li style="font-family:var(--mono);font-size:11px;color:var(--text);display:flex;gap:8px;"><span style="color:var(--plasma);">⬇</span>Base mount disc STL</li>
+      <li style="font-family:var(--mono);font-size:11px;color:var(--text);display:flex;gap:8px;"><span style="color:var(--plasma);">⬇</span>Tube cap STL</li>
+      <li style="font-family:var(--mono);font-size:11px;color:var(--text);display:flex;gap:8px;"><span style="color:var(--plasma);">⬇</span>Electrode arm assemblies STL (×2)</li>
+      <li style="font-family:var(--mono);font-size:11px;color:var(--text);display:flex;gap:8px;"><span style="color:var(--plasma);">⬇</span>Ground pipe support block STL</li>
+    </ul>
+  </div></div>
+
+  <div class="sc"><div class="st">// Safety Quick Ref</div><div class="sb" style="display:flex;flex-direction:column;gap:7px;">
+    <div style="font-family:var(--mono);font-size:11px;color:var(--danger);display:flex;gap:8px;"><span>☠</span>Never work alone — ever</div>
+    <div style="font-family:var(--mono);font-size:11px;color:var(--danger);display:flex;gap:8px;"><span>☠</span>Always discharge all caps first</div>
+    <div style="font-family:var(--mono);font-size:11px;color:var(--danger);display:flex;gap:8px;"><span>☠</span>Verify zero V with HV probe</div>
+    <div style="font-family:var(--mono);font-size:11px;color:var(--warn);display:flex;gap:8px;"><span>⚡</span>Class 2 gloves — 17kV rated min</div>
+    <div style="font-family:var(--mono);font-size:11px;color:var(--warn);display:flex;gap:8px;"><span>⚡</span>Face shield + ANSI Z87.1 glasses</div>
+    <div style="font-family:var(--mono);font-size:11px;color:var(--warn);display:flex;gap:8px;"><span>⚡</span>CO₂ extinguisher within reach</div>
+    <div style="font-family:var(--mono);font-size:11px;color:var(--arc);display:flex;gap:8px;"><span>✓</span>HV ground isolated from building</div>
+    <div style="font-family:var(--mono);font-size:11px;color:var(--arc);display:flex;gap:8px;"><span>✓</span>3ft min clearance all sides</div>
+    <div style="font-family:var(--mono);font-size:11px;color:var(--arc);display:flex;gap:8px;"><span>✓</span>Emergency shutoff within reach</div>
+  </div></div>
+
+  <div class="sc"><div class="st">// HV Lab Navigation</div>
+    <ul class="navs">
+      <li><a href="hv-001.html" class="active">HV-001 Marx Gen V1 <span>BUILT</span></a></li>
+      <li><a href="hv-002.html">HV-002 Marx Gen V2 <span>BUILT</span></a></li>
+      <li><a href="hv-003.html">HV-003 HV Multiplier <span>BUILT</span></a></li>
+      <li><a href="hv-004.html">HV-004 HV Transformer <span>IN PROG</span></a></li>
+    </ul>
+  </div>
+</div>
+</div><!-- end db -->
+
+<footer class="df">
+  <div><a href="hv-lab.html">← HV Lab</a> &nbsp;·&nbsp; <a href="classified.html">Section 7</a> &nbsp;·&nbsp; <a href="index.html">SpaceCommsKit</a></div>
+  <div class="right">HV-001 // CHAPTER 1 // OCT 2025 // CLASSIFIED // TIER 2</div>
 </footer>
 
 </body>
