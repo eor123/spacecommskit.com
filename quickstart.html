@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quick Start Guide — SpaceCommsKit Explorer SCK-915</title>
+<meta name="description" content="SCK-915 Quick Start Guide — ground station to remote radio RF link in under 30 minutes. Step by step from unboxing to first telemetry.">
+<link rel="canonical" href="https://www.spacecommskit.com/quickstart.html">
+<link rel="stylesheet" href="style.css">
+<style>
+  .qs-hero {
+    background: var(--void);
+    padding: 120px 5% 60px;
+    border-bottom: 1px solid var(--border);
+  }
+  .qs-hero-inner { max-width: 860px; margin: 0 auto; }
+  .qs-meta {
+    display: flex; gap: 24px; flex-wrap: wrap;
+    margin-top: 24px; padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+  .qs-meta-item {
+    font-family: var(--font-mono); font-size: 12px;
+    color: var(--text-inv); letter-spacing: 0.5px;
+  }
+  .qs-meta-item span { color: var(--cyan); }
+
+  /* Step sections */
+  .qs-body { max-width: 860px; margin: 0 auto; padding: 0 5%; }
+  .qs-section { padding: 56px 0; border-bottom: 1px solid var(--border-lt); }
+  .qs-section:last-child { border-bottom: none; }
+
+  .step-header {
+    display: flex; align-items: flex-start; gap: 20px; margin-bottom: 28px;
+  }
+  .step-num {
+    width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
+    background: var(--blue); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 16px; font-family: var(--font-mono);
+    margin-top: 2px;
+  }
+  .step-num.complete { background: #16a34a; }
+  .step-title { font-size: clamp(18px, 2.5vw, 22px); font-weight: 600;
+    color: var(--text-head); margin-bottom: 4px; }
+  .step-sub { font-size: 14px; color: var(--text-muted); }
+
+  /* Content blocks */
+  .qs-prose { font-size: 15px; line-height: 1.8; color: var(--text-body); margin-bottom: 20px; }
+
+  .cmd-block {
+    background: var(--void); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px 20px;
+    font-family: var(--font-mono); font-size: 13px;
+    color: var(--cyan); margin: 16px 0; overflow-x: auto;
+  }
+  .cmd-block .comment { color: #4B6080; }
+  .cmd-block .ok { color: #4ade80; }
+  .cmd-block .label { color: var(--text-inv); }
+
+  .qs-callout {
+    border-radius: var(--radius); padding: 16px 20px;
+    display: flex; gap: 14px; align-items: flex-start; margin: 20px 0;
+    font-size: 14px; line-height: 1.7;
+  }
+  .qs-callout.info { background: #EFF6FF; border-left: 3px solid var(--blue); }
+  .qs-callout.warn { background: #FFFBEB; border-left: 3px solid var(--gold); }
+  .qs-callout.success { background: #F0FDF4; border-left: 3px solid #16a34a; }
+  .qs-callout.critical { background: #FEF2F2; border-left: 3px solid var(--red); }
+  .qs-callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .qs-callout strong { display: block; margin-bottom: 4px; color: var(--text-head); }
+
+  .qs-checklist { list-style: none; display: flex; flex-direction: column; gap: 10px; margin: 16px 0; }
+  .qs-checklist li {
+    display: flex; gap: 12px; align-items: flex-start;
+    padding: 12px 16px; background: var(--panel);
+    border-radius: var(--radius); font-size: 14px;
+  }
+  .qs-checklist li .check { color: var(--blue); font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+  .qs-checklist li .check.done { color: #16a34a; }
+
+  .qs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+  .qs-card {
+    background: var(--panel); border-radius: var(--radius);
+    padding: 20px; font-size: 14px;
+  }
+  .qs-card h4 { font-size: 13px; font-weight: 600; color: var(--text-head);
+    margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .qs-card .board-id {
+    font-family: var(--font-mono); font-size: 22px; font-weight: 700;
+    color: var(--blue); display: block; margin-bottom: 6px;
+  }
+
+  .qs-table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 16px 0; }
+  .qs-table th {
+    background: var(--void); color: var(--cyan);
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 1px;
+    text-transform: uppercase; padding: 10px 14px; text-align: left;
+  }
+  .qs-table td { padding: 10px 14px; border-bottom: 1px solid var(--border-lt); }
+  .qs-table tr:last-child td { border-bottom: none; }
+  .qs-table .mono { font-family: var(--font-mono); font-size: 12px; color: var(--blue); }
+
+  .qs-telemetry {
+    background: var(--void); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px; margin: 16px 0;
+    font-family: var(--font-mono); font-size: 12px;
+  }
+  .qs-telemetry .telem-row {
+    display: flex; justify-content: space-between;
+    padding: 6px 0; border-bottom: 1px solid var(--border);
+  }
+  .qs-telemetry .telem-row:last-child { border-bottom: none; }
+  .qs-telemetry .telem-label { color: var(--text-inv); }
+  .qs-telemetry .telem-val { color: var(--cyan); }
+  .qs-telemetry .telem-val.good { color: #4ade80; }
+  .qs-telemetry .telem-val.warn { color: var(--gold); }
+
+  .progress-bar {
+    display: flex; gap: 6px; margin: 32px 0 48px; flex-wrap: wrap;
+  }
+  .progress-step {
+    flex: 1; min-width: 60px; padding: 10px 8px; text-align: center;
+    border-radius: var(--radius); font-size: 11px; font-weight: 600;
+    font-family: var(--font-mono); letter-spacing: 0.3px;
+    border: 1.5px solid var(--border-lt); color: var(--text-muted);
+    background: #fff;
+  }
+  .progress-step.active {
+    background: var(--blue); color: #fff; border-color: var(--blue);
+  }
+  .progress-step.done {
+    background: #F0FDF4; color: #16a34a; border-color: #86efac;
+  }
+
+  /* Success state */
+  .qs-success {
+    background: linear-gradient(135deg, #0D1520 0%, #0F2D1A 100%);
+    border: 1px solid #166534; border-radius: var(--radius-lg);
+    padding: 40px; text-align: center; margin: 40px 0;
+  }
+  .qs-success h3 { color: #4ade80; font-size: 24px; margin-bottom: 12px; }
+  .qs-success p { color: var(--text-inv); font-size: 15px; line-height: 1.7; }
+
+  @media (max-width: 640px) {
+    .qs-grid { grid-template-columns: 1fr; }
+    .step-header { flex-direction: row; }
+    .progress-step { font-size: 9px; padding: 8px 4px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo">SpaceComms<span>Kit</span><span class="logo-tag">SCK-915</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="kit.html">The Kit</a></li>
+    <li><a href="documentation.html">Documentation</a></li>
+    <li><a href="quickstart.html">Quick Start</a></li>
+    <li><a href="software.html">Software</a></li>
+    <li><a href="pico.html">Pico Project</a></li>
+    <li><a href="groundstation.html">Ground Station</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="classified.html">⬛ Section 7</a></li>
+    <li><a href="https://spacecommskit.myshopify.com" target="_blank" class="nav-cta">Buy a Kit</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<div class="qs-hero">
+  <div class="qs-hero-inner">
+    <span class="eyebrow">Quick Start Guide · SpaceCommsKit Explorer</span>
+    <h1 style="font-size:clamp(28px,4vw,44px);font-weight:700;color:#fff;line-height:1.2;margin:16px 0 12px;">
+      Ground Station to Remote Radio<br>
+      <span style="color:var(--cyan);">First RF Link in Under 30 Minutes</span>
+    </h1>
+    <p style="font-size:16px;color:var(--text-inv);max-width:640px;line-height:1.7;">
+      Your SCK-915 boards shipped fully commissioned — bootloader flashed, radio application
+      installed, hardware IDs assigned, and end-to-end tested. This guide takes you from
+      unboxing to a live RF link with verified telemetry.
+    </p>
+    <div class="qs-meta">
+      <div class="qs-meta-item">Board: <span>SCK-915</span></div>
+      <div class="qs-meta-item">Frequency: <span>915 MHz ISM</span></div>
+      <div class="qs-meta-item">OS: <span>Windows 10 / 11 x64</span></div>
+      <div class="qs-meta-item">Time: <span>~20 minutes</span></div>
+      <div class="qs-meta-item">Prerequisites: <span>None</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="qs-body">
+
+<!-- Progress indicator -->
+<div style="padding:40px 0 0;">
+  <div class="progress-bar">
+    <div class="progress-step active">1 · Unbox</div>
+    <div class="progress-step active">2 · Install</div>
+    <div class="progress-step active">3 · Connect</div>
+    <div class="progress-step active">4 · Telemetry</div>
+    <div class="progress-step active">5 · RF Link</div>
+    <div class="progress-step active">6 · Verified</div>
+  </div>
+</div>
+
+<!-- What's in the box -->
+<div class="qs-section">
+  <div class="step-header">
+    <div class="step-num">1</div>
+    <div>
+      <div class="step-title">Verify Your Kit Contents</div>
+      <div class="step-sub">Two minutes — confirm everything is present before you start</div>
+    </div>
+  </div>
+
+  <p class="qs-prose">
+    Your Explorer Dev Kit contains two fully commissioned SCK-915 boards.
+    Each board left our bench after a complete end-to-end test — bootloader flashed,
+    radio application installed, RF link confirmed, and image transfer verified.
+    Check the stickers on each board before proceeding.
+  </p>
+
+  <div class="qs-grid">
+    <div class="qs-card">
+      <h4>Ground Station Board</h4>
+      <span class="board-id">0001</span>
+      <ul style="list-style:none;font-size:13px;color:var(--text-muted);line-height:2;">
+        <li>✓ Bootloader installed</li>
+        <li>✓ Radio app installed</li>
+        <li>✓ HWID: 0001</li>
+        <li>✓ AES keys: Lab (all-F)</li>
+        <li>✓ Connects to your PC via USB-serial</li>
+      </ul>
+    </div>
+    <div class="qs-card">
+      <h4>Remote Radio Board</h4>
+      <span class="board-id">0004</span>
+      <ul style="list-style:none;font-size:13px;color:var(--text-muted);line-height:2;">
+        <li>✓ Bootloader installed</li>
+        <li>✓ Radio app installed</li>
+        <li>✓ HWID: 0004</li>
+        <li>✓ AES keys: Lab (all-F)</li>
+        <li>✓ Operates standalone — no PC connection needed</li>
+      </ul>
+    </div>
+  </div>
+
+  <ul class="qs-checklist">
+    <li><span class="check">□</span><div><strong>2× SCK-915 radio boards</strong> — stickered 0001 and 0004</div></li>
+    <li><span class="check">□</span><div><strong>2× 915MHz SMA antennas</strong> — hand-tighten only, do not over-torque</div></li>
+    <li><span class="check">□</span><div><strong>1× USB to serial adapter</strong> — for Board 0001 ground station connection</div></li>
+    <li><span class="check">□</span><div><strong>2× 5V 3A power supplies</strong> — one per board</div></li>
+  </ul>
+
+  <div class="qs-callout warn">
+    <div class="qs-callout-icon">⚠️</div>
+    <div>
+      <strong>Never exceed 5V</strong>
+      During RF transmission the power amplifier draws significant current.
+      Use only the included 5V 3A adapters or a bench supply set to exactly 5.00V.
+      Undervoltage causes missed packets. Overvoltage causes permanent damage.
+    </div>
+  </div>
+</div>
+
+<!-- Install Software -->
+<div class="qs-section">
+  <div class="step-header">
+    <div class="step-num">2</div>
+    <div>
+      <div class="step-title">Install the Ground Station Software</div>
+      <div class="step-sub">Self-contained installer — no .NET runtime, no prerequisites</div>
+    </div>
+  </div>
+
+  <p class="qs-prose">
+    The OpenLST Ground Station is a self-contained Windows application.
+    The installer includes everything it needs — no separate .NET runtime installation,
+    no Visual C++ redistributables, no prerequisites of any kind.
+  </p>
+
+  <ul class="qs-checklist">
+    <li>
+      <span class="check">□</span>
+      <div>
+        <strong>Download the installer</strong><br>
+        <span style="color:var(--text-muted);font-size:13px;">
+          From the
+          <a href="https://github.com/eor123/spacecommskit/raw/main/installer/OpenLST_Ground_Station_Setup_v1.0.0.exe">
+          SpaceCommsKit GitHub repository</a> or from the
+          <a href="software.html">Software page</a>.
+          File: <code style="background:var(--panel);padding:1px 6px;border-radius:4px;font-size:12px;">OpenLST_Ground_Station_Setup_v1.0.0.exe</code>
+        </span>
+      </div>
+    </li>
+    <li>
+      <span class="check">□</span>
+      <div>
+        <strong>Run the installer as Administrator</strong><br>
+        <span style="color:var(--text-muted);font-size:13px;">
+          Right-click the .exe → Run as Administrator.
+          If Windows SmartScreen appears click <em>More info</em> → <em>Run anyway</em>.
+          The application installs to <code style="background:var(--panel);padding:1px 6px;border-radius:4px;font-size:12px;">C:\Program Files\OpenLST Ground Station</code>
+        </span>
+      </div>
+    </li>
+    <li>
+      <span class="check">□</span>
+      <div>
+        <strong>Launch the application</strong><br>
+        <span style="color:var(--text-muted);font-size:13px;">
+          OpenLST Ground Station appears in your Start menu.
+          A desktop shortcut is created during installation.
+        </span>
+      </div>
+    </li>
+  </ul>
+
+  <div class="qs-callout info">
+    <div class="qs-callout-icon">ℹ️</div>
+    <div>
+      <strong>Open Source</strong>
+      The ground station is fully open source under GPLv3.
+      Source code at <a href="https://github.com/eor123/spacecommskit/tree/main/ground-station" target="_blank">github.com/eor123/spacecommskit</a>.
+      Built with C# .NET 8 WinForms — Visual Studio 2022 opens the project directly.
+    </div>
+  </div>
+</div>
+
+<!-- Hardware Setup -->
+<div class="qs-section">
+  <div class="step-header">
+    <div class="step-num">3</div>
+    <div>
+      <div class="step-title">Connect the Hardware</div>
+      <div class="step-sub">Board 0001 to your PC — Board 0004 standalone with power</div>
+    </div>
+  </div>
+
+  <p class="qs-prose">
+    Board 0001 is your ground station — it connects to your PC via USB-serial and communicates
+    with Board 0004 over the 915MHz RF link. Board 0004 needs only power — no PC connection required.
+    Place the boards at least 0.5 meters apart to avoid receiver saturation from the TX signal.
+  </p>
+
+  <table class="qs-table">
+    <thead>
+      <tr>
+        <th>Connection</th>
+        <th>Board 0001 (Ground Station)</th>
+        <th>Board 0004 (Remote)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Power</td>
+        <td>5V 3A adapter → DC jack</td>
+        <td>5V 3A adapter → DC jack</td>
+      </tr>
+      <tr>
+        <td>Serial</td>
+        <td>USB-serial adapter → UART header<br>
+          <span style="font-family:var(--font-mono);font-size:11px;color:var(--text-muted);">
+          TX→RX, RX→TX, GND→GND, 115200 baud
+          </span>
+        </td>
+        <td>Not required</td>
+      </tr>
+      <tr>
+        <td>Antenna</td>
+        <td>915MHz SMA antenna — hand-tighten</td>
+        <td>915MHz SMA antenna — hand-tighten</td>
+      </tr>
+      <tr>
+        <td>Separation</td>
+        <td colspan="2" style="color:var(--text-muted);">Minimum 0.5m — recommended 1–3m for initial testing</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="qs-callout info">
+    <div class="qs-callout-icon">🔌</div>
+    <div>
+      <strong>UART Header Pinout</strong>
+      The SCK-915 UART header is a 4-pin 2.54mm connector.
+      Pin 1 = TX (board transmit → adapter RX),
+      Pin 2 = RX (board receive ← adapter TX),
+      Pin 3 = GND,
+      Pin 4 = +3.3V (reference only — do not connect to adapter VCC).
+      The board runs at <strong>115200 baud, 8N1</strong>.
+    </div>
+  </div>
+
+  <ul class="qs-checklist">
+    <li><span class="check">□</span><div><strong>Power on Board 0004 first</strong> — remote radio needs to be listening before ground station transmits</div></li>
+    <li><span class="check">□</span><div><strong>Power on Board 0001</strong> — ground station board</div></li>
+    <li><span class="check">□</span><div><strong>Connect USB-serial adapter</strong> to PC — Windows installs driver automatically</div></li>
+    <li><span class="check">□</span><div><strong>Note the COM port</strong> — Device Manager → Ports (COM &amp; LPT) → note the COMx number</div></li>
+  </ul>
+</div>
+
+<!-- First Telemetry -->
+<div class="qs-section">
+  <div class="step-header">
+    <div class="step-num">4</div>
+    <div>
+      <div class="step-title">Establish Connection — First Telemetry</div>
+      <div class="step-sub">Verify the ground station talks to Board 0001 locally before attempting RF</div>
+    </div>
+  </div>
+
+  <p class="qs-prose">
+    Start with the local ground station connection before testing the RF link.
+    This confirms your USB-serial connection is working and Board 0001 is responding.
+  </p>
+
+  <ul class="qs-checklist">
+    <li>
+      <span class="check">□</span>
+      <div>
+        <strong>Open the ground station application</strong><br>
+        <span style="color:var(--text-muted);font-size:13px;">The header bar shows Port, Baud, and HWID fields.</span>
+      </div>
+    </li>
+    <li>
+      <span class="check">□</span>
+      <div>
+        <strong>Set Port to your COM port</strong> — e.g. COM5<br>
+        <span style="color:var(--text-muted);font-size:13px;">Select from the dropdown. Baud is pre-set to 115200.</span>
+      </div>
+    </li>
+    <li>
+      <span class="check">□</span>
+      <div>
+        <strong>Set HWID to 0001</strong><br>
+        <span style="color:var(--text-muted);font-size:13px;">This addresses Board 0001 — the board physically connected to your PC.</span>
+      </div>
+    </li>
+    <li>
+      <span class="check">□</span>
+      <div>
+        <strong>Click Connect</strong><br>
+        <span style="color:var(--text-muted);font-size:13px;">Status bar turns green. The log panel shows the connection timestamp.</span>
+      </div>
+    </li>
+    <li>
+      <span class="check">□</span>
+      <div>
+        <strong>Click Get Telem on the Home tab</strong><br>
+        <span style="color:var(--text-muted);font-size:13px;">Board 0001 responds with its telemetry. All panels update.</span>
+      </div>
+    </li>
+  </ul>
+
+  <p style="font-size:14px;color:var(--text-muted);margin-bottom:12px;">Expected telemetry response from Board 0001:</p>
+  <div class="qs-telemetry">
+    <div class="telem-row"><span class="telem-label">Uptime</span><span class="telem-val good">00:01:24 — counting up ✓</span></div>
+    <div class="telem-row"><span class="telem-label">RSSI</span><span class="telem-val">— dBm (local only, no RF yet)</span></div>
+    <div class="telem-row"><span class="telem-label">Packets Sent</span><span class="telem-val good">1 ✓</span></div>
+    <div class="telem-row"><span class="telem-label">Good Packets</span><span class="telem-val good">1 ✓</span></div>
+    <div class="telem-row"><span class="telem-label">Reboot Count</span><span class="telem-val good">0 ✓</span></div>
+    <div class="telem-row"><span class="telem-label">Supply Voltage</span><span class="telem-val good">5.00V ✓</span></div>
+  </div>
+
+  <div class="qs-callout warn">
+    <div class="qs-callout-icon">⚠️</div>
+    <div>
+      <strong>Reboot LED during TX</strong>
+      If the reboot indicator illuminates when you send a command, your power supply
+      cannot sustain the PA current draw during transmission. Switch to the included
+      5V 3A adapter. A USB port or lightweight bench supply will not reliably power this board during TX.
+    </div>
+  </div>
+</div>
+
+<!-- RF Link -->
+<div class="qs-section">
+  <div class="step-header">
+    <div class="step-num">5</div>
+    <div>
+      <div class="step-title">Establish the RF Link — Board 0001 to Board 0004</div>
+      <div class="step-sub">Your first over-the-air command and telemetry exchange</div>
+    </div>
+  </div>
+
+  <p class="qs-prose">
+    With Board 0001 connected and responding, change the HWID to address Board 0004.
+    Board 0001 will relay your commands over the 915MHz RF link to Board 0004
+    and return its responses. You are now commanding a remote radio over RF.
+  </p>
+
+  <ul class="qs-checklist">
+    <li>
+      <span class="check">□</span>
+      <div>
+        <strong>Change HWID to 0004</strong> in the header bar<br>
+        <span style="color:var(--text-muted);font-size:13px;">
+          All commands now address Board 0004 via RF relay through Board 0001.
+        </span>
+      </div>
+    </li>
+    <li>
+      <span class="check">□</span>
+      <div>
+        <strong>Click Get Telem</strong><br>
+        <span style="color:var(--text-muted);font-size:13px;">
+          Board 0001 transmits the request at 915MHz. Board 0004 receives it,
+          assembles a telemetry response, and transmits back. Board 0001 receives
+          the response and forwards it to the ground station over serial.
+          Round trip takes approximately 200–400ms at 7.4 kbaud.
+        </span>
+      </div>
+    </li>
+  </ul>
+
+  <p style="font-size:14px;color:var(--text-muted);margin-bottom:12px;">Expected telemetry response from Board 0004 over RF:</p>
+  <div class="qs-telemetry">
+    <div class="telem-row"><span class="telem-label">Source HWID</span><span class="telem-val good">0004 ✓ — response from remote board</span></div>
+    <div class="telem-row"><span class="telem-label">Uptime</span><span class="telem-val good">00:02:xx — counting independently ✓</span></div>
+    <div class="telem-row"><span class="telem-label">RSSI</span><span class="telem-val good">−60 to −85 dBm typical at 1–3m ✓</span></div>
+    <div class="telem-row"><span class="telem-label">LQI</span><span class="telem-val good">100–110 typical at 1–3m ✓</span></div>
+    <div class="telem-row"><span class="telem-label">Good Packets</span><span class="telem-val good">1 ✓</span></div>
+    <div class="telem-row"><span class="telem-label">Reboot Count</span><span class="telem-val good">0 ✓</span></div>
+  </div>
+
+  <div class="qs-callout success">
+    <div class="qs-callout-icon">✅</div>
+    <div>
+      <strong>RF Link Confirmed</strong>
+      A telemetry response from HWID 0004 with RSSI and LQI values confirms
+      a working bidirectional 915MHz RF link. Both boards are transmitting and receiving.
+      Your ground station is commanding a remote radio over RF.
+    </div>
+  </div>
+
+  <div class="qs-callout warn">
+    <div class="qs-callout-icon">⚠️</div>
+    <div>
+      <strong>No response from Board 0004?</strong>
+      Check: (1) Board 0004 is powered on and antenna is attached.
+      (2) Boards are at least 0.5m apart — too close causes receiver saturation.
+      (3) HWID is set to 0004 not 0001.
+      (4) Board 0001 is still connected — check the status bar.
+      If RSSI shows −100 dBm or lower, move boards further apart and check antenna connections.
+    </div>
+  </div>
+</div>
+
+<!-- Verify -->
+<div class="qs-section">
+  <div class="step-header">
+    <div class="step-num">6</div>
+    <div>
+      <div class="step-title">Verify Your Setup — Quick Functional Check</div>
+      <div class="step-sub">Three commands that confirm full system operation</div>
+    </div>
+  </div>
+
+  <p class="qs-prose">
+    Run these three commands with HWID set to 0004 to confirm full bidirectional
+    RF link operation. All three should return responses from the remote board.
+  </p>
+
+  <table class="qs-table">
+    <thead>
+      <tr><th>Command</th><th>Expected Response</th><th>What It Confirms</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Get Telem</strong><br><span class="mono">Commands tab</span></td>
+        <td>Telemetry from 0004 with RSSI and LQI</td>
+        <td>Full bidirectional RF link working</td>
+      </tr>
+      <tr>
+        <td><strong>Get Time</strong><br><span class="mono">Commands tab</span></td>
+        <td>Unix timestamp from Board 0004 RTC</td>
+        <td>Command routing and RTC functional</td>
+      </tr>
+      <tr>
+        <td><strong>Reboot</strong><br><span class="mono">Commands tab</span></td>
+        <td>Board 0004 reboots — uptime resets to 0</td>
+        <td>Remote command execution confirmed</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="qs-success">
+    <div style="font-size:48px;margin-bottom:16px;">🛰️</div>
+    <h3>RF Link Verified — You're Operational</h3>
+    <p>
+      Your SCK-915 ground station is commanding a remote radio at 915MHz with bidirectional
+      telemetry, remote command execution, and confirmed link quality. This is the same
+      RF architecture that flew on over 150 Planet Labs Dove satellites —
+      now running on your bench.
+    </p>
+  </div>
+</div>
+
+<!-- What's Next -->
+<div class="qs-section">
+  <div class="step-header">
+    <div class="step-num" style="background:var(--cyan);color:var(--void);">→</div>
+    <div>
+      <div class="step-title">What's Next</div>
+      <div class="step-sub">Where to go from a working RF link</div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:8px;">
+    <a href="groundstation.html" style="text-decoration:none;">
+      <div class="qs-card" style="border:1.5px solid var(--border-lt);cursor:pointer;transition:border-color 0.15s;">
+        <div style="font-size:28px;margin-bottom:10px;">💻</div>
+        <h4 style="text-transform:none;font-size:15px;margin-bottom:6px;">Full Ground Station Tour</h4>
+        <p style="font-size:13px;color:var(--text-muted);">Every tab, every feature. OTA firmware updates, file transfer, custom commands.</p>
+      </div>
+    </a>
+    <a href="pico.html" style="text-decoration:none;">
+      <div class="qs-card" style="border:1.5px solid var(--border-lt);cursor:pointer;">
+        <div style="font-size:28px;margin-bottom:10px;">📷</div>
+        <h4 style="text-transform:none;font-size:15px;margin-bottom:6px;">Pico Imaging Project</h4>
+        <p style="font-size:13px;color:var(--text-muted);">Add a Raspberry Pi Pico and Arducam to Board 0004. Capture and transfer JPEG images over RF.</p>
+      </div>
+    </a>
+    <a href="documentation.html" style="text-decoration:none;">
+      <div class="qs-card" style="border:1.5px solid var(--border-lt);cursor:pointer;">
+        <div style="font-size:28px;margin-bottom:10px;">📋</div>
+        <h4 style="text-transform:none;font-size:15px;margin-bottom:6px;">Developer Guide</h4>
+        <p style="font-size:13px;color:var(--text-muted);">Protocol reference, custom firmware development, OTA flash walkthrough, and more.</p>
+      </div>
+    </a>
+    <a href="https://github.com/eor123/spacecommskit" target="_blank" style="text-decoration:none;">
+      <div class="qs-card" style="border:1.5px solid var(--border-lt);cursor:pointer;">
+        <div style="font-size:28px;margin-bottom:10px;">⚙️</div>
+        <h4 style="text-transform:none;font-size:15px;margin-bottom:6px;">Firmware Source</h4>
+        <p style="font-size:13px;color:var(--text-muted);">Fork the firmware, add custom opcodes, build with SDCC, flash OTA. GPLv3 open source.</p>
+      </div>
+    </a>
+  </div>
+
+  <div class="qs-callout info" style="margin-top:32px;">
+    <div class="qs-callout-icon">📧</div>
+    <div>
+      <strong>Need Help?</strong>
+      Contact <a href="mailto:support@spacecommskit.com">support@spacecommskit.com</a> —
+      we respond to technical questions directly.
+      For bug reports and firmware questions, open an issue on
+      <a href="https://github.com/eor123/spacecommskit" target="_blank">GitHub</a>.
+    </div>
+  </div>
+
+</div>
+</div><!-- end qs-body -->
+
+<!-- Footer -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="nav-logo" style="color:#fff;">SpaceComms<span style="color:var(--cyan);">Kit</span></div>
+      <p>OpenLST inspired. SCK-915 evolved. Open-source software, hand-assembled hardware. Tennessee, USA.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <a href="kit.html">The Kit</a>
+      <a href="https://spacecommskit.myshopify.com" target="_blank">Buy Now</a>
+    </div>
+    <div class="footer-col">
+      <h4>Resources</h4>
+      <a href="documentation.html">Documentation</a>
+      <a href="software.html">Software</a>
+      <a href="groundstation.html">Ground Station</a>
+      <a href="https://github.com/eor123/spacecommskit" target="_blank">GitHub</a>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <a href="mailto:support@spacecommskit.com">support@spacecommskit.com</a>
+      <a href="mailto:info@spacecommskit.com">info@spacecommskit.com</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 SpaceCommsKit · Tennessee, USA · Ships to United States only</p>
+    <p>OpenLST inspired — based on Planet Labs OpenLST (GPLv3) · <a href="https://github.com/OpenLST/openlst" target="_blank">Original Project</a></p>
+  </div>
+</footer>
+
+</body>
+</html>
