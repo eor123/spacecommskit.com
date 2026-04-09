@@ -172,6 +172,15 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
 .book-item span{font-size:13px;color:var(--dim);}
 /* End stamp */
 .end-stamp{text-align:center;padding:32px 0;font-family:var(--mono);border-top:1px solid rgba(0,207,255,.1);margin-top:32px;}
+/* Figure / image blocks */
+.fig{margin:20px 0;background:var(--panel);border:1px solid rgba(0,207,255,.12);overflow:hidden;}
+.fig img{width:100%;height:auto;display:block;filter:brightness(.95) contrast(1.05);}
+.fig-cap{padding:10px 14px;font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:1px;border-top:1px solid rgba(0,207,255,.08);}
+.fig-cap strong{color:var(--arc);}
+.fig-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0;}
+.fig-row .fig{margin:0;}
+.fig-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:20px 0;}
+.fig-row3 .fig{margin:0;}
 @media(max-width:900px){.db{grid-template-columns:1fr;}.dm{padding:40px 0;border-right:none;border-bottom:1px solid rgba(0,207,255,.08);}.ds{padding:40px 0;}.psu-grid{grid-template-columns:1fr;}.toc-grid{grid-template-columns:1fr;}.tp-grid{grid-template-columns:1fr 1fr;}}
 </style>
 </head>
@@ -481,6 +490,17 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
   </ul>
 
   <div class="h3">The Four Approaches — Complete Results</div>
+
+  <div class="fig-row">
+    <div class="fig">
+      <img src="images/flyback_transformer.jpg" alt="ZVS driver module with flyback transformer — red PCB with inductors, MOSFETs, and black flyback transformer">
+      <div class="fig-cap"><strong>Figure 1-1.</strong> ZVS driver + flyback combo. 12–30V DC input, ~10kV pulsating DC output. The HV generation stage used in all four PSU configurations.</div>
+    </div>
+    <div class="fig">
+      <img src="images/ac_flyback.jpg" alt="AC flyback transformer — white body with orange coiled wire, rated 25kV AC output">
+      <div class="fig-cap"><strong>Figure 1-2.</strong> Alternate: 25kV AC flyback from hv-experimental.com. True AC output allows polarity selection and dual-generator configurations.</div>
+    </div>
+  </div>
   <div class="psu-grid">
     <div class="psu fail">
       <span class="pbadge pb-fail">FAILED</span>
@@ -535,6 +555,27 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
     </div>
   </div>
 
+  <div class="fig-row">
+    <div class="fig">
+      <img src="images/power_supply_unit.jpg" alt="Variable bench power supply showing 30.00V 10.00A 300W display with control knobs">
+      <div class="fig-cap"><strong>Figure 1-3.</strong> Supply #1 — Variable bench PSU. Precise control, zero EMI tolerance. Reset after every discharge.</div>
+    </div>
+    <div class="fig">
+      <img src="images/switching_power_supply.jpg" alt="Industrial switching power supply with metal shielded chassis and screw terminal block">
+      <div class="fig-cap"><strong>Figure 1-4.</strong> Supply #2 — Shielded switching PSU. Better EMI resistance, still failed. Voltage instability destroyed the flyback.</div>
+    </div>
+  </div>
+  <div class="fig-row">
+    <div class="fig">
+      <img src="images/circuit_board.jpg" alt="Transformer-rectifier assembly on base plate with transformer circled in red and bridge rectifier visible">
+      <div class="fig-cap"><strong>Figure 1-5.</strong> Supply #3 — Transformer + rectifier. Right architecture, undersized transformer. Thermal cascade failure at 60 seconds.</div>
+    </div>
+    <div class="fig">
+      <img src="images/transformer.jpg" alt="Rewound microwave oven transformer showing secondary removed, custom winding apertures visible, bridge rectifier mounted on top">
+      <div class="fig-cap"><strong>Figure 1-6.</strong> Supply #4 — Rewound MOT. The winner. Zero failures through all testing. Bridge rectifier (GBPC3504) mounted on top.</div>
+    </div>
+  </div>
+
   <div class="h3">MOT Rewinding Specifications</div>
   <p class="prose">
     Choose a microwave that feels unexpectedly heavy when you lift it — these contain traditional laminated iron-core
@@ -566,6 +607,11 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
       <tr><td>Waveguide sections</td><td>Precision machined aluminum</td><td>Microwave coupling experiments</td></tr>
     </tbody>
   </table>
+  <div class="fig">
+    <img src="images/components_removed_from_microwave.jpg" alt="Disassembled microwave components: transformer (green circle), HV capacitor (red circle), magnetron (orange circle), waveguide (yellow circle)">
+    <div class="fig-cap"><strong>Figure 1-7.</strong> Complete salvage haul from one microwave oven. Green: MOT transformer. Red: HV capacitor (~1µF, 2kV). Orange: magnetron (2.45GHz). Yellow: waveguide sections. All typically in perfect working condition even from non-functional microwaves.</div>
+  </div>
+
   <div class="co danger">
     <span class="ci">⚠️</span>
     <div><strong>CAPACITOR DISCHARGE MANDATORY BEFORE ANY DISASSEMBLY</strong>
@@ -599,6 +645,18 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
   </table>
 
   <div class="h3">Why Doorknob Capacitors?</div>
+
+  <div class="fig-row">
+    <div class="fig">
+      <img src="images/door_knob_cap.jpg" alt="780pF 30kV doorknob high-voltage ceramic capacitor with threaded metal terminal stud">
+      <div class="fig-cap"><strong>Figure 1-8.</strong> 780pF, 30kV doorknob capacitor. The ceramic dielectric offers low ESR for fast discharge. Threaded terminal stud mounts directly to a ring terminal with a machine screw. Available from surplussales.com.</div>
+    </div>
+    <div class="fig">
+      <img src="images/poly_tube.jpg" alt="3-inch clear polycarbonate tube — structural backbone of the Marx generator stack">
+      <div class="fig-cap"><strong>Figure 1-9.</strong> 3" OD clear polycarbonate tube — the structural backbone. A 35" longitudinal cutout exposes the spark gaps while maintaining rigidity and full visual access to every stage.</div>
+    </div>
+  </div>
+
   <p class="prose">
     <strong>Doorknob capacitors</strong> — named for their shape — are ceramic high-voltage pulse capacitors.
     The ceramic dielectric provides very low equivalent series resistance (ESR), enabling the fast, high-current
@@ -630,6 +688,57 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
     Equalize gaps every session.</div>
   </div>
 
+  <div class="h4">// Component Preparation — From Raw Parts to Finished Stage</div>
+
+  <div class="fig-row">
+    <div class="fig">
+      <img src="images/ring_terminals.jpg" alt="Blue insulated ring connector terminals in packaging — 16-14 AWG, M5 size, 100 piece kit">
+      <div class="fig-cap"><strong>Figure 1-10.</strong> Insulated ring terminals — the backbone of every electrical connection in this build. Every capacitor terminal, every resistor lead, every spark gap wire ends in a ring terminal on a machine screw.</div>
+    </div>
+    <div class="fig">
+      <img src="images/1000001534.jpg" alt="Pile of M3 zinc-plated washers and lock washers on wood surface">
+      <div class="fig-cap"><strong>Figure 1-11.</strong> Hardware assortment — M3 washers and lock washers. Lock washers are mandatory on all high-voltage connections. Vibration from discharge events will loosen plain fasteners over time.</div>
+    </div>
+  </div>
+
+  <div class="fig-row">
+    <div class="fig">
+      <img src="images/1000001535.jpg" alt="Raw components laid out: black heat shrink tubing pieces, 1MΩ resistors on tape, and metal washers">
+      <div class="fig-cap"><strong>Figure 1-12.</strong> Raw stage components — 1MΩ charging resistors (blue, on tape), heat shrink tubing sections, and hardware. Two resistors and one section of heat shrink per stage, 14 stages = 28 resistors minimum plus spares.</div>
+    </div>
+    <div class="fig">
+      <img src="images/1000001536.jpg" alt="Resistors being prepped with ring terminals and heat shrink — in-progress assembly on workbench">
+      <div class="fig-cap"><strong>Figure 1-13.</strong> Resistor preparation in progress. Ring terminals crimped to both leads, heat shrink positioned before shrinking. Every resistor body gets fully covered — no exposed resistor surface at high-voltage nodes.</div>
+    </div>
+  </div>
+
+  <div class="fig-row">
+    <div class="fig">
+      <img src="images/1000001539.jpg" alt="Completed resistor assemblies with heat shrink applied and brass balls visible, plus fresh copper spark gap arms">
+      <div class="fig-cap"><strong>Figure 1-14.</strong> Completed resistor assemblies (top) with heat shrink applied. Fresh copper spark gap support arms below — 12 AWG solid copper wire with ring terminals crimped. Brass electrode balls visible in packaging.</div>
+    </div>
+    <div class="fig">
+      <img src="images/1000001540.jpg" alt="Spark gap arms and ring terminals — copper wire segments with ring terminals crimped, ready for brass ball attachment">
+      <div class="fig-cap"><strong>Figure 1-15.</strong> Spark gap arm components. Uninsulated ring terminals for the spark gap connections (copper-to-copper contact required for conductivity), insulated black assemblies for the resistor-to-capacitor connections.</div>
+    </div>
+  </div>
+
+  <div class="fig-row">
+    <div class="fig">
+      <img src="images/1000001541.jpg" alt="Completed spark gap arms — copper wire with ring terminals, ready to receive brass electrode balls">
+      <div class="fig-cap"><strong>Figure 1-16.</strong> Completed spark gap support arms — all 28 pieces. Bare copper ring terminals at the ends will clamp between the brass ball M3 stud and a machine screw nut. Bare copper ensures lowest resistance contact.</div>
+    </div>
+    <div class="fig">
+      <img src="images/1000001548.jpg" alt="Assembled spark gap units showing brass balls on copper arms with heat-shrink insulated resistor connections alongside M3 hardware">
+      <div class="fig-cap"><strong>Figure 1-17.</strong> Completed spark gap assemblies with brass electrode balls installed. Left pair shows the gap electrode arms with balls. Right pair shows the heat-shrink insulated charging resistor assemblies alongside M3 hardware.</div>
+    </div>
+  </div>
+
+  <div class="fig">
+    <img src="images/single_stack.jpg" alt="Single Marx generator stage assembled — doorknob capacitor in 3D printed mount with spark gap arms and brass balls positioned">
+    <div class="fig-cap"><strong>Figure 1-18.</strong> Single completed stage — doorknob capacitor secured in its 3D-printed PETG mounting frame, spark gap arms positioned with brass electrode balls facing outward toward the ground pipe. This unit repeats 14 times up the polycarbonate backbone.</div>
+  </div>
+
   <div class="h3">3D Printed Components — STL Files Available via Patreon</div>
   <p class="prose">
     All printed parts are PETG for improved temperature resistance over PLA. These are structural components
@@ -649,6 +758,12 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
   </table>
 
   <div class="h3">Grounding System — Isolated Copper Pipe</div>
+
+  <div class="fig">
+    <img src="images/ground_pipe.jpg" alt="Copper plumbing stub-out fitting with flat mounting bracket — the ground pipe base mount assembly">
+    <div class="fig-cap"><strong>Figure 1-19.</strong> Copper ground pipe base mount — a standard plumbing stub-out fitting with a bent copper strap screwed to the base plate. Simple, zero-resistance, and completely immune to EMI. The ½" pipe attaches here and runs the full height of the stack.</div>
+  </div>
+
   <p class="prose">
     A ½-inch copper plumbing pipe runs parallel to the stack, mounted vertically on the base plate via a
     plumbing stub-out fitting and bent copper strap. All 14 spark gap lower terminals connect to this pipe
@@ -668,6 +783,11 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
 <div class="doc-sec" id="s6">
   <div class="sl"><span class="sn">1.6</span> Mechanical Construction</div>
   <div class="h2">CONSTRUCTION</div>
+
+  <div class="fig">
+    <img src="images/complete_device.jpg" alt="Completed 14-stage Marx generator — full assembly with polycarbonate backbone, 14 doorknob capacitor stages, brass spark gaps, copper ground pipe, and base-mounted power supply">
+    <div class="fig-cap"><strong>Figure 1-20.</strong> Completed 14-stage Marx generator. Clear polycarbonate backbone housing the capacitor stack with brass spark gap arms extending outward, copper ground pipe running parallel on the left, output electrode assembly at top, and base-mounted MOT power supply. This is what we are building.</div>
+  </div>
 
   <div class="h3">Base Plate</div>
   <table class="dt">
