@@ -597,6 +597,7 @@ Naming: `FLT-001.sckflight`, `FLT-002.sckflight`, etc.
 **Adding new fields:**
 
 In `write_flight_packet()` in `main.py`:
+{% raw %}
 ```python
 line = (f'{sep}{{"t":{t},'
         f'"lat":{gps_fix["lat"]:.6f},'
@@ -604,6 +605,7 @@ line = (f'{sep}{{"t":{t},'
         f'"my_new_field":{my_value},'   # ← add here
         f'"event":"{event}"}}\n')
 ```
+{% endraw %}
 Also update the ground station `FlightReplayForm` parser.
 
 ---
