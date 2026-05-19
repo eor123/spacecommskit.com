@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Software — SpaceCommsKit Explorer SCK-915</title>
-<meta name="description" content="Download the OpenLST Ground Station Windows application, Pico firmware, and required development tools for the SpaceCommsKit Explorer Kit.">
+<meta name="description" content="Download the SCK Ground Station Windows application v1.2.0 — live GPS map, flight recorder, flight replay, OTA firmware updates, and remote file management. Free, open source.">
 <link rel="canonical" href="https://www.spacecommskit.com/software.html">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -20,6 +20,7 @@
     <li><a href="software.html" class="active">Software</a></li>
     <li><a href="pico.html">Pico Project</a></li>
     <li><a href="groundstation.html">Ground Station</a></li>
+    <li><a href="hab-mission.html">HAB Mission</a></li>
     <li><a href="about.html">About</a></li>
     <li><a href="classified.html">⬛ Section 7</a></li>
     <li><a href="https://spacecommskit.myshopify.com" target="_blank" class="nav-cta">Buy a Kit</a></li>
@@ -28,26 +29,26 @@
 
 <section class="hero">
   <div class="hero-inner">
-    <span class="eyebrow">Software · Firmware · Tools</span>
+    <span class="eyebrow">Software · Firmware · Tools · v1.2.0</span>
     <h1 class="hero-title">Open Source.<br><span>All of It.</span></h1>
-    <p class="hero-sub">The ground station application, Pico firmware, and CC1110 firmware are all fully open source on GitHub. Download, modify, extend, and share.</p>
+    <p class="hero-sub">The ground station application, Pico firmware, and CC1110 firmware are all fully open source on GitHub. Download, modify, extend, and share. No license required to fly.</p>
   </div>
 </section>
 
-<!-- Ground Station -->
+<!-- Ground Station Download -->
 <div class="section-panel">
 <div class="section">
   <span class="eyebrow eyebrow-dark">Windows Application</span>
-  <h2 class="section-title">OpenLST Ground Station</h2>
-  <p class="section-lead">A full-featured Windows ground station application built in C# .NET 8. No prerequisites — the installer bundles everything needed to run on Windows 10 or later.</p>
+  <h2 class="section-title">SCK Ground Station · v1.2.0</h2>
+  <p class="section-lead">A full-featured Windows ground station application built in C# .NET 8. Live GPS map, flight recorder, flight replay, OTA firmware updates, and remote file management. No prerequisites — the installer bundles everything.</p>
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;margin-top:40px;">
     <div>
       <div class="card" style="margin-bottom:24px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
           <div>
-            <div class="tag tag-blue mb-8">Windows 10/11 · x64</div>
-            <h3>Ground Station v1.0.0</h3>
+            <div class="tag tag-blue mb-8">Windows 10/11 · x64 · v1.2.0</div>
+            <h3>Ground Station v1.2.0</h3>
           </div>
           <div style="font-size:40px;">💻</div>
         </div>
@@ -55,7 +56,7 @@
           Self-contained installer — includes .NET 8 runtime. No prerequisites required.
           Installs per-user, no admin rights needed.
         </p>
-        <a href="https://github.com/eor123/spacecommskit/raw/main/installer/OpenLST_Ground_Station_Setup_v1.0.0.exe"
+        <a href="https://github.com/eor123/spacecommskit/raw/main/installer/OpenLST_Ground_Station_Setup_v1.2.0.exe"
            class="btn btn-primary" style="width:100%;justify-content:center;">
           ⬇ Download Installer (.exe · ~50MB)
         </a>
@@ -63,6 +64,22 @@
           Windows 10 version 1809 or later required
         </p>
       </div>
+
+      <!-- Mission V1 Flight File -->
+      <div class="card" style="margin-bottom:24px;border-left:3px solid var(--cyan);">
+        <div class="tag tag-cyan mb-8">Free Download · Real Flight Data</div>
+        <h3 style="margin-bottom:8px;">Mission V1 Flight File</h3>
+        <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;">
+          Load a real stratospheric balloon flight into the ground station before you buy a kit.
+          Install the app, open Flight Replay, load this file, press Play.
+        </p>
+        <a href="mission-v1.html"
+           class="btn btn-outline btn-sm"
+           style="border-color:var(--cyan);color:var(--cyan);">
+          Mission V1 Flight Data →
+        </a>
+      </div>
+
       <div class="card">
         <div class="tag tag-cyan mb-8">Open Source · GPLv3</div>
         <h3 style="margin-bottom:8px;">View Source Code</h3>
@@ -90,7 +107,11 @@
         </div>
         <div style="display:flex;gap:12px;padding:12px;background:var(--panel);border-radius:var(--radius);">
           <span style="font-size:18px;">🔧</span>
-          <div><strong style="font-size:14px;">Custom Commands Tab</strong><p class="text-muted" style="font-size:13px;">Send any opcode with any payload. JSON-persistent. Pre-loaded with Pico imaging commands.</p></div>
+          <div><strong style="font-size:14px;">Custom Commands Tab</strong><p class="text-muted" style="font-size:13px;">Send any opcode with any payload. JSON-persistent. Pre-loaded with Pico imaging and telemetry commands.</p></div>
+        </div>
+        <div style="display:flex;gap:12px;padding:12px;background:var(--panel);border-radius:var(--radius);">
+          <span style="font-size:18px;">🗺️</span>
+          <div><strong style="font-size:14px;">GPS / Map Tab</strong><p class="text-muted" style="font-size:13px;">Live fused GPS + baro on Google Maps. Autonomous beacon every 10 seconds. 8 stat panels. Altitude display with ascent rate. Flight recorder → .sckflight + KML. Flight Replay launcher.</p></div>
         </div>
         <div style="display:flex;gap:12px;padding:12px;background:var(--panel);border-radius:var(--radius);">
           <span style="font-size:18px;">📁</span>
@@ -98,7 +119,7 @@
         </div>
         <div style="display:flex;gap:12px;padding:12px;background:var(--panel);border-radius:var(--radius);">
           <span style="font-size:18px;">⚡</span>
-          <div><strong style="font-size:14px;">Firmware Tab</strong><p class="text-muted" style="font-size:13px;">Build, sign, and flash firmware OTA. AES-CBC-MAC signing. Page-level progress and retry.</p></div>
+          <div><strong style="font-size:14px;">Firmware Tab</strong><p class="text-muted" style="font-size:13px;">Build, sign, and flash firmware OTA over RF. AES-CBC-MAC signing. Page-level progress, retry, and cancel.</p></div>
         </div>
         <div style="display:flex;gap:12px;padding:12px;background:var(--panel);border-radius:var(--radius);">
           <span style="font-size:18px;">🔑</span>
@@ -110,27 +131,91 @@
 </div>
 </div>
 
-<!-- Pico Firmware -->
+<!-- Flight Replay -->
 <div class="section-dark">
 <div class="section">
-  <span class="eyebrow">Pico Firmware</span>
-  <h2 class="section-title-inv section-title">Raspberry Pi Pico MicroPython</h2>
-  <p class="section-lead-inv section-lead">MicroPython firmware for the Raspberry Pi Pico. Handles ESP framing, camera capture, SD card file management, and chunked RF file transfer.</p>
+  <span class="eyebrow">New in v1.2.0</span>
+  <h2 class="section-title-inv section-title">Flight Replay — Experience Any Flight Again</h2>
+  <p class="section-lead-inv section-lead">Open any .sckflight file and watch the entire mission play back — animated GPS track on Google Maps, altitude profile chart, event timeline, and all 8 telemetry channels updating in real time.</p>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;margin-top:40px;">
+    <div>
+      <div style="background:#0d0d1a;border:1px solid #2a2a4a;border-radius:12px;overflow:hidden;margin-bottom:16px;">
+        <div style="background:#080812;padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #1a1a2e;">
+          <div style="width:12px;height:12px;border-radius:50%;background:#FF5F56;"></div>
+          <div style="width:12px;height:12px;border-radius:50%;background:#FFBD2E;"></div>
+          <div style="width:12px;height:12px;border-radius:50%;background:#27C93F;"></div>
+          <span style="font-family:var(--font-mono);font-size:12px;color:#444;margin-left:8px;">◈ Flight Replay — FLT-Mission-V1</span>
+        </div>
+        <div style="padding:20px;font-family:var(--font-mono);font-size:11px;color:#666;line-height:1.8;">
+          <div style="color:var(--cyan);margin-bottom:8px;">▶ Play &nbsp;|&nbsp; Speed: 10x &nbsp;|&nbsp; t: 01:22:04 &nbsp;|&nbsp; Packet: 492/814</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+            <div style="background:#111122;border:1px solid #1e1e35;border-radius:6px;padding:10px;">
+              <div style="font-size:9px;color:#555;margin-bottom:3px;">BARO ALT</div>
+              <div style="font-size:18px;color:var(--cyan);font-weight:700;">18,440m</div>
+            </div>
+            <div style="background:#111122;border:1px solid #1e1e35;border-radius:6px;padding:10px;">
+              <div style="font-size:9px;color:#555;margin-bottom:3px;">TEMP °C</div>
+              <div style="font-size:18px;color:#4da6ff;font-weight:700;">−41.2°C</div>
+            </div>
+          </div>
+          <div style="color:#a0e080;">t+8s &nbsp;&nbsp;&nbsp; ● LAUNCH</div>
+          <div style="color:var(--cyan);">t+4920s ● APOGEE 30,847m</div>
+          <div style="color:#ff6b6b;">t+4988s ⚡ BURST</div>
+        </div>
+      </div>
+      <a href="mission-v1.html" class="btn btn-outline btn-sm" style="border-color:var(--cyan);color:var(--cyan);">Load Mission V1 Flight File →</a>
+    </div>
+    <div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.04);border-radius:var(--radius);">
+          <span style="font-size:18px;">🗺️</span>
+          <div><strong style="font-size:14px;color:#fff;">Animated GPS Track</strong><p style="font-size:13px;color:var(--text-inv);">Position marker moves on Google Maps as playback runs. Launch, apogee, and landing pins always visible.</p></div>
+        </div>
+        <div style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.04);border-radius:var(--radius);">
+          <span style="font-size:18px;">📈</span>
+          <div><strong style="font-size:14px;color:#fff;">Altitude Profile Chart</strong><p style="font-size:13px;color:var(--text-inv);">Baro alt (cyan), GPS alt (blue dashed), temperature (orange dotted). Vertical cursor tracks current playback position.</p></div>
+        </div>
+        <div style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.04);border-radius:var(--radius);">
+          <span style="font-size:18px;">⏩</span>
+          <div><strong style="font-size:14px;color:#fff;">Variable Speed</strong><p style="font-size:13px;color:var(--text-inv);">1x, 5x, 10x, 30x, 60x playback. Watch a 2-hour flight in 2 minutes. Scrub bar to jump anywhere.</p></div>
+        </div>
+        <div style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.04);border-radius:var(--radius);">
+          <span style="font-size:18px;">📋</span>
+          <div><strong style="font-size:14px;color:#fff;">Event Timeline</strong><p style="font-size:13px;color:var(--text-inv);">LAUNCH, APOGEE, BURST, LANDING automatically detected with timestamps. Max altitude, flight duration, burst status.</p></div>
+        </div>
+        <div style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.04);border-radius:var(--radius);">
+          <span style="font-size:18px;">⬇️</span>
+          <div><strong style="font-size:14px;color:#fff;">Try Before You Buy</strong><p style="font-size:13px;color:var(--text-inv);">Download the free ground station, load Mission V1, and watch a real stratospheric flight — before you spend a dollar on hardware.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- Pico Firmware -->
+<div class="section">
+  <span class="eyebrow eyebrow-dark">Pico Firmware</span>
+  <h2 class="section-title">Raspberry Pi Pico MicroPython</h2>
+  <p class="section-lead">MicroPython firmware for the Raspberry Pi Pico. Handles ESP framing, fused GPS + barometric telemetry beacon, camera capture, SD card file management, and chunked RF file transfer.</p>
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:40px;">
-    <div class="card card-dark">
-      <div class="tag tag-cyan mb-16">MicroPython · Raspberry Pi Pico</div>
+    <div class="card card-dark" style="background:var(--void);border:1px solid var(--border);">
+      <div class="tag tag-cyan mb-16">MicroPython · Raspberry Pi Pico · v1.2.0</div>
       <h3>main.py</h3>
-      <p style="font-size:14px;margin-bottom:20px;">
-        Main pipeline firmware. ESP framing, all sub-opcode handlers (PING, TEMP, SNAP, LIST, GET_INFO, GET_CHUNK, DELETE), camera init, SD card management.
+      <p style="font-size:14px;margin-bottom:12px;">
+        Main pipeline firmware. Fused GPS + MS5611 barometric beacon every 10 seconds.
+        All sub-opcode handlers: PING, TEMP, SNAP, LIST, GET_INFO, GET_CHUNK, DELETE, GET_GPS, GET_BARO.
+        Camera init, SD card management, GPS airborne mode (50km rated).
       </p>
       <a href="https://github.com/eor123/spacecommskit/raw/main/pico/main.py"
          class="btn btn-outline btn-sm">⬇ Download main.py</a>
     </div>
-    <div class="card card-dark">
+    <div class="card card-dark" style="background:var(--void);border:1px solid var(--border);">
       <div class="tag tag-cyan mb-16">MicroPython · SPI SD Driver</div>
       <h3>sdcard.py</h3>
-      <p style="font-size:14px;margin-bottom:20px;">
+      <p style="font-size:14px;margin-bottom:12px;">
         MicroPython SPI SD card driver. Required dependency for main.py. Must be installed on the Pico filesystem before main.py.
       </p>
       <a href="https://github.com/eor123/spacecommskit/raw/main/pico/sdcard.py"
@@ -138,27 +223,27 @@
     </div>
   </div>
 
-  <div class="notice notice-info" style="margin-top:24px;background:rgba(26,111,212,0.1);border-color:var(--blue);">
+  <div class="notice notice-info" style="margin-top:24px;">
     <div class="notice-icon">💡</div>
     <div>
       <strong>Installation</strong>
-      <p style="color:var(--text-inv);">Use <a href="https://thonny.org" target="_blank" style="color:var(--cyan);">Thonny</a> to copy both files to the Pico. Install sdcard.py first, then main.py. The Pico runs main.py automatically on power-up. See the <a href="pico.html" style="color:var(--cyan);">Pico Project page</a> for full setup instructions.</p>
+      <p>Use <a href="https://thonny.org" target="_blank">Thonny</a> to copy both files to the Pico. Install sdcard.py first, then main.py. The Pico runs main.py automatically on power-up. See the <a href="pico.html">Pico Project page</a> for full setup instructions.</p>
     </div>
   </div>
 </div>
-</div>
 
 <!-- CC1110 Firmware -->
+<div class="section-panel">
 <div class="section">
   <span class="eyebrow eyebrow-dark">CC1110 Firmware</span>
   <h2 class="section-title">Radio Firmware Source</h2>
-  <p class="section-lead">The CC1110 radio firmware is based on the OpenLST project with our custom PICO_MSG command handler added. Build with SDCC on Windows.</p>
+  <p class="section-lead">The CC1110 radio firmware is based on the OpenLST project with our custom PICO_MSG command handler and 915MHz CC1190 RF front end support. Build with SDCC on Windows.</p>
 
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;margin-top:40px;">
     <div class="card">
       <div style="font-size:32px;margin-bottom:14px;">⚡</div>
       <h3>Custom Firmware Source</h3>
-      <p style="font-size:14px;color:var(--text-muted);margin-bottom:20px;">board.c, board.h, Board.mk — the three files that add PICO_MSG support to the OpenLST radio app. Clone and build with SDCC.</p>
+      <p style="font-size:14px;color:var(--text-muted);margin-bottom:20px;">board.c, board.h, Board.mk — CC1190 PA/LNA control, 915MHz registers, PICO_MSG handler, bootloader OTA support. Clone and build with SDCC.</p>
       <a href="https://github.com/eor123/openlst/tree/master/radios/openlst_437"
          class="btn btn-outline btn-sm" target="_blank"
          style="border-color:var(--border-lt);color:var(--blue);">View on GitHub →</a>
@@ -174,72 +259,66 @@
     <div class="card">
       <div style="font-size:32px;margin-bottom:14px;">🗂️</div>
       <h3>Inno Setup Script</h3>
-      <p style="font-size:14px;color:var(--text-muted);margin-bottom:20px;">Want to rebuild the installer from source? The Inno Setup 6 script is included in the repository with full build instructions.</p>
+      <p style="font-size:14px;color:var(--text-muted);margin-bottom:20px;">Rebuild the installer from source. The Inno Setup 6 script is included in the repository with full build instructions.</p>
       <a href="https://github.com/eor123/spacecommskit/tree/main/installer"
          class="btn btn-outline btn-sm" target="_blank"
          style="border-color:var(--border-lt);color:var(--blue);">View Installer Files →</a>
     </div>
   </div>
 </div>
+</div>
 
 <!-- Required Tools -->
-<div class="section-panel">
 <div class="section">
   <span class="eyebrow eyebrow-dark">Required Tools</span>
   <h2 class="section-title">Third-Party Tools</h2>
   <p class="section-lead">These free tools are required for firmware development and board provisioning. Not needed for basic kit operation.</p>
 
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:40px;">
-
     <div class="card" style="padding:20px;">
       <div class="tag tag-blue mb-8">Firmware Compiler</div>
       <h3 style="font-size:16px;margin-bottom:6px;">SDCC</h3>
       <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">Small Device C Compiler for the CC1110 8051 core. Required for building the radio firmware.</p>
-      <a href="https://sdcc.sourceforge.net" target="_blank" class="btn btn-outline btn-sm"
-         style="border-color:var(--border-lt);color:var(--blue);">Download →</a>
+      <a href="https://sdcc.sourceforge.net" target="_blank" class="btn btn-outline btn-sm" style="border-color:var(--border-lt);color:var(--blue);">Download →</a>
     </div>
-
     <div class="card" style="padding:20px;">
       <div class="tag tag-blue mb-8">Flash Programmer</div>
       <h3 style="font-size:16px;margin-bottom:6px;">SmartRF Flash Programmer</h3>
       <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">TI tool for flashing the bootloader onto fresh CC1110 boards via CC Debugger.</p>
-      <a href="https://www.ti.com/tool/FLASH-PROGRAMMER" target="_blank" class="btn btn-outline btn-sm"
-         style="border-color:var(--border-lt);color:var(--blue);">Download →</a>
+      <a href="https://www.ti.com/tool/FLASH-PROGRAMMER" target="_blank" class="btn btn-outline btn-sm" style="border-color:var(--border-lt);color:var(--blue);">Download →</a>
     </div>
-
+    <div class="card" style="padding:20px;">
+      <div class="tag tag-blue mb-8">RF Studio</div>
+      <h3 style="font-size:16px;margin-bottom:6px;">SmartRF Studio 7</h3>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">TI tool for deriving CC1110 register values for custom frequencies. Used to configure 915MHz RF parameters.</p>
+      <a href="https://www.ti.com/tool/SMARTRFTM-STUDIO" target="_blank" class="btn btn-outline btn-sm" style="border-color:var(--border-lt);color:var(--blue);">Download →</a>
+    </div>
     <div class="card" style="padding:20px;">
       <div class="tag tag-blue mb-8">GNU Make</div>
       <h3 style="font-size:16px;margin-bottom:6px;">mingw32-make</h3>
       <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">GNU Make for Windows. Required to run the OpenLST build system on Windows.</p>
-      <a href="https://sourceforge.net/projects/mingw/" target="_blank" class="btn btn-outline btn-sm"
-         style="border-color:var(--border-lt);color:var(--blue);">Download →</a>
+      <a href="https://sourceforge.net/projects/mingw/" target="_blank" class="btn btn-outline btn-sm" style="border-color:var(--border-lt);color:var(--blue);">Download →</a>
     </div>
-
     <div class="card" style="padding:20px;">
       <div class="tag tag-blue mb-8">Pico IDE</div>
       <h3 style="font-size:16px;margin-bottom:6px;">Thonny</h3>
       <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">MicroPython IDE for loading firmware onto the Raspberry Pi Pico.</p>
-      <a href="https://thonny.org" target="_blank" class="btn btn-outline btn-sm"
-         style="border-color:var(--border-lt);color:var(--blue);">Download →</a>
+      <a href="https://thonny.org" target="_blank" class="btn btn-outline btn-sm" style="border-color:var(--border-lt);color:var(--blue);">Download →</a>
     </div>
-
     <div class="card" style="padding:20px;">
       <div class="tag tag-blue mb-8">Installer Builder</div>
       <h3 style="font-size:16px;margin-bottom:6px;">Inno Setup 6</h3>
       <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">Free Windows installer builder. Only needed to rebuild the ground station installer from source.</p>
-      <a href="https://jrsoftware.org/isinfo.php" target="_blank" class="btn btn-outline btn-sm"
-         style="border-color:var(--border-lt);color:var(--blue);">Download →</a>
+      <a href="https://jrsoftware.org/isinfo.php" target="_blank" class="btn btn-outline btn-sm" style="border-color:var(--border-lt);color:var(--blue);">Download →</a>
     </div>
-
   </div>
-</div>
 </div>
 
 <footer>
   <div class="footer-inner">
     <div class="footer-brand">
       <div class="nav-logo" style="color:#fff;">SpaceComms<span style="color:var(--cyan);">Kit</span></div>
-      <p>OpenLST inspired. SCK-915 evolved. Open-source software, hand-assembled hardware. Hand-assembled in Tennessee, USA.</p>
+      <p>OpenLST inspired. SCK-915 evolved. Open-source software, hand-assembled hardware. Tennessee, USA.</p>
     </div>
     <div class="footer-col">
       <h4>Product</h4>
@@ -251,7 +330,14 @@
       <a href="documentation.html">Documentation</a>
       <a href="software.html">Software</a>
       <a href="pico.html">Pico Project</a>
+      <a href="hab-mission.html">HAB Mission</a>
       <a href="https://github.com/eor123/spacecommskit" target="_blank">GitHub</a>
+    </div>
+    <div class="footer-col">
+      <h4>Mission V1</h4>
+      <a href="mission-v1.html">Flight Data</a>
+      <a href="mission-v1.html#download">Download Flight File</a>
+      <a href="groundstation.html">Ground Station</a>
     </div>
     <div class="footer-col">
       <h4>Contact</h4>
@@ -260,7 +346,7 @@
     </div>
   </div>
   <div class="footer-bottom">
-    <p>© 2025 SpaceCommsKit · Tennessee, USA · Ships to United States only</p>
+    <p>© 2026 SpaceCommsKit · Tennessee, USA · Ships to United States only</p>
     <p>Based on OpenLST by Planet Labs Inc. (GPLv3)</p>
   </div>
 </footer>

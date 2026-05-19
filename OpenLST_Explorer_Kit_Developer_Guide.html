@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCK-915 Explorer Kit — Developer Guide</title>
+<style>
+  :root {
+    --bg:      #0D1117;
+    --surface: #161B22;
+    --border:  #30363D;
+    --blue:    #58A6FF;
+    --green:   #3FB950;
+    --yellow:  #D29922;
+    --red:     #F85149;
+    --purple:  #BC8CFF;
+    --cyan:    #39C5CF;
+    --text:    #C9D1D9;
+    --muted:   #8B949E;
+    --heading: #E6EDF3;
+    --code-bg: #1C2128;
+    --accent:  #1F6FEB;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, 'Segoe UI', sans-serif;
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--text);
+    background: var(--bg);
+  }
+  /* Cover */
+  .cover {
+    background: linear-gradient(135deg, #0D1117 0%, #161B22 50%, #0D1117 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 60px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at 20% 50%, rgba(31,111,235,0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(63,185,80,0.08) 0%, transparent 50%);
+  }
+  .cover-inner { position: relative; }
+  .cover-badge {
+    display: inline-block;
+    background: rgba(31,111,235,0.2);
+    border: 1px solid rgba(88,166,255,0.3);
+    color: var(--blue);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    font-family: 'Courier New', monospace;
+  }
+  .cover h1 {
+    font-size: 42px;
+    font-weight: 700;
+    color: var(--heading);
+    margin-bottom: 10px;
+    letter-spacing: -0.5px;
+  }
+  .cover h1 span { color: var(--blue); }
+  .cover .subtitle { font-size: 18px; color: var(--muted); margin-bottom: 28px; }
+  .cover-meta { display: flex; gap: 24px; }
+  .cover-meta span {
+    font-size: 12px; color: var(--muted);
+    font-family: 'Courier New', monospace;
+  }
+  .cover-meta span b { color: var(--green); }
+  /* Layout */
+  .layout { display: flex; }
+  .sidebar {
+    width: 260px; min-width: 260px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 24px 0;
+    position: sticky; top: 0;
+    height: 100vh; overflow-y: auto;
+  }
+  .sidebar-section { padding: 0 16px; margin-bottom: 8px; }
+  .sidebar-section h3 {
+    font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--muted); margin-bottom: 6px; margin-top: 20px;
+    font-family: 'Courier New', monospace;
+  }
+  .sidebar a {
+    display: flex; align-items: center; gap: 8px;
+    padding: 5px 10px; color: var(--muted);
+    text-decoration: none; font-size: 13px;
+    border-radius: 4px; margin-bottom: 1px;
+    border-left: 2px solid transparent;
+    transition: all 0.15s;
+  }
+  .sidebar a:hover {
+    color: var(--text); background: rgba(88,166,255,0.08);
+    border-left-color: var(--blue);
+  }
+  /* Main */
+  .content { flex: 1; padding: 48px 64px; max-width: 900px; }
+  h2 {
+    font-size: 26px; color: var(--heading);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 10px; margin: 48px 0 20px;
+    font-weight: 700;
+  }
+  h2:first-child { margin-top: 0; }
+  h2 .anchor { color: var(--blue); margin-right: 8px; font-size: 20px; }
+  h3 { font-size: 18px; color: var(--heading); margin: 32px 0 12px; font-weight: 600; }
+  h4 {
+    font-size: 12px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 1px;
+    color: var(--muted); margin: 24px 0 8px;
+    font-family: 'Courier New', monospace;
+  }
+  p { margin-bottom: 14px; color: var(--text); }
+  ul, ol { margin: 8px 0 14px 20px; }
+  li { margin-bottom: 5px; }
+  a { color: var(--blue); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  /* Code */
+  code {
+    font-family: 'Courier New', Consolas, monospace;
+    font-size: 12px;
+    background: var(--code-bg);
+    color: var(--cyan);
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin: 14px 0 18px;
+    overflow-x: auto;
+    position: relative;
+  }
+  pre code {
+    font-family: 'Courier New', Consolas, monospace;
+    font-size: 12px;
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--text);
+    line-height: 1.6;
+  }
+  .lang-label {
+    position: absolute; top: 8px; right: 12px;
+    font-size: 10px; color: var(--muted);
+    font-family: 'Courier New', monospace;
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+  /* Syntax highlighting */
+  .kw  { color: #FF7B72; }  /* keywords */
+  .ty  { color: #79C0FF; }  /* types */
+  .fn  { color: #D2A8FF; }  /* functions */
+  .st  { color: #A5D6FF; }  /* strings */
+  .cm  { color: #8B949E; font-style: italic; }  /* comments */
+  .nu  { color: #F2CC60; }  /* numbers */
+  .pp  { color: #FFA657; }  /* preprocessor */
+  .py-kw { color: #FF7B72; }
+  .py-fn { color: #D2A8FF; }
+  .py-st { color: #A5D6FF; }
+  .py-cm { color: #8B949E; font-style: italic; }
+  .py-nu { color: #F2CC60; }
+  /* Tables */
+  table {
+    width: 100%; border-collapse: collapse;
+    margin: 14px 0 18px; font-size: 13px;
+  }
+  th {
+    background: var(--surface); color: var(--heading);
+    padding: 10px 14px; text-align: left;
+    border-bottom: 2px solid var(--accent);
+    font-size: 12px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    font-family: 'Courier New', monospace;
+  }
+  td {
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:hover td { background: rgba(88,166,255,0.04); }
+  td code { font-size: 11px; }
+  /* Callout boxes */
+  .callout {
+    border-radius: 6px; padding: 14px 18px;
+    margin: 14px 0; border-left: 3px solid;
+  }
+  .callout.info  { background: rgba(31,111,235,0.1);  border-color: var(--blue);   }
+  .callout.warn  { background: rgba(210,153,34,0.1);  border-color: var(--yellow); }
+  .callout.tip   { background: rgba(63,185,80,0.1);   border-color: var(--green);  }
+  .callout.danger{ background: rgba(248,81,73,0.1);   border-color: var(--red);    }
+  .callout .title {
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px;
+    margin-bottom: 6px; font-family: 'Courier New', monospace;
+  }
+  .callout.info   .title { color: var(--blue); }
+  .callout.warn   .title { color: var(--yellow); }
+  .callout.tip    .title { color: var(--green); }
+  .callout.danger .title { color: var(--red); }
+  /* File tree */
+  .filetree {
+    background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 16px 20px;
+    font-family: 'Courier New', monospace; font-size: 12px;
+    line-height: 1.8; margin: 14px 0;
+  }
+  .filetree .dir  { color: var(--blue); font-weight: 600; }
+  .filetree .file { color: var(--text); }
+  .filetree .note { color: var(--muted); font-style: italic; }
+  /* Architecture diagram */
+  .arch {
+    background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 20px 24px;
+    font-family: 'Courier New', monospace; font-size: 12px;
+    line-height: 2; margin: 14px 0; color: var(--text);
+  }
+  .arch .box   { color: var(--cyan); }
+  .arch .arrow { color: var(--muted); }
+  .arch .label { color: var(--green); }
+  /* Footer */
+  footer {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 24px 64px;
+    font-size: 12px; color: var(--muted);
+    font-family: 'Courier New', monospace;
+  }
+</style>
+</head>
+<body>
+
+<!-- Cover -->
+<div class="cover">
+  <div class="cover-inner">
+    <div class="cover-badge">// Developer Guide</div>
+    <h1>SCK-915 <span>Explorer Kit</span></h1>
+    <div class="subtitle">Firmware, Protocol & Ground Station Extension Reference</div>
+    <div class="cover-meta">
+      <span>Version <b>1.0</b></span>
+      <span>Audience <b>Engineers / Researchers / Students</b></span>
+      <span>CC1110 + Pico + C# .NET 8</span>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+
+<!-- Sidebar -->
+<nav class="sidebar">
+  <div class="sidebar-section">
+    <h3>Architecture</h3>
+    <a href="#overview">System Overview</a>
+    <a href="#repo-layout">Repository Layout</a>
+    <a href="#protocol">ESP Protocol</a>
+    <a href="#packet-structure">Packet Structure</a>
+  </div>
+  <div class="sidebar-section">
+    <h3>CC1110 Firmware</h3>
+    <a href="#firmware-intro">Introduction</a>
+    <a href="#build-system">Build System</a>
+    <a href="#custom-commands">Adding Custom Commands</a>
+    <a href="#firmware-rules">Critical Rules</a>
+    <a href="#telemetry">Telemetry Diagnostics</a>
+  </div>
+  <div class="sidebar-section">
+    <h3>Pico Firmware</h3>
+    <a href="#pico-intro">Introduction</a>
+    <a href="#pico-esp">ESP Framing</a>
+    <a href="#pico-opcodes">Sub-Opcode System</a>
+    <a href="#pico-adding">Adding Commands</a>
+  </div>
+  <div class="sidebar-section">
+    <h3>Ground Station</h3>
+    <a href="#cs-intro">C# Project Structure</a>
+    <a href="#cs-protocol">Protocol Layer</a>
+    <a href="#cs-ui">Adding UI Tabs</a>
+    <a href="#cs-commands">Adding Commands</a>
+    <a href="#cs-parsing">Parsing Responses</a>
+  </div>
+  <div class="sidebar-section">
+    <h3>Reference</h3>
+    <a href="#opcode-table">Opcode Table</a>
+    <a href="#telem-layout">Telemetry Layout</a>
+    <a href="#flash-constants">Flash Constants</a>
+    <a href="#lessons">Hard-Won Lessons</a>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<main class="content">
+
+<!-- SYSTEM OVERVIEW -->
+<h2 id="overview"><span class="anchor">#</span>System Overview</h2>
+<p>The SCK-915 Explorer Kit is a three-layer system. Understanding how the layers interact is essential before modifying any component.</p>
+
+<div class="arch">
+<span class="box">┌─────────────────────────────────────────────────────────┐</span>
+<span class="box">│  Windows PC  </span><span class="label">SCK Ground Station (C# .NET 8 WinForms)</span><span class="box">  │</span>
+<span class="box">└──────────────────────────┬──────────────────────────────┘</span>
+               <span class="arrow">│  COM5 · 115200 baud · 3.3V TTL · ESP framing</span>
+<span class="box">┌──────────────────────────▼──────────────────────────────┐</span>
+<span class="box">│  Board 0001  </span><span class="label">CC1110 · Original OpenLST firmware (relay)</span><span class="box">  │</span>
+<span class="box">└──────────────────────────┬──────────────────────────────┘</span>
+               <span class="arrow">│  RF 437 MHz · 7.4 kbaud · 2-FSK + FEC</span>
+<span class="box">┌──────────────────────────▼──────────────────────────────┐</span>
+<span class="box">│  Board 0004  </span><span class="label">CC1110 · Custom firmware · PICO_MSG handler</span><span class="box">  │</span>
+<span class="box">└──────────────────────────┬──────────────────────────────┘</span>
+               <span class="arrow">│  UART0 · P1_5/P1_4 · 115200 baud · ESP framing</span>
+<span class="box">┌──────────────────────────▼──────────────────────────────┐</span>
+<span class="box">│  Raspberry Pi Pico  </span><span class="label">MicroPython · main.py · camera + SD</span><span class="box">  │</span>
+<span class="box">└─────────────────────────────────────────────────────────┘</span>
+</div>
+
+<p>All communication uses the OpenLST ESP frame format. Board 0001 relays packets transparently — it does not need custom firmware. Only board 0004 requires the custom <code>PICO_MSG</code> handler.</p>
+
+<!-- REPOSITORY LAYOUT -->
+<h2 id="repo-layout"><span class="anchor">#</span>Repository Layout</h2>
+
+<div class="filetree">
+<span class="dir">openlst-master/</span>
+├── <span class="file">Makefile</span>               <span class="note">← top-level: includes Board.mk then Build.mk</span>
+├── <span class="dir">open-lst/</span>              <span class="note">← core OpenLST library (do not modify)</span>
+│   ├── <span class="dir">common/</span>            <span class="note">← shared: uart0.c uart1.c radio.c watchdog.c ...</span>
+│   ├── <span class="dir">radio/</span>             <span class="note">← radio app: main.c commands.c input_handlers.c ...</span>
+│   └── <span class="dir">bootloader/</span>        <span class="note">← bootloader source (rarely modified)</span>
+└── <span class="dir">radios/openlst_437/</span>    <span class="note">← YOUR customization lives here</span>
+    ├── <span class="file">Board.mk</span>           <span class="note">← build config: SRCS, CFLAGS</span>
+    ├── <span class="file">board.h</span>            <span class="note">← board config + custom_commands declaration</span>
+    └── <span class="file">board.c</span>            <span class="note">← board_init() + custom_commands() implementation</span>
+</div>
+
+<div class="callout info">
+  <div class="title">Golden Rule</div>
+  Never modify files inside <code>open-lst/</code>. All customization goes in <code>radios/openlst_437/</code>. This keeps your changes clean and makes upstream updates safe to apply.
+</div>
+
+<!-- ESP PROTOCOL -->
+<h2 id="protocol"><span class="anchor">#</span>ESP Protocol</h2>
+<p>All communication between every component uses the same ESP (Embedded Serial Protocol) frame format defined in <code>open-lst/common/uart.h</code>.</p>
+
+<pre><code><span class="cm">// ESP frame on the wire</span>
+<span class="nu">0x22</span>  <span class="nu">0x69</span>  <span class="ty">&lt;length&gt;</span>  <span class="ty">&lt;payload bytes...&gt;</span>
+
+<span class="cm">// ESP_START_BYTE_0 = 0x22</span>
+<span class="cm">// ESP_START_BYTE_1 = 0x69</span>
+<span class="cm">// length = number of payload bytes (1–251)</span>
+<span class="cm">// ESP_MAX_PAYLOAD = 251 bytes</span>
+
+<span class="cm">// IMPORTANT: length must be ≥ 1. Zero-length payloads are</span>
+<span class="cm">// silently rejected by the UART RX ISR (c &lt; 1 check).</span></code></pre>
+
+<!-- PACKET STRUCTURE -->
+<h2 id="packet-structure"><span class="anchor">#</span>Packet Structure</h2>
+<p>The ESP payload carries an OpenLST command packet. The first 6 bytes are always the command header.</p>
+
+<pre><code><span class="cm">// Payload layout (from commands.h)</span>
+<span class="kw">typedef struct</span> command_header {
+    <span class="ty">hwid_t</span>           hwid;     <span class="cm">// 2 bytes LE — destination hardware ID</span>
+    <span class="ty">uint16_t</span>         seqnum;  <span class="cm">// 2 bytes LE — sequence number</span>
+    <span class="ty">uint8_t</span>          system;  <span class="cm">// 1 byte — MSG_TYPE_RADIO_IN (0x01) for commands</span>
+    <span class="ty">radio_msg_no_t</span>   command; <span class="cm">// 1 byte — opcode</span>
+} command_header_t;
+
+<span class="cm">// Full command (header + up to 245 bytes of data)</span>
+<span class="kw">typedef struct</span> command {
+    command_header_t header;
+    <span class="ty">uint8_t</span>  data[<span class="nu">251</span> - <span class="kw">sizeof</span>(command_header_t)];
+} command_t;</code></pre>
+
+<table>
+  <tr><th>Byte</th><th>Field</th><th>Value</th></tr>
+  <tr><td><code>0–1</code></td><td>HWID</td><td>Little-endian destination hardware ID</td></tr>
+  <tr><td><code>2–3</code></td><td>Sequence</td><td>Little-endian sequence number (16–64000)</td></tr>
+  <tr><td><code>4</code></td><td>System</td><td><code>0x01</code> = MSG_TYPE_RADIO_IN (required for processing)</td></tr>
+  <tr><td><code>5</code></td><td>Opcode</td><td>Command opcode byte</td></tr>
+  <tr><td><code>6+</code></td><td>Data</td><td>Command-specific payload (optional)</td></tr>
+</table>
+
+<div class="callout warn">
+  <div class="title">System byte</div>
+  The system byte at offset 4 must be <code>0x01</code> (MSG_TYPE_RADIO_IN). Packets with any other value are forwarded rather than processed by the command handler. This is how relay works — board 0001 forwards packets addressed to other HWIDs over RF.
+</div>
+
+<!-- FIRMWARE INTRO -->
+<h2 id="firmware-intro"><span class="anchor">#</span>CC1110 Firmware — Introduction</h2>
+<p>The CC1110 firmware is written in C and compiled with <strong>SDCC (Small Device C Compiler)</strong> for the 8051 architecture. The CC1110 has very limited resources:</p>
+
+<table>
+  <tr><th>Resource</th><th>Total</th><th>Notes</th></tr>
+  <tr><td>Flash</td><td>32 KB</td><td>Bootloader uses ~7 KB; radio app ~6 KB; rest available</td></tr>
+  <tr><td>XDATA RAM</td><td>3.3 KB</td><td>Already heavily used by UART buffers and command buffers</td></tr>
+  <tr><td>IRAM</td><td>256 bytes</td><td>Stack and fast variables only</td></tr>
+  <tr><td>Clock</td><td>26 MHz</td><td>8051 core — much slower than modern MCUs</td></tr>
+</table>
+
+<p>Memory constraints are the most common source of issues when extending the firmware. The XDATA allocations in the existing code leave very little margin.</p>
+
+<!-- BUILD SYSTEM -->
+<h2 id="build-system"><span class="anchor">#</span>Build System</h2>
+<p>The build uses GNU Make with mingw32-make on Windows. The entry points are:</p>
+
+<pre><code class="lang-makefile"><span class="cm"># Top-level Makefile</span>
+<span class="kw">include</span> radios/openlst_437/Board.mk   <span class="cm"># your config (processed first)</span>
+<span class="kw">include</span> open-lst/Build.mk             <span class="cm"># core build rules</span>
+
+<span class="cm"># Build targets</span>
+mingw32-make openlst_437_radio        <span class="cm"># build radio app hex</span>
+mingw32-make openlst_437_bootloader   <span class="cm"># build bootloader hex (rarely needed)</span></code></pre>
+
+<h3>Board.mk — Your Build Config</h3>
+<pre><code class="lang-makefile"><span class="cm"># radios/openlst_437/Board.mk</span>
+RADIOS += openlst_437
+BOOTLOADERS += openlst_437
+openlst_437_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
+
+<span class="cm"># Source files compiled for radio app</span>
+openlst_437_SRCS := \
+    $(openlst_437_DIR)/board.c
+
+<span class="cm"># CFLAGS — -DCUSTOM_COMMANDS enables the hook in commands.c</span>
+openlst_437_CFLAGS := \
+    -DCUSTOM_BOARD_INIT \
+    -DCUSTOM_COMMANDS \
+    -DUART0_ENABLED=1 \
+    -I$(openlst_437_DIR)
+
+<span class="cm"># Bootloader disables UART0 to save space</span>
+openlst_437_BOOTLOADER_CFLAGS := -DUART0_ENABLED=0</code></pre>
+
+<div class="callout danger">
+  <div class="title">Always Clean + Build</div>
+  SDCC does not reliably detect all dependency changes. Always use Clean + Build (or delete the specific <code>.rel</code> file) after any source change. Stale object files are the most common cause of mysterious behavior.
+</div>
+
+<h3>Cleaning Safely on Windows</h3>
+<p><code>mingw32-make clean</code> fails on Windows because it uses Linux <code>rm</code>. The ground station app has a Clean button that safely deletes only radio build artifacts — files matching <code>*.openlst_437.rel</code> without <code>.bl.</code> in the name. Bootloader files (<code>*.openlst_437.bl.rel</code>) are preserved.</p>
+
+<!-- CUSTOM COMMANDS -->
+<h2 id="custom-commands"><span class="anchor">#</span>Adding Custom Commands (CC1110)</h2>
+<p>The OpenLST firmware has a built-in extension point for custom commands. When <code>-DCUSTOM_COMMANDS</code> is in your CFLAGS, any opcode not handled by the standard switch statement falls through to your <code>custom_commands()</code> function.</p>
+
+<h3>Step 1 — Declare in board.h</h3>
+<pre><code class="lang-c"><span class="cm">// radios/openlst_437/board.h</span>
+<span class="pp">#define</span> <span class="fn">CUSTOM_COMMANDS</span> <span class="nu">1</span>
+<span class="pp">#include</span> <span class="st">"commands.h"</span>
+
+<span class="cm">// Forward declaration — implementation in board.c</span>
+<span class="ty">uint8_t</span> <span class="fn">custom_commands</span>(<span class="kw">const</span> <span class="ty">__xdata</span> command_t *cmd,
+                        <span class="ty">uint8_t</span> len,
+                        <span class="ty">__xdata</span> command_t *reply);</code></pre>
+
+<h3>Step 2 — Implement in board.c</h3>
+<pre><code class="lang-c"><span class="cm">// radios/openlst_437/board.c</span>
+<span class="pp">#include</span> <span class="st">"commands.h"</span>
+<span class="pp">#include</span> <span class="st">"uart0.h"</span>     <span class="cm">// UART0 = Pico interface (P1_4/P1_5)</span>
+
+<span class="pp">#define</span> PICO_MSG         <span class="nu">0x20</span>
+<span class="pp">#define</span> PICO_TIMEOUT     <span class="nu">20000</span>   <span class="cm">// inner loop count</span>
+<span class="pp">#define</span> PICO_TIMEOUT_OUT <span class="nu">10</span>      <span class="cm">// outer loop count (~2s total)</span>
+
+<span class="ty">uint8_t</span> <span class="fn">custom_commands</span>(<span class="kw">const</span> <span class="ty">__xdata</span> command_t *cmd,
+                        <span class="ty">uint8_t</span> len,
+                        <span class="ty">__xdata</span> command_t *reply) {
+    <span class="ty">uint8_t</span>  payload_len;
+    <span class="ty">uint8_t</span>  rx_len;
+    <span class="ty">uint16_t</span> timeout;
+    <span class="ty">uint8_t</span>  outer;
+
+    <span class="kw">switch</span> (cmd-&gt;header.command) {
+
+        <span class="kw">case</span> PICO_MSG:
+            payload_len = len - <span class="kw">sizeof</span>(cmd-&gt;header);
+            <span class="fn">uart0_send_message</span>((<span class="ty">__xdata</span> <span class="ty">uint8_t</span> *) cmd-&gt;data, payload_len);
+
+            rx_len = <span class="nu">0</span>;
+            <span class="kw">for</span> (outer = <span class="nu">0</span>; outer &lt; PICO_TIMEOUT_OUT; outer++) {
+                timeout = PICO_TIMEOUT;
+                <span class="kw">while</span> (timeout &gt; <span class="nu">0</span>) {
+                    rx_len = <span class="fn">uart0_get_message</span>((<span class="ty">__xdata</span> <span class="ty">uint8_t</span> *) reply-&gt;data);
+                    <span class="kw">if</span> (rx_len &gt; <span class="nu">0</span>) <span class="kw">goto</span> pico_done;
+                    timeout--;
+                }
+            }
+            pico_done:
+            <span class="kw">if</span> (rx_len &gt; <span class="nu">0</span>) {
+                reply-&gt;header.command = common_msg_ack;
+                <span class="kw">return</span> <span class="kw">sizeof</span>(reply-&gt;header) + rx_len;
+            }
+            reply-&gt;header.command = common_msg_nack;
+            <span class="kw">break</span>;
+
+        <span class="kw">default</span>:
+            reply-&gt;header.command = common_msg_nack;
+            <span class="kw">break</span>;
+    }
+    <span class="kw">return</span> <span class="kw">sizeof</span>(reply-&gt;header);
+}</code></pre>
+
+<!-- FIRMWARE RULES -->
+<h2 id="firmware-rules"><span class="anchor">#</span>Critical Firmware Rules</h2>
+<p>These rules were learned through extensive debugging. Violating any of them produces subtle, hard-to-diagnose failures.</p>
+
+<table>
+  <tr><th>Rule</th><th>Reason</th></tr>
+  <tr><td>Never initialize <code>reply->header.hwid</code>, <code>seqnum</code>, or <code>system</code></td><td><code>commands.c</code> already sets these before calling you. Doing it again corrupts memory.</td></tr>
+  <tr><td>Only set <code>reply->header.command</code></td><td>This is the only field <code>custom_commands</code> owns.</td></tr>
+  <tr><td>Never use <code>WATCHDOG_CLEAR</code> macro</td><td>The inline assembly conflicts with SDCC register allocation in this call context and corrupts RF receive state.</td></tr>
+  <tr><td>Never declare large <code>static __xdata</code> buffers</td><td>XDATA is nearly full. Write directly into <code>reply->data</code> which is already allocated.</td></tr>
+  <tr><td>Use <code>uint8_t</code>/<code>uint16_t</code> only for timeout counters</td><td><code>uint32_t</code> generates much larger 8051 code and causes RAM overflow crashes.</td></tr>
+  <tr><td>Use nested loops for large timeouts</td><td><code>uint16_t</code> silently wraps at 65535. <code>outer(10) × inner(20000)</code> = ~2 seconds safely.</td></tr>
+  <tr><td>Always send ≥1 byte payload</td><td>The UART RX ISR rejects ESP frames with length 0 (<code>c &lt; 1</code> check).</td></tr>
+  <tr><td>Custom commands belong in <code>board.c</code></td><td>Separate <code>.c</code> files cause RAM overflow and linker errors due to different memory context.</td></tr>
+</table>
+
+<!-- TELEMETRY DIAGNOSTICS -->
+<h2 id="telemetry"><span class="anchor">#</span>Telemetry Diagnostics</h2>
+<p>The telemetry packet contains counters useful for debugging UART activity without a logic analyzer.</p>
+
+<pre><code class="lang-c"><span class="cm">// Raw telem packet layout (after 9-byte ESP+header)</span>
+<span class="cm">// Offset  Field              Size</span>
+<span class="cm">// 0       reserved           1 byte</span>
+<span class="cm">// 1–4     uptime             uint32 LE (seconds)</span>
+<span class="cm">// 5–8     uart0_rx_count     uint32 LE  ← UART0 packets received</span>
+<span class="cm">// 9–12    uart1_rx_count     uint32 LE  ← UART1 packets received</span>
+<span class="cm">// 13      rx_mode            uint8</span>
+<span class="cm">// 14      tx_mode            uint8</span>
+<span class="cm">// 15–34   adc0–adc9          int16 each (20 bytes)</span>
+<span class="cm">// 35      last_rssi          int8  (dBm)</span>
+<span class="cm">// 36      last_lqi           uint8</span>
+<span class="cm">// 37      last_freqest       int8</span>
+<span class="cm">// 38–41   packets_sent       uint32 LE</span>
+<span class="cm">// 42–45   cs_count           uint32 LE</span>
+<span class="cm">// 46–49   packets_good       uint32 LE</span></code></pre>
+
+<p>To verify UART0 TX is actually firing, use the loopback technique: connect a jumper wire between P1_4 and P1_5 on board 0004, send a PICO_MSG command, then check if <code>uart0_rx_count</code> incremented in the next telem response.</p>
+
+<!-- PICO INTRO -->
+<h2 id="pico-intro"><span class="anchor">#</span>Pico Firmware — Introduction</h2>
+<p>The Pico runs MicroPython v1.27. The main firmware file is <code>main.py</code> on the Pico filesystem. It uses UART0 (GP0=TX, GP1=RX) to communicate with board 0004 using ESP framing — the same protocol as the CC1110.</p>
+
+<p>Key hardware resources used:</p>
+<table>
+  <tr><th>Resource</th><th>Pin(s)</th><th>Use</th></tr>
+  <tr><td>UART0</td><td>GP0 (TX), GP1 (RX)</td><td>Communication with CC1110 board 0004</td></tr>
+  <tr><td>SPI0</td><td>GP16/GP18/GP19</td><td>Shared bus for Arducam + SD card</td></tr>
+  <tr><td>CS — Camera</td><td>GP15</td><td>Arducam OV2640 chip select</td></tr>
+  <tr><td>CS — SD</td><td>GP17</td><td>SD card chip select</td></tr>
+  <tr><td>I2C0</td><td>GP4 (SDA), GP5 (SCL)</td><td>OV2640 register configuration</td></tr>
+  <tr><td>ADC4</td><td>internal</td><td>Onboard temperature sensor</td></tr>
+  <tr><td>GP25</td><td>onboard LED</td><td>Status blink</td></tr>
+</table>
+
+<!-- PICO ESP FRAMING -->
+<h2 id="pico-esp"><span class="anchor">#</span>ESP Framing on the Pico</h2>
+<p>All communication between the Pico and CC1110 uses ESP framing. The CC1110's <code>uart0_send_message()</code> automatically wraps outgoing data. The Pico must parse incoming frames and wrap its responses.</p>
+
+<pre><code class="lang-python"><span class="py-cm"># ESP constants — must match open-lst/common/uart.h</span>
+ESP_START_0 = <span class="py-nu">0x22</span>
+ESP_START_1 = <span class="py-nu">0x69</span>
+MAX_PAYLOAD = <span class="py-nu">251</span>
+
+<span class="py-kw">def</span> <span class="py-fn">send_esp</span>(payload_bytes):
+    <span class="py-st">"""Wrap payload in ESP framing and send over UART0."""</span>
+    frame = bytes([ESP_START_0, ESP_START_1, len(payload_bytes)]) + payload_bytes
+    uart.write(frame)
+
+<span class="py-kw">def</span> <span class="py-fn">recv_esp</span>(timeout_ms=<span class="py-nu">5000</span>):
+    <span class="py-st">"""Parse one complete ESP-framed packet from UART0."""</span>
+    STATE_START0, STATE_START1, STATE_LENGTH, STATE_PAYLOAD = <span class="py-nu">0</span>, <span class="py-nu">1</span>, <span class="py-nu">2</span>, <span class="py-nu">3</span>
+    state, payload, remaining = STATE_START0, bytearray(), <span class="py-nu">0</span>
+    deadline = time.ticks_add(time.ticks_ms(), timeout_ms)
+    <span class="py-kw">while</span> time.ticks_diff(deadline, time.ticks_ms()) &gt; <span class="py-nu">0</span>:
+        <span class="py-kw">if</span> uart.any():
+            b = uart.read(<span class="py-nu">1</span>)[<span class="py-nu">0</span>]
+            <span class="py-kw">if</span> state == STATE_START0:
+                <span class="py-kw">if</span> b == ESP_START_0: state = STATE_START1
+            <span class="py-kw">elif</span> state == STATE_START1:
+                <span class="py-kw">if</span> b == ESP_START_1:   state = STATE_LENGTH
+                <span class="py-kw">elif</span> b == ESP_START_0: state = STATE_START1
+                <span class="py-kw">else</span>:                  state = STATE_START0
+            <span class="py-kw">elif</span> state == STATE_LENGTH:
+                <span class="py-kw">if</span> <span class="py-nu">1</span> &lt;= b &lt;= MAX_PAYLOAD:
+                    remaining, payload, state = b, bytearray(), STATE_PAYLOAD
+                <span class="py-kw">else</span>: state = STATE_START0
+            <span class="py-kw">elif</span> state == STATE_PAYLOAD:
+                payload.append(b)
+                remaining -= <span class="py-nu">1</span>
+                <span class="py-kw">if</span> remaining == <span class="py-nu">0</span>: <span class="py-kw">return</span> bytes(payload)
+        <span class="py-kw">else</span>: time.sleep_ms(<span class="py-nu">1</span>)
+    <span class="py-kw">return</span> <span class="py-kw">None</span></code></pre>
+
+<!-- PICO SUB-OPCODE SYSTEM -->
+<h2 id="pico-opcodes"><span class="anchor">#</span>Sub-Opcode System</h2>
+<p>CC1110 opcode <code>0x20</code> (PICO_MSG) carries a one-byte sub-opcode as the first payload byte. The CC1110 strips the OpenLST header and forwards the raw payload — so payload byte 0 is the sub-opcode the Pico sees.</p>
+
+<table>
+  <tr><th>Sub-Opcode</th><th>Name</th><th>Request Payload</th><th>Response</th></tr>
+  <tr><td><code>0x00</code></td><td>PING</td><td>(none)</td><td><code>PICO:ACK</code></td></tr>
+  <tr><td><code>0x01</code></td><td>READ_TEMP</td><td>(none)</td><td><code>TEMP:13.47C</code></td></tr>
+  <tr><td><code>0x02</code></td><td>SNAP</td><td>(none)</td><td><code>SNAP:OK:snap_001.jpg:4617</code> or <code>SNAP:ERR:reason</code></td></tr>
+  <tr><td><code>0x03</code></td><td>LIST</td><td>(none)</td><td><code>LIST:file1.jpg,file2.jpg</code> or <code>LIST:EMPTY</code></td></tr>
+  <tr><td><code>0x04</code></td><td>GET_INFO</td><td>filename bytes</td><td><code>INFO:filename:bytes:chunks</code></td></tr>
+  <tr><td><code>0x05</code></td><td>GET_CHUNK</td><td>chunk_idx(2 bytes LE) + filename</td><td><code>CHUNK:N:</code> + binary data</td></tr>
+  <tr><td><code>0x06</code></td><td>DELETE</td><td>filename bytes</td><td><code>DEL:OK:filename</code> or <code>DEL:ERR:reason</code></td></tr>
+</table>
+
+<!-- ADDING PICO COMMANDS -->
+<h2 id="pico-adding"><span class="anchor">#</span>Adding a New Pico Command</h2>
+<p>To add a new command (e.g. sub-opcode <code>0x07</code> to read a GPIO pin):</p>
+
+<h4>1. Add the constant</h4>
+<pre><code class="lang-python">CMD_READ_GPIO = <span class="py-nu">0x07</span></code></pre>
+
+<h4>2. Add the handler in the main loop</h4>
+<pre><code class="lang-python"><span class="py-kw">elif</span> sub_opcode == CMD_READ_GPIO:
+    pin_num = payload[<span class="py-nu">1</span>] <span class="py-kw">if</span> len(payload) &gt; <span class="py-nu">1</span> <span class="py-kw">else</span> <span class="py-nu">0</span>
+    <span class="py-kw">try</span>:
+        p = Pin(pin_num, Pin.IN)
+        val = p.value()
+        send_esp(<span class="py-fn">f</span><span class="py-st">"GPIO:{pin_num}:{val}"</span>.encode())
+    <span class="py-kw">except</span> Exception <span class="py-kw">as</span> e:
+        send_esp(<span class="py-fn">f</span><span class="py-st">"GPIO:ERR:{e}"</span>.encode())</code></pre>
+
+<h4>3. Add a custom command in the ground station</h4>
+<p>In the Custom Commands tab, add a new command with opcode <code>0x20</code> and payload <code>07 &lt;pin_number&gt;</code>. No code changes required — the custom commands system handles arbitrary payloads.</p>
+
+<div class="callout tip">
+  <div class="title">Response length limit</div>
+  All Pico responses must fit within <code>MAX_PAYLOAD - 1 = 250</code> bytes after ESP framing. For long responses (like LIST with many files), truncate gracefully.
+</div>
+
+<!-- C# PROJECT STRUCTURE -->
+<h2 id="cs-intro"><span class="anchor">#</span>C# Ground Station — Project Structure</h2>
+<p>The ground station is a .NET 8 WinForms application built entirely in code — no designer files or .resx resources. All controls are created programmatically.</p>
+
+<div class="filetree">
+<span class="dir">OpenLstGroundStation/</span>
+├── <span class="file">Program.cs</span>          <span class="note">← entry point</span>
+├── <span class="file">MainForm.cs</span>         <span class="note">← all UI: controls, tabs, event handlers, async methods</span>
+├── <span class="file">OpenLstProtocol.cs</span>  <span class="note">← packet building, parsing, RxPacket, TelemData, signing</span>
+├── <span class="file">CustomCommand.cs</span>    <span class="note">← CustomCommand model + CustomCommandStore (JSON persistence)</span>
+├── <span class="file">AppLogger.cs</span>        <span class="note">← daily log file writer</span>
+└── <span class="file">appsettings.json</span>    <span class="note">← persistent settings (COM port, HWID, paths, AES key)</span>
+</div>
+
+<!-- C# PROTOCOL LAYER -->
+<h2 id="cs-protocol"><span class="anchor">#</span>Protocol Layer (OpenLstProtocol.cs)</h2>
+
+<h3>Building Packets</h3>
+<pre><code class="lang-csharp"><span class="cm">// Build an ESP-framed command packet</span>
+<span class="kw">public static</span> <span class="ty">byte</span>[] <span class="fn">BuildPacket</span>(<span class="ty">ushort</span> hwid, <span class="ty">ushort</span> seq,
+                                  <span class="ty">byte</span> opcode, <span class="ty">byte</span>[]? args = <span class="kw">null</span>)
+{
+    <span class="kw">var</span> payload = <span class="kw">new</span> List&lt;<span class="ty">byte</span>&gt;
+    {
+        (<span class="ty">byte</span>)(hwid &amp; <span class="nu">0xFF</span>), (<span class="ty">byte</span>)((hwid &gt;&gt; <span class="nu">8</span>) &amp; <span class="nu">0xFF</span>),
+        (<span class="ty">byte</span>)(seq  &amp; <span class="nu">0xFF</span>), (<span class="ty">byte</span>)((seq  &gt;&gt; <span class="nu">8</span>) &amp; <span class="nu">0xFF</span>),
+        <span class="nu">0x01</span>,   <span class="cm">// MSG_TYPE_RADIO_IN — required for processing</span>
+        opcode
+    };
+    <span class="kw">if</span> (args != <span class="kw">null</span>) payload.AddRange(args);
+    <span class="kw">var</span> frame = <span class="kw">new</span> List&lt;<span class="ty">byte</span>&gt; { <span class="nu">0x22</span>, <span class="nu">0x69</span>, (<span class="ty">byte</span>)payload.Count };
+    frame.AddRange(payload);
+    <span class="kw">return</span> frame.ToArray();
+}</code></pre>
+
+<h3>Parsing Responses (RxPacket)</h3>
+<pre><code class="lang-csharp"><span class="cm">// RxPacket is a C# record — immutable, value-based equality</span>
+<span class="kw">public record</span> <span class="ty">RxPacket</span>(<span class="ty">ushort</span> Hwid, <span class="ty">ushort</span> SeqNum,
+                        <span class="ty">string</span> OpName, <span class="ty">int</span> AckValue, <span class="ty">byte</span>[] RawPayload)
+{
+    <span class="cm">// Auto-decodes ASCII Pico responses from ack payloads</span>
+    <span class="cm">// RawPayload layout: hwid(2) + seq(2) + flag(1) + opcode(1) + data</span>
+    <span class="cm">// Data starts at index 6</span>
+    <span class="kw">public string</span>? PicoPayload
+    {
+        <span class="kw">get</span> {
+            <span class="kw">if</span> (RawPayload == <span class="kw">null</span> || RawPayload.Length &lt; <span class="nu">7</span>) <span class="kw">return null</span>;
+            <span class="kw">if</span> (OpName != <span class="st">"ack"</span>) <span class="kw">return null</span>;
+            <span class="ty">byte</span>[] data = RawPayload.Skip(<span class="nu">6</span>).ToArray();
+            <span class="kw">if</span> (!data.All(b =&gt; b &gt;= <span class="nu">0x20</span> &amp;&amp; b &lt;= <span class="nu">0x7E</span>)) <span class="kw">return null</span>;
+            <span class="kw">return</span> Encoding.ASCII.GetString(data);
+        }
+    }
+}</code></pre>
+
+<!-- ADDING UI TABS -->
+<h2 id="cs-ui"><span class="anchor">#</span>Adding a New UI Tab</h2>
+<p>All tabs follow the same pattern. Here is the minimum required to add a new tab:</p>
+
+<h4>1. Declare the tab page and controls</h4>
+<pre><code class="lang-csharp"><span class="cm">// In field declarations section of MainForm.cs</span>
+<span class="kw">private</span> TabPage tpMyTab = <span class="kw">null</span>!;
+<span class="kw">private</span> Button  btnMyAction = <span class="kw">null</span>!;
+<span class="kw">private</span> Label   lblMyStatus = <span class="kw">null</span>!;</code></pre>
+
+<h4>2. Create the tab page</h4>
+<pre><code class="lang-csharp"><span class="cm">// In the tab creation block</span>
+tpMyTab = MkTab(<span class="st">"  My Tab  "</span>);
+tabMain.TabPages.Add(tpMyTab);</code></pre>
+
+<h4>3. Build the tab contents</h4>
+<pre><code class="lang-csharp"><span class="kw">private void</span> <span class="fn">BuildMyTab</span>()
+{
+    <span class="kw">var</span> p = tpMyTab;
+    <span class="ty">int</span> lx = <span class="nu">10</span>, row = <span class="nu">12</span>;
+
+    p.Controls.Add(MkSectionLabel(<span class="st">"── My Section"</span>, lx, row)); row += <span class="nu">28</span>;
+
+    btnMyAction = MkButton(<span class="st">"▶ Do Something"</span>, lx, row, <span class="nu">140</span>,
+        Theme.Green, Theme.PanelBack);
+    btnMyAction.Click += async (s, e) =&gt; await MyActionAsync();
+    p.Controls.Add(btnMyAction);
+    row += <span class="nu">42</span>;
+
+    lblMyStatus = MkLabel(<span class="st">"Ready"</span>, lx, row, <span class="nu">500</span>, Theme.Gray, Theme.FontSmall);
+    p.Controls.Add(lblMyStatus);
+}
+
+<span class="kw">private async</span> Task <span class="fn">MyActionAsync</span>()
+{
+    <span class="kw">if</span> (!CheckConnected()) <span class="kw">return</span>;
+    <span class="ty">ushort</span> hwid = ActiveHwid;
+    <span class="ty">ushort</span> seq  = IncSeqNum();
+
+    FlushRxQueue();
+    WritePacket(OpenLstProtocol.BuildPacket(hwid, seq, <span class="nu">0x20</span>,
+        <span class="kw">new byte</span>[] { <span class="nu">0x00</span> }));   <span class="cm">// PING sub-opcode</span>
+    <span class="kw">var</span> pkt = <span class="kw">await</span> WaitForReply(hwid, seq, <span class="nu">10000</span>);
+
+    <span class="kw">if</span> (pkt?.PicoPayload != <span class="kw">null</span>)
+        Log(<span class="st">$"Result: {pkt.PicoPayload}"</span>, Theme.Green);
+    <span class="kw">else</span>
+        Log(<span class="st">"No response"</span>, Theme.Red);
+}</code></pre>
+
+<!-- ADDING COMMANDS -->
+<h2 id="cs-commands"><span class="anchor">#</span>Key Helper Methods</h2>
+<table>
+  <tr><th>Method</th><th>Description</th></tr>
+  <tr><td><code>ActiveHwid</code></td><td>Property — gets the current HWID from the header bar</td></tr>
+  <tr><td><code>IncSeqNum()</code></td><td>Increments and returns the next sequence number</td></tr>
+  <tr><td><code>FlushRxQueue()</code></td><td>Discards any queued received packets before sending</td></tr>
+  <tr><td><code>WritePacket(byte[])</code></td><td>Sends raw bytes to the serial port</td></tr>
+  <tr><td><code>WaitForReply(hwid, seq, ms)</code></td><td>Async — waits for a matching ack/response packet</td></tr>
+  <tr><td><code>Log(message, color)</code></td><td>Appends a line to the main log panel</td></tr>
+  <tr><td><code>LogTx(message, hwid)</code></td><td>Logs a transmitted packet in yellow TX format</td></tr>
+  <tr><td><code>CheckConnected()</code></td><td>Returns false and logs error if port not open</td></tr>
+  <tr><td><code>MkButton(text, x, y, w, fg, bg)</code></td><td>Creates a styled flat button</td></tr>
+  <tr><td><code>MkLabel(text, x, y, w, color, font)</code></td><td>Creates a styled label</td></tr>
+  <tr><td><code>MkSectionLabel(text, x, y)</code></td><td>Creates a cyan section divider label</td></tr>
+  <tr><td><code>MkTab(text)</code></td><td>Creates a styled tab page</td></tr>
+</table>
+
+<!-- PARSING RESPONSES -->
+<h2 id="cs-parsing"><span class="anchor">#</span>Parsing Binary Pico Responses</h2>
+<p>The GET_CHUNK command returns binary data prefixed with a text header. The ground station parses this by finding the second colon:</p>
+
+<pre><code class="lang-csharp"><span class="cm">// Response format: "CHUNK:N:" + binary JPEG data</span>
+<span class="cm">// RawPayload = hwid(2) + seq(2) + flag(1) + opcode(1) + response bytes</span>
+<span class="ty">byte</span>[] raw = chunkPkt.RawPayload.Skip(<span class="nu">6</span>).ToArray();
+
+<span class="cm">// Find second colon to split "CHUNK:N:" from data</span>
+<span class="ty">int</span> firstColon  = Array.IndexOf(raw, (<span class="ty">byte</span>)<span class="st">':'</span>);
+<span class="ty">int</span> secondColon = firstColon &gt;= <span class="nu">0</span>
+    ? Array.IndexOf(raw, (<span class="ty">byte</span>)<span class="st">':'</span>, firstColon + <span class="nu">1</span>) : -<span class="nu">1</span>;
+
+<span class="kw">if</span> (secondColon &gt;= <span class="nu">0</span>)
+{
+    <span class="ty">byte</span>[] chunkData = raw.Skip(secondColon + <span class="nu">1</span>).ToArray();
+    imageStream.Write(chunkData, <span class="nu">0</span>, chunkData.Length);
+}</code></pre>
+
+<!-- OPCODE TABLE -->
+<h2 id="opcode-table"><span class="anchor">#</span>Complete Opcode Reference</h2>
+<table>
+  <tr><th>Opcode</th><th>Name</th><th>Direction</th><th>Description</th></tr>
+  <tr><td><code>0x10</code></td><td>common_msg_ack</td><td>Response</td><td>Acknowledge</td></tr>
+  <tr><td><code>0xFF</code></td><td>common_msg_nack</td><td>Response</td><td>Not acknowledge</td></tr>
+  <tr><td><code>0x11</code></td><td>common_msg_ascii</td><td>Both</td><td>ASCII text (used for debug prints)</td></tr>
+  <tr><td><code>0x12</code></td><td>radio_msg_reboot</td><td>Command</td><td>Reboot (optional 4-byte postpone_sec)</td></tr>
+  <tr><td><code>0x13</code></td><td>radio_msg_get_time</td><td>Command</td><td>Request RTC time</td></tr>
+  <tr><td><code>0x14</code></td><td>radio_msg_set_time</td><td>Command</td><td>Set RTC time</td></tr>
+  <tr><td><code>0x17</code></td><td>radio_msg_get_telem</td><td>Command</td><td>Request telemetry</td></tr>
+  <tr><td><code>0x18</code></td><td>radio_msg_telem</td><td>Response</td><td>Telemetry data (83 bytes)</td></tr>
+  <tr><td><code>0x19</code></td><td>radio_msg_get_callsign</td><td>Command</td><td>Request stored callsign</td></tr>
+  <tr><td><code>0x1A</code></td><td>radio_msg_set_callsign</td><td>Command</td><td>Store callsign (8 bytes)</td></tr>
+  <tr><td><code>0x20</code></td><td>PICO_MSG</td><td>Command</td><td>Forward payload to Pico via UART0</td></tr>
+  <tr><td><code>0x01</code></td><td>bootloader_ping</td><td>Bootloader</td><td>Ping bootloader, resets watchdog</td></tr>
+  <tr><td><code>0x11</code></td><td>bootloader_erase</td><td>Bootloader</td><td>Erase application flash</td></tr>
+  <tr><td><code>0x12</code></td><td>bootloader_write_page</td><td>Bootloader</td><td>Write 128-byte flash page</td></tr>
+</table>
+
+<!-- FLASH CONSTANTS -->
+<h2 id="flash-constants"><span class="anchor">#</span>Flash Memory Constants</h2>
+<table>
+  <tr><th>Constant</th><th>Address</th><th>Description</th></tr>
+  <tr><td>APP_START</td><td><code>0x0400</code></td><td>Application code start</td></tr>
+  <tr><td>APP_END</td><td><code>0x6BFF</code></td><td>Application code end</td></tr>
+  <tr><td>SIG_START</td><td><code>0x6BF0</code></td><td>16-byte AES-CBC-MAC signature</td></tr>
+  <tr><td>PAGE_SIZE</td><td>128 bytes</td><td>Flash page size for OTA write</td></tr>
+  <tr><td>FLASH_HWID</td><td><code>0x03FE</code></td><td>Hardware ID (2 bytes LE) in bootloader</td></tr>
+  <tr><td>FLASH_KEYS</td><td><code>0x03CC</code></td><td>3 × 16-byte AES signing keys</td></tr>
+  <tr><td>MEM_SIZE</td><td><code>0x8000</code></td><td>Total flash (32 KB)</td></tr>
+</table>
+
+<p>The AES signature is computed as CBC-MAC over the application bytes from <code>APP_START</code> to <code>SIG_START</code>, using an all-zero IV. All Explorer Kit boards ship with all-<code>0xFF</code> signing keys.</p>
+
+<!-- LESSONS LEARNED -->
+<h2 id="lessons"><span class="anchor">#</span>Hard-Won Lessons</h2>
+<p>These are the most impactful discoveries from developing the Explorer Kit firmware. Each one represents multiple hours of debugging.</p>
+
+<table>
+  <tr><th>#</th><th>Lesson</th><th>Impact</th></tr>
+  <tr><td>L1</td><td>UART1 is the ground station interface on both boards — use UART0 for Pico</td><td>Critical</td></tr>
+  <tr><td>L2</td><td>Custom commands must be in <code>board.c</code> — separate files cause RAM overflow</td><td>Critical</td></tr>
+  <tr><td>L3</td><td>Never reinitialize reply header in <code>custom_commands</code> — commands.c already does it</td><td>Critical</td></tr>
+  <tr><td>L4</td><td>WATCHDOG_CLEAR macro corrupts RF via register conflict with SDCC</td><td>High</td></tr>
+  <tr><td>L5</td><td>uint32_t in custom_commands causes RAM crash — use uint8_t/uint16_t only</td><td>High</td></tr>
+  <tr><td>L6</td><td>uint16_t timeout wraps at 65535 — use nested loops for large timeouts</td><td>High</td></tr>
+  <tr><td>L7</td><td>Zero-length ESP payload rejected by UART RX ISR (c &lt; 1 check)</td><td>Medium</td></tr>
+  <tr><td>L8</td><td>SD card mount corrupts SPI bus state for Arducam — reinit SPI after mount</td><td>High</td></tr>
+  <tr><td>L9</td><td>Arducam SPI unreliable on breadboard — direct wire required</td><td>Medium</td></tr>
+  <tr><td>L10</td><td>Camera I2C init at startup blocks UART listener — init on first idle timeout</td><td>Medium</td></tr>
+  <tr><td>L11</td><td>Board 0001 must run original firmware — custom firmware intercepts opcode 0x20</td><td>High</td></tr>
+  <tr><td>L12</td><td>After direct serial flash: send 2–3 get_telems before going to RF operation</td><td>Medium</td></tr>
+  <tr><td>L13</td><td>Always Clean + Build — stale .rel files from broken builds persist silently</td><td>High</td></tr>
+</table>
+
+</main>
+</div>
+
+<footer>
+  SCK-915 Explorer Kit Developer Guide &nbsp;|&nbsp; Version 1.0 &nbsp;|&nbsp;
+  Based on OpenLST open-source radio platform (C) 2018 Planet Labs Inc. (GPLv3)
+</footer>
+
+</body>
+</html>

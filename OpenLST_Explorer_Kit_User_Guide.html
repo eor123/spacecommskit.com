@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCK-915 Explorer Kit — User Guide</title>
+<style>
+  :root {
+    --blue:    #1A56A0;
+    --lblue:   #2E75B6;
+    --dark:    #0E0E14;
+    --gray:    #4A4A5A;
+    --light:   #F5F7FA;
+    --border:  #D0D8E8;
+    --green:   #1B7340;
+    --code-bg: #1E1E2E;
+    --code-fg: #CDD6F4;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #222;
+    background: #fff;
+  }
+  /* Cover */
+  .cover {
+    background: var(--blue);
+    color: #fff;
+    padding: 80px 60px 60px;
+    min-height: 220px;
+  }
+  .cover h1 { font-size: 36px; font-weight: 700; margin-bottom: 8px; }
+  .cover .subtitle { font-size: 18px; opacity: 0.85; margin-bottom: 24px; }
+  .cover .meta { font-size: 12px; opacity: 0.7; }
+  /* Navigation sidebar */
+  .layout { display: flex; min-height: calc(100vh - 220px); }
+  .sidebar {
+    width: 240px;
+    min-width: 240px;
+    background: var(--light);
+    border-right: 1px solid var(--border);
+    padding: 24px 16px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  .sidebar h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--gray); margin-bottom: 12px; margin-top: 20px; }
+  .sidebar h3:first-child { margin-top: 0; }
+  .sidebar a { display: block; padding: 5px 8px; color: var(--blue); text-decoration: none;
+    font-size: 13px; border-radius: 4px; margin-bottom: 2px; }
+  .sidebar a:hover { background: var(--border); }
+  /* Main content */
+  .content { flex: 1; padding: 40px 60px; max-width: 860px; }
+  h2 { font-size: 24px; color: var(--blue); border-bottom: 2px solid var(--lblue);
+    padding-bottom: 8px; margin: 40px 0 16px; }
+  h2:first-child { margin-top: 0; }
+  h3 { font-size: 17px; color: var(--dark); margin: 28px 0 10px; }
+  h4 { font-size: 14px; font-weight: 700; color: var(--gray); margin: 20px 0 8px;
+    text-transform: uppercase; letter-spacing: 0.5px; }
+  p { margin-bottom: 12px; }
+  ul, ol { margin: 8px 0 12px 24px; }
+  li { margin-bottom: 4px; }
+  /* Code */
+  code { font-family: Consolas, monospace; font-size: 12px;
+    background: var(--code-bg); color: var(--code-fg);
+    padding: 2px 6px; border-radius: 3px; }
+  pre { background: var(--code-bg); color: var(--code-fg);
+    font-family: Consolas, monospace; font-size: 12px;
+    padding: 16px 20px; border-radius: 6px; margin: 12px 0 16px;
+    overflow-x: auto; line-height: 1.5; }
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; margin: 12px 0 16px; font-size: 13px; }
+  th { background: var(--blue); color: #fff; padding: 8px 12px; text-align: left; }
+  td { padding: 7px 12px; border-bottom: 1px solid var(--border); }
+  tr:nth-child(even) td { background: var(--light); }
+  /* Note / tip boxes */
+  .note { background: #EFF6FF; border-left: 4px solid var(--lblue);
+    padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 12px 0; }
+  .warn { background: #FFF8E7; border-left: 4px solid #F59E0B;
+    padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 12px 0; }
+  .success { background: #ECFDF5; border-left: 4px solid #10B981;
+    padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 12px 0; }
+  .note strong, .warn strong, .success strong { display: block; margin-bottom: 4px; }
+  /* Step numbers */
+  .steps { counter-reset: step; }
+  .step { display: flex; gap: 16px; margin-bottom: 20px; }
+  .step-num { min-width: 32px; height: 32px; background: var(--blue); color: #fff;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px; flex-shrink: 0; margin-top: 2px; }
+  .step-body { flex: 1; }
+  .step-body strong { display: block; margin-bottom: 4px; font-size: 15px; }
+  /* Log samples */
+  .log { background: #0A0A10; color: #A0F0A0; font-family: Consolas, monospace;
+    font-size: 12px; padding: 14px 16px; border-radius: 6px; margin: 10px 0;
+    line-height: 1.6; }
+  .log .tx  { color: #FFD700; }
+  .log .rx  { color: #6EE7B7; }
+  .log .err { color: #F87171; }
+  .log .info{ color: #93C5FD; }
+  /* Page break for PDF */
+  .pagebreak { page-break-before: always; }
+  /* Footer */
+  footer { background: var(--light); border-top: 1px solid var(--border);
+    padding: 20px 60px; font-size: 12px; color: var(--gray); }
+</style>
+</head>
+<body>
+
+<!-- ── Cover ──────────────────────────────────────────────────────────────── -->
+<div class="cover">
+  <h1>SCK-915 Explorer Kit</h1>
+  <div class="subtitle">Ground Station Application — User Guide</div>
+  <div class="meta">Version 1.0 &nbsp;|&nbsp; SCK-915 Explorer Kit Documentation</div>
+</div>
+
+<div class="layout">
+
+<!-- ── Sidebar ───────────────────────────────────────────────────────────── -->
+<nav class="sidebar">
+  <h3>Getting Started</h3>
+  <a href="#overview">Overview</a>
+  <a href="#whats-in-the-box">What's in the Box</a>
+  <a href="#installation">Installation</a>
+  <a href="#first-launch">First Launch</a>
+
+  <h3>Hardware Setup</h3>
+  <a href="#hardware-connections">Connections</a>
+  <a href="#power">Power Requirements</a>
+  <a href="#pico-wiring">Pico Wiring</a>
+
+  <h3>Application Guide</h3>
+  <a href="#connecting">Connecting</a>
+  <a href="#home-tab">Home Tab</a>
+  <a href="#commands-tab">Commands Tab</a>
+  <a href="#custom-commands">Custom Commands</a>
+  <a href="#files-tab">Files Tab</a>
+  <a href="#firmware-tab">Firmware Tab</a>
+  <a href="#provision-tab">Provision Tab</a>
+
+  <h3>Reference</h3>
+  <a href="#log-format">Log Format</a>
+  <a href="#troubleshooting">Troubleshooting</a>
+  <a href="#specs">Specifications</a>
+</nav>
+
+<!-- ── Main Content ──────────────────────────────────────────────────────── -->
+<main class="content">
+
+<!-- OVERVIEW -->
+<h2 id="overview">Overview</h2>
+<p>The <strong>SCK-915 Explorer Kit</strong> is a complete RF communications development kit based on the open-source OpenLST radio platform originally developed by Planet Labs. The kit includes two CC1110-based radio boards operating at 437 MHz and a Windows ground station application for commanding, monitoring, and imaging.</p>
+<p>With the Explorer Kit you can:</p>
+<ul>
+  <li>Send and receive commands between a ground station and a remote radio board over RF</li>
+  <li>View real-time telemetry including uptime, signal strength, and ADC readings</li>
+  <li>Trigger a remote Raspberry Pi Pico to capture images with an Arducam OV2640 camera</li>
+  <li>Transfer JPEG images from the remote SD card back to your Windows PC over RF</li>
+  <li>Build and flash custom firmware to the remote board</li>
+  <li>Provision new boards with the bootloader and hardware IDs</li>
+</ul>
+
+<div class="note">
+  <strong>Note</strong>
+  The SCK-915 Explorer Kit operates at 437 MHz in the amateur 70cm band. Operation may require an amateur radio license depending on your jurisdiction. Please ensure you comply with all applicable local regulations before transmitting.
+</div>
+
+<!-- WHAT'S IN THE BOX -->
+<h2 id="whats-in-the-box">What's in the Box</h2>
+<table>
+  <tr><th>Item</th><th>Quantity</th><th>Description</th></tr>
+  <tr><td>SCK-915 Radio Board</td><td>2</td><td>CC1110-based 437 MHz transceiver boards (HWID 0001 and 0004 pre-provisioned)</td></tr>
+  <tr><td>USB-Serial Adapter</td><td>1</td><td>3.3V TTL FTDI adapter for connecting board 0001 to your PC</td></tr>
+  <tr><td>Antennas</td><td>2</td><td>SMA 437 MHz antennas</td></tr>
+  <tr><td>Power Supply</td><td>1</td><td>5V DC power supply for board 0001</td></tr>
+  <tr><td>Ground Station Software</td><td>1</td><td>SCK Ground Station Windows application (download link included)</td></tr>
+</table>
+
+<div class="note">
+  <strong>Sold separately (for full imaging capability):</strong>
+  Raspberry Pi Pico, Arducam OV2640 Mini 2MP camera module, SPI SD card adapter, microSD card (FAT32 formatted).
+</div>
+
+<!-- INSTALLATION -->
+<h2 id="installation">Installation</h2>
+<div class="steps">
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <strong>Run the installer</strong>
+      Double-click <code>SCK_Ground_Station_Setup.exe</code> and follow the prompts. The application will be installed to <code>C:\Users\...\AppData\Local\SpaceCommsKit\SCK Ground Station\</code>.
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <strong>Install USB-Serial driver</strong>
+      Connect the USB-serial adapter to your PC. Windows should install the driver automatically. If not, download the FTDI driver from ftdichip.com. The adapter will appear as a COM port in Device Manager.
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <strong>Note your COM port</strong>
+      Open Device Manager → Ports (COM &amp; LPT) and note the COM port assigned to your USB-serial adapter (e.g. COM5). You will enter this in the application.
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <strong>Launch the application</strong>
+      Find <em>SCK Ground Station</em> in the Start menu and launch it.
+    </div>
+  </div>
+</div>
+
+<!-- FIRST LAUNCH -->
+<h2 id="first-launch">First Launch</h2>
+<p>When you first launch the application you will see the main window with tabs across the top. Settings are automatically saved between sessions including your COM port, baud rate, HWID, firmware directory, and AES key.</p>
+
+<div class="success">
+  <strong>Quick Start Checklist</strong>
+  <ol style="margin-top:6px">
+    <li>Connect USB-serial adapter to board 0001's UART1 header (TX→P0_5, RX→P0_4, GND→GND)</li>
+    <li>Power board 0001 from the external 5V supply — <em>not</em> USB power alone</li>
+    <li>Power board 0004 and place it at least 2 feet away from board 0001</li>
+    <li>In the application header, select your COM port and set HWID to 0001</li>
+    <li>Click <strong>Connect</strong></li>
+    <li>Go to Commands tab and click <strong>Get Telem</strong> — you should see a green ✓ response</li>
+  </ol>
+</div>
+
+<!-- HARDWARE CONNECTIONS -->
+<h2 id="hardware-connections">Hardware Connections</h2>
+
+<h3>Board 0001 — Ground Station Radio</h3>
+<p>Board 0001 connects to your Windows PC via the USB-serial adapter and relays all RF commands to board 0004.</p>
+<table>
+  <tr><th>USB-Serial Adapter Pin</th><th>Board 0001 Pin</th></tr>
+  <tr><td>TX</td><td>P0_5 (UART1 RX)</td></tr>
+  <tr><td>RX</td><td>P0_4 (UART1 TX)</td></tr>
+  <tr><td>GND</td><td>GND</td></tr>
+</table>
+
+<h3>Board 0004 — Remote Radio</h3>
+<p>Board 0004 is the remote unit. It communicates with board 0001 over RF at 437 MHz and optionally connects to a Raspberry Pi Pico for imaging.</p>
+<table>
+  <tr><th>Board 0004 Pin</th><th>Connection</th></tr>
+  <tr><td>P1_5 (UART0 TX)</td><td>Pico GP1 (UART0 RX)</td></tr>
+  <tr><td>P1_4 (UART0 RX)</td><td>Pico GP0 (UART0 TX)</td></tr>
+  <tr><td>GND</td><td>Pico GND</td></tr>
+</table>
+
+<!-- POWER -->
+<h2 id="power">Power Requirements</h2>
+<div class="warn">
+  <strong>Important — External Power Required</strong>
+  Board 0001 must be powered from the included external 5V supply during RF operation. The RF power amplifier draws a current spike during transmission that will cause the board to brown out and reset if powered only from USB. Always connect the external supply before operating.
+</div>
+<table>
+  <tr><th>Component</th><th>Supply Voltage</th><th>Current</th></tr>
+  <tr><td>Board 0001 / 0004</td><td>5V DC</td><td>~120mA idle, ~1.6A during RF TX</td></tr>
+  <tr><td>Raspberry Pi Pico</td><td>5V (USB) or 3.3V</td><td>~25mA typical</td></tr>
+  <tr><td>Arducam OV2640</td><td>3.3V</td><td>~50mA active</td></tr>
+  <tr><td>SD Card Adapter</td><td>5V (VBUS)</td><td>~100mA active</td></tr>
+</table>
+
+<!-- PICO WIRING -->
+<h2 id="pico-wiring">Raspberry Pi Pico Wiring</h2>
+<p>The full imaging setup requires a Raspberry Pi Pico with an Arducam OV2640 camera and SPI SD card adapter. All three share the Pico's SPI0 bus with separate chip select pins.</p>
+<table>
+  <tr><th>Device</th><th>Signal</th><th>Pico Pin</th></tr>
+  <tr><td>Arducam OV2640</td><td>VCC</td><td>3.3V</td></tr>
+  <tr><td>Arducam OV2640</td><td>GND</td><td>GND</td></tr>
+  <tr><td>Arducam OV2640</td><td>MISO</td><td>GP16</td></tr>
+  <tr><td>Arducam OV2640</td><td>MOSI</td><td>GP19</td></tr>
+  <tr><td>Arducam OV2640</td><td>SCK</td><td>GP18</td></tr>
+  <tr><td>Arducam OV2640</td><td>CS</td><td>GP15</td></tr>
+  <tr><td>Arducam OV2640</td><td>SDA</td><td>GP4</td></tr>
+  <tr><td>Arducam OV2640</td><td>SCL</td><td>GP5</td></tr>
+  <tr><td>SD Card Adapter</td><td>VCC</td><td>VBUS (5V)</td></tr>
+  <tr><td>SD Card Adapter</td><td>GND</td><td>GND</td></tr>
+  <tr><td>SD Card Adapter</td><td>MISO</td><td>GP16 (shared)</td></tr>
+  <tr><td>SD Card Adapter</td><td>MOSI</td><td>GP19 (shared)</td></tr>
+  <tr><td>SD Card Adapter</td><td>SCK</td><td>GP18 (shared)</td></tr>
+  <tr><td>SD Card Adapter</td><td>CS</td><td>GP17</td></tr>
+</table>
+<div class="warn">
+  <strong>Camera wiring note</strong>
+  The Arducam OV2640 must be connected with direct jumper wires — not through a breadboard. Breadboard connections are unreliable for SPI at the required speed and will cause camera captures to fail.
+</div>
+
+<!-- CONNECTING -->
+<h2 id="connecting">Connecting to the Radio</h2>
+<p>The connection controls are in the header bar at the top of the application window.</p>
+<ol>
+  <li>Select your COM port from the dropdown (click <strong>↺</strong> to refresh the list)</li>
+  <li>Baud rate should remain at <strong>115200</strong></li>
+  <li>Set the HWID to the board you want to address (e.g. <code>0001</code>)</li>
+  <li>Click <strong>Connect</strong></li>
+</ol>
+<p>The status indicator in the header turns green when connected. The application will begin receiving any data from the board immediately.</p>
+
+<div class="log">
+<span class="info">12:06:52.720  Connected: COM5 @ 115200</span>
+</div>
+
+<!-- HOME TAB -->
+<h2 id="home-tab">Home Tab</h2>
+<p>The Home tab shows live telemetry from the currently addressed board, updated automatically every 5 seconds when connected.</p>
+
+<h3>Telemetry Panels</h3>
+<table>
+  <tr><th>Panel</th><th>Description</th></tr>
+  <tr><td>Uptime</td><td>Seconds since last boot</td></tr>
+  <tr><td>Last RSSI</td><td>Received signal strength of last packet (dBm)</td></tr>
+  <tr><td>Last LQI</td><td>Link quality indicator (0–255, higher is better)</td></tr>
+  <tr><td>Packets Sent/Good</td><td>RF packet counters since last boot</td></tr>
+  <tr><td>UART0/1 RX Count</td><td>Packets received on each serial port</td></tr>
+  <tr><td>ADC 0–9</td><td>Raw ADC readings from the CC1110 analog inputs</td></tr>
+</table>
+
+<div class="note">
+  <strong>Note</strong>
+  The board automatically reboots every 10 minutes by default. Uptime will reset when this occurs. This is normal behavior and can be extended using the Reboot command with a postpone value.
+</div>
+
+<!-- COMMANDS TAB -->
+<h2 id="commands-tab">Commands Tab</h2>
+<p>The Commands tab provides quick access to all standard SCK commands.</p>
+
+<h4>Available Commands</h4>
+<table>
+  <tr><th>Button</th><th>Opcode</th><th>Description</th></tr>
+  <tr><td>Get Telem</td><td>0x17</td><td>Request telemetry from the addressed board</td></tr>
+  <tr><td>Reboot</td><td>0x12</td><td>Immediately reboot the addressed board</td></tr>
+  <tr><td>Get Time</td><td>0x13</td><td>Request current RTC time</td></tr>
+  <tr><td>Set Time</td><td>0x14</td><td>Set the RTC time</td></tr>
+  <tr><td>Get Callsign</td><td>0x19</td><td>Read stored callsign</td></tr>
+  <tr><td>Set Callsign</td><td>0x1A</td><td>Store callsign (up to 8 characters)</td></tr>
+</table>
+
+<p>All commands are sent to the HWID shown in the header bar. To address board 0004 remotely, set HWID to <code>0004</code> — board 0001 will relay the command over RF automatically.</p>
+
+<!-- CUSTOM COMMANDS -->
+<h2 id="custom-commands">Custom Commands Tab</h2>
+<p>The Custom Commands tab lets you send any opcode with any payload to the addressed board. Commands are saved to a JSON file and persist between sessions.</p>
+
+<h3>Pre-loaded Pico Commands</h3>
+<p>On first run the following commands are automatically available for controlling the Raspberry Pi Pico payload:</p>
+<table>
+  <tr><th>Name</th><th>Opcode</th><th>Payload</th><th>Response</th></tr>
+  <tr><td>PICO Ping</td><td>0x20</td><td>00</td><td><code>PICO:ACK</code></td></tr>
+  <tr><td>PICO Read Temp</td><td>0x20</td><td>01</td><td><code>TEMP:13.47C</code></td></tr>
+  <tr><td>PICO Snap</td><td>0x20</td><td>02</td><td><code>SNAP:OK:snap_001.jpg:4617</code></td></tr>
+  <tr><td>PICO List Files</td><td>0x20</td><td>03</td><td><code>LIST:snap_001.jpg,snap_002.jpg</code></td></tr>
+</table>
+
+<h3>Sending a Command</h3>
+<ol>
+  <li>Select a command from the left panel, or fill in the Name, Opcode, and Payload fields on the right</li>
+  <li>Set HWID to the target board in the header bar</li>
+  <li>Click <strong>▶ Send</strong></li>
+</ol>
+
+<p>Responses appear in the main log panel. Pico ASCII responses are decoded automatically:</p>
+<div class="log">
+<span class="tx">→ TX [0004]  [CUSTOM] PICO Read Temp  opcode=0x20  (seq=31)</span>
+<span class="rx">← RX  ack → "TEMP:13.47C"  hwid=0004 seq=31</span>
+<span class="rx">  ✓ ack → TEMP:13.47C</span>
+</div>
+
+<!-- FILES TAB -->
+<h2 id="files-tab">Files Tab</h2>
+<p>The Files tab provides a complete SD card file manager for the remote Pico. It allows you to list, download, and delete files stored on the Pico's SD card — all over RF.</p>
+
+<div class="warn">
+  <strong>Prerequisite</strong>
+  The Pico must be running the provided <code>main.py</code> firmware with an SD card inserted and the Arducam camera connected. Set HWID to <strong>0004</strong> before using Files tab functions.
+</div>
+
+<h3>Refreshing the File List</h3>
+<p>Click <strong>↺ Refresh List</strong> to request the current list of files from the Pico's SD card. JPEG and text files are shown. The request is sent over RF to board 0004 which forwards it to the Pico.</p>
+
+<h3>Downloading a File</h3>
+<div class="steps">
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <strong>Select a file</strong>
+      Click a filename in the list to select it.
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <strong>Click ▼ Get File</strong>
+      The application requests file information, then transfers the file in 200-byte chunks over RF. The progress bar shows transfer progress.
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <strong>File opens automatically</strong>
+      When complete, the file is saved to the <code>Images\</code> folder next to the application and Windows Explorer opens that folder automatically.
+    </div>
+  </div>
+</div>
+
+<div class="log">
+<span class="info">Files: requesting info for snap_008.jpg...</span>
+<span class="info">Files: snap_008.jpg = 4617 bytes, 24 chunks</span>
+<span class="rx">Files: ✓ snap_008.jpg saved (4617 bytes) → ...\Images\snap_008.jpg</span>
+</div>
+
+<div class="note">
+  <strong>Transfer time</strong>
+  A typical 320×240 JPEG (4–8 KB) transfers in approximately 2–5 seconds depending on RF conditions. Larger files take proportionally longer.
+</div>
+
+<h3>Deleting a File</h3>
+<p>Select a file and click <strong>✕ Delete File</strong>. A confirmation dialog will appear before the file is permanently deleted from the SD card.</p>
+
+<!-- FIRMWARE TAB -->
+<h2 id="firmware-tab">Firmware Tab</h2>
+<p>The Firmware tab is used to build, sign, and flash custom firmware to the radio boards. This tab is primarily for developers — standard users do not need to use it.</p>
+
+<h3>Build</h3>
+<ol>
+  <li>Set the <strong>Project Dir</strong> to your SCK firmware source folder (the folder containing the top-level <code>Makefile</code>)</li>
+  <li>Click <strong>⌧ Clean + Build</strong> to ensure a fresh compile</li>
+  <li>Build output appears in the log. A successful build ends with <code>Build succeeded: openlst_437_radio.hex</code></li>
+</ol>
+
+<div class="warn">
+  <strong>Always use Clean + Build</strong>
+  Using plain Build without cleaning first can result in stale object files being linked into the firmware, causing unexpected behavior. Always use Clean + Build after making source code changes.
+</div>
+
+<h3>Flash OTA</h3>
+<ol>
+  <li>Set HWID to the board you want to flash (e.g. <code>0004</code>)</li>
+  <li>Ensure the HEX file path is correct (auto-filled after a successful build)</li>
+  <li>Verify the AES key matches the key used when provisioning that board</li>
+  <li>Click <strong>▶ Flash OTA</strong></li>
+</ol>
+
+<p>The flash process has three phases: entering bootloader mode, writing pages, and sending the end signal. Progress is shown in the log with page numbers and attempt counts.</p>
+
+<div class="log">
+<span class="info">── PHASE 2: Writing Pages ─────────────────────</span>
+<span class="rx">    Page   8: ✓ attempt=1</span>
+<span class="rx">    Page   9: ✓ attempt=1</span>
+<span class="info">FLASH COMPLETE ✓  55 written, 153 skipped.</span>
+</div>
+
+<div class="note">
+  <strong>After flashing</strong>
+  After flashing a board directly via serial, send 2–3 Get Telem commands while still connected before moving the board to its remote position. This allows the radio to fully initialize before switching to RF-only operation.
+</div>
+
+<!-- PROVISION TAB -->
+<h2 id="provision-tab">Provision Tab</h2>
+<p>The Provision tab is used to program the bootloader onto a fresh CC1110 board using the Texas Instruments CC Debugger hardware programmer. This is a one-time operation required for new boards.</p>
+
+<h3>Requirements</h3>
+<ul>
+  <li>Texas Instruments CC Debugger connected to the board's programming header</li>
+  <li>SmartRF Flash Programmer installed (included with the CC Debugger)</li>
+  <li>The bootloader HEX file (<code>openlst_437_bootloader.hex</code>)</li>
+</ul>
+
+<h3>Provisioning Steps</h3>
+<ol>
+  <li>Connect the CC Debugger to the board and your PC</li>
+  <li>Enter the desired HWID (e.g. <code>0001</code> for the ground station board)</li>
+  <li>Enter the AES signing key (default: <code>FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF</code>)</li>
+  <li>Browse to select the bootloader HEX file</li>
+  <li>Click <strong>Flash Bootloader</strong></li>
+</ol>
+
+<!-- LOG FORMAT -->
+<h2 id="log-format">Log Format Reference</h2>
+<p>The main log panel uses a consistent color-coded format:</p>
+<table>
+  <tr><th>Color</th><th>Meaning</th><th>Example</th></tr>
+  <tr><td>Yellow</td><td>Transmitted packet</td><td><code>→ TX [0004] get_telem (seq=17)</code></td></tr>
+  <tr><td>Green</td><td>Successful response</td><td><code>✓ telem 0</code></td></tr>
+  <tr><td>Cyan</td><td>Raw received bytes</td><td><code>← RX [RAW] 22 69 54 04...</code></td></tr>
+  <tr><td>Red</td><td>Error or no reply</td><td><code>✗ No reply</code></td></tr>
+  <tr><td>Gray</td><td>Discarded/info messages</td><td><code>[discard] hwid=0001 seq=0</code></td></tr>
+  <tr><td>White</td><td>Parsed packet details</td><td><code>← RX telem 0 hwid=0004 seq=17</code></td></tr>
+</table>
+
+<!-- TROUBLESHOOTING -->
+<h2 id="troubleshooting">Troubleshooting</h2>
+
+<h3>No reply to Get Telem on board 0001</h3>
+<ul>
+  <li>Check the USB-serial adapter is connected and the correct COM port is selected</li>
+  <li>Verify TX→P0_5 and RX→P0_4 (not swapped)</li>
+  <li>Confirm the external 5V power supply is connected to board 0001</li>
+  <li>Check the board LEDs — rapid double-flash indicates bootloader mode; flash the radio app</li>
+</ul>
+
+<h3>No reply to Get Telem on board 0004</h3>
+<ul>
+  <li>Confirm board 0001 is responding first — it must relay commands over RF</li>
+  <li>Ensure the boards are at least 2 feet apart — too close causes RF overload</li>
+  <li>Check board 0004's power supply</li>
+  <li>Try sending Get Telem 2–3 times — the first packet after boot is sometimes missed</li>
+</ul>
+
+<h3>PICO commands return no reply</h3>
+<ul>
+  <li>Wait 5–10 seconds after the Pico boots for camera initialization to complete</li>
+  <li>Verify UART wires between board 0004 and Pico (P1_5→GP1, P1_4→GP0)</li>
+  <li>Check the Pico is running <code>main.py</code> (connect Thonny to verify)</li>
+</ul>
+
+<h3>SNAP returns error</h3>
+<ul>
+  <li>Check camera wiring — must be direct wire, not breadboard</li>
+  <li>Verify SD card is inserted and formatted as FAT32</li>
+  <li>Ensure SD card adapter VCC is connected to VBUS (5V), not 3.3V</li>
+</ul>
+
+<h3>File transfer shows wrong image</h3>
+<ul>
+  <li>Click Refresh List before downloading to ensure the file list is current</li>
+  <li>Check the Images folder path shown in the transfer status log</li>
+</ul>
+
+<h3>Board resets during RF transmission</h3>
+<ul>
+  <li>The external 5V power supply must be connected — USB power alone is insufficient</li>
+  <li>Add a 100µF electrolytic capacitor across the board's power supply pins to absorb the transmit current spike</li>
+</ul>
+
+<!-- SPECS -->
+<h2 id="specs">Specifications</h2>
+<table>
+  <tr><th>Parameter</th><th>Value</th></tr>
+  <tr><td>RF Frequency</td><td>437 MHz (amateur 70cm band)</td></tr>
+  <tr><td>Modulation</td><td>2-FSK with FEC</td></tr>
+  <tr><td>Data Rate</td><td>7.4 kbaud</td></tr>
+  <tr><td>TX Power</td><td>+30 dBm (1W) via on-board PA</td></tr>
+  <tr><td>Receiver Sensitivity</td><td>−112 dBm</td></tr>
+  <tr><td>Microcontroller</td><td>Texas Instruments CC1110</td></tr>
+  <tr><td>Flash Memory</td><td>32 KB</td></tr>
+  <tr><td>Interface</td><td>3.3V TTL UART (×2), 115200 baud</td></tr>
+  <tr><td>Supply Voltage</td><td>5V DC</td></tr>
+  <tr><td>Board Size</td><td>50 × 60 × 5 mm</td></tr>
+</table>
+
+</main>
+</div>
+
+<footer>
+  SCK-915 Explorer Kit User Guide &nbsp;|&nbsp; Version 1.0 &nbsp;|&nbsp; Based on OpenLST open-source radio platform by Planet Labs Inc.
+</footer>
+
+</body>
+</html>

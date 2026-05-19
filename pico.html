@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pico Imaging Project — SpaceCommsKit Explorer SCK-915</title>
-<meta name="description" content="Complete guide to building the OpenLST-Pico remote imaging pipeline. Capture JPEG images with an Arducam OV2640 and transfer them over RF to your Windows PC.">
+<title>Pico Payload Project — SpaceCommsKit Explorer SCK-915</title>
+<meta name="description" content="Complete guide to building the SCK-PBL-1 payload pipeline. GPS, MS5611 altimeter, OV2640 camera, SD card — fused telemetry beacon every 10 seconds over RF. HAB mission ready.">
 <link rel="canonical" href="https://www.spacecommskit.com/pico.html">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -19,6 +19,8 @@
     <li><a href="quickstart.html">Quick Start</a></li>
     <li><a href="software.html">Software</a></li>
     <li><a href="pico.html" class="active">Pico Project</a></li>
+    <li><a href="groundstation.html">Ground Station</a></li>
+    <li><a href="hab-mission.html">HAB Mission</a></li>
     <li><a href="about.html">About</a></li>
     <li><a href="classified.html">⬛ Section 7</a></li>
     <li><a href="https://spacecommskit.myshopify.com" target="_blank" class="nav-cta">Buy a Kit</a></li>
@@ -27,12 +29,12 @@
 
 <section class="hero">
   <div class="hero-inner">
-    <span class="eyebrow">Pico Imaging Project · Full Replication Guide</span>
-    <h1 class="hero-title">Remote Image Capture<br><span>Over RF</span></h1>
+    <span class="eyebrow">SCK-PBL-1 Payload Platform · Full Build Guide</span>
+    <h1 class="hero-title">Complete Payload Pipeline<br><span>GPS · Baro · Camera · Over RF</span></h1>
     <p class="hero-sub">
-      A proven end-to-end pipeline: command a Raspberry Pi Pico over RF,
-      capture a JPEG image with an Arducam OV2640 camera,
-      and transfer it back to your Windows PC — all wirelessly.
+      A proven end-to-end pipeline: fused GPS + barometric telemetry beacon every 10 seconds,
+      remote image capture over RF, SD card file management, and a complete HAB mission stack.
+      No radio license required.
     </p>
     <a href="#wiring" class="btn btn-primary">Start Building →</a>
   </div>
@@ -43,27 +45,36 @@
 <div class="section">
   <span class="eyebrow eyebrow-dark">System Overview</span>
   <h2 class="section-title">How It Works</h2>
-  <p class="section-lead">The Pico acts as a remote payload processor. Board 0004 receives RF commands and forwards them to the Pico over UART. The Pico handles camera, storage, and file transfer.</p>
+  <p class="section-lead">The Pico acts as a remote payload processor. Board 0004 receives RF commands and forwards them to the Pico over UART. The Pico handles GPS, altimeter, camera, storage, and telemetry.</p>
 
   <div style="background:var(--void);border-radius:var(--radius-lg);padding:32px;margin-top:40px;font-family:var(--font-mono);font-size:13px;line-height:2.2;color:var(--text-inv);">
-    <div style="color:var(--cyan);">// Complete RF imaging pipeline</div>
+    <div style="color:var(--cyan);">// Complete RF payload pipeline — fused telemetry + imaging</div>
     <br>
     <span style="color:#fff;">Windows Ground Station</span>
-    <span style="color:#666;"> ──── COM5 · 115200 baud · USB-Serial ────► </span>
+    <span style="color:#666;"> ──── COM · USB-Serial ────► </span>
     <span style="color:var(--blue);">Board 0001</span><br>
-    <span style="color:#666;padding-left:160px;">RF 915MHz · 7.4-250kbaud · 2-FSK+FEC ────► </span>
+    <span style="color:#666;padding-left:160px;">RF 915MHz · CC1190 PA/LNA ────► </span>
     <span style="color:var(--blue);">Board 0004</span><br>
-    <span style="color:#666;padding-left:304px;">UART0 · 115200 baud ────► </span>
+    <span style="color:#666;padding-left:300px;">UART0 · 115200 baud ────► </span>
     <span style="color:var(--cyan);">Raspberry Pi Pico</span><br>
+    <span style="color:#666;padding-left:420px;">UART1 · 9600 baud ────► </span>
+    <span style="color:var(--gold);">GPS6MV2 (NEO-6M)</span><br>
+    <span style="color:#666;padding-left:420px;">I2C1 · addr 0x76 ────► </span>
+    <span style="color:var(--gold);">MS5611 Altimeter</span><br>
     <span style="color:#666;padding-left:420px;">SPI0 · 400kHz ────► </span>
     <span style="color:var(--gold);">Arducam OV2640</span><br>
-    <span style="color:#666;padding-left:420px;">SPI0 · 400kHz ────► </span>
-    <span style="color:var(--gold);">SD Card</span>
+    <span style="color:#666;padding-left:420px;">SPI0 · CS GP17 ────► </span>
+    <span style="color:var(--gold);">MicroSD Card</span>
   </div>
 
   <div class="feature-grid" style="background:transparent;margin-top:32px;">
     <div style="background:var(--void);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;">
       <div style="font-size:28px;margin-bottom:12px;">📡</div>
+      <h3 style="color:#fff;font-size:15px;margin-bottom:6px;">Fused Beacon</h3>
+      <p style="font-size:13px;color:var(--text-inv);">GPS + baro fused packet fires every 10 seconds autonomously. No ground command needed during flight. 8-field telemetry.</p>
+    </div>
+    <div style="background:var(--void);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;">
+      <div style="font-size:28px;margin-bottom:12px;">📷</div>
       <h3 style="color:#fff;font-size:15px;margin-bottom:6px;">SNAP Command</h3>
       <p style="font-size:13px;color:var(--text-inv);">Send PICO Snap from ground station. Pico captures JPEG and saves to SD. Returns filename and size confirmation.</p>
     </div>
@@ -75,70 +86,106 @@
     <div style="background:var(--void);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;">
       <div style="font-size:28px;margin-bottom:12px;">⬇️</div>
       <h3 style="color:#fff;font-size:15px;margin-bottom:6px;">GET Command</h3>
-      <p style="font-size:13px;color:var(--text-inv);">Transfer image in 200-byte chunks over RF. Ground station reassembles and saves to Images\ folder. Auto-opens Explorer.</p>
+      <p style="font-size:13px;color:var(--text-inv);">Transfer files in 200-byte chunks over RF. Ground station reassembles and saves to Images\ folder automatically.</p>
     </div>
-    <div style="background:var(--void);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;">
-      <div style="font-size:28px;margin-bottom:12px;">🗑️</div>
-      <h3 style="color:#fff;font-size:15px;margin-bottom:6px;">DELETE Command</h3>
-      <p style="font-size:13px;color:var(--text-inv);">Remove files from SD card remotely. Confirmation dialog prevents accidental deletion.</p>
+  </div>
+</div>
+</div>
+
+<!-- Sub-Opcodes Reference -->
+<div class="section-dark">
+<div class="section">
+  <span class="eyebrow">Command Reference</span>
+  <h2 class="section-title-inv section-title">Pico Sub-Opcodes (opcode 0x20)</h2>
+  <p class="section-lead-inv section-lead">All Pico commands use opcode 0x20 (PICO_MSG) with a sub-opcode byte as the payload. Responses are ESP-framed ASCII strings returned as ACK payloads.</p>
+
+  <table class="spec-table" style="margin-top:40px;">
+    <tr><th>Sub-opcode</th><th>Command</th><th>Response</th></tr>
+    <tr><td style="color:var(--cyan);">0x00</td><td style="color:var(--text-inv);">PING</td><td style="color:var(--text-inv);">PICO:ACK</td></tr>
+    <tr><td style="color:var(--cyan);">0x01</td><td style="color:var(--text-inv);">READ_TEMP</td><td style="color:var(--text-inv);">TEMP:xx.xxC</td></tr>
+    <tr><td style="color:var(--cyan);">0x02</td><td style="color:var(--text-inv);">SNAP</td><td style="color:var(--text-inv);">SNAP:OK:&lt;filename&gt;:&lt;bytes&gt;</td></tr>
+    <tr><td style="color:var(--cyan);">0x03</td><td style="color:var(--text-inv);">LIST</td><td style="color:var(--text-inv);">LIST:&lt;file1&gt;,&lt;file2&gt;,...</td></tr>
+    <tr><td style="color:var(--cyan);">0x04</td><td style="color:var(--text-inv);">GET_INFO</td><td style="color:var(--text-inv);">INFO:&lt;filename&gt;:&lt;bytes&gt;:&lt;chunks&gt;</td></tr>
+    <tr><td style="color:var(--cyan);">0x05</td><td style="color:var(--text-inv);">GET_CHUNK</td><td style="color:var(--text-inv);">CHUNK:&lt;index&gt;:&lt;200 bytes&gt;</td></tr>
+    <tr><td style="color:var(--cyan);">0x06</td><td style="color:var(--text-inv);">DELETE</td><td style="color:var(--text-inv);">DEL:OK:&lt;filename&gt;</td></tr>
+    <tr><td style="color:var(--cyan);">0x07</td><td style="color:var(--text-inv);">GET_GPS</td><td style="color:var(--text-inv);">GPS:lat,lon,gps_alt,sats,fix,hpa,baro_alt,temp_c</td></tr>
+    <tr><td style="color:var(--cyan);">0x08</td><td style="color:var(--text-inv);">GET_BARO</td><td style="color:var(--text-inv);">BARO:hpa,alt_m,temp_c</td></tr>
+  </table>
+
+  <div style="margin-top:32px;background:var(--void);border-radius:var(--radius-lg);padding:24px;font-family:var(--font-mono);font-size:13px;">
+    <div style="color:var(--cyan);font-size:11px;letter-spacing:1px;margin-bottom:12px;">// Fused GPS + Baro beacon format (autonomous every 10 seconds)</div>
+    <div style="color:#fff;margin-bottom:8px;">GPS:36.058910,-87.384024,254.5,8,1,989.31,201.3,20.56</div>
+    <div style="color:#666;font-size:11px;line-height:2;">
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      └ baro temp °C<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└ baro altitude metres<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└ pressure hPa<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└ fix (1=valid)<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└ satellites<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└ GPS altitude m<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└ longitude<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└ latitude
     </div>
   </div>
 </div>
 </div>
 
 <!-- Parts List -->
-<div class="section-dark">
 <div class="section">
-  <span class="eyebrow">Parts List</span>
-  <h2 class="section-title-inv section-title">What You'll Need</h2>
-  <p class="section-lead-inv section-lead">In addition to the OpenLST Explorer Dev Kit (which provides board 0004), you need these additional components for the imaging pipeline.</p>
+<div style="max-width:1100px;margin:0 auto;">
+  <span class="eyebrow eyebrow-dark">Parts List</span>
+  <h2 class="section-title">What You'll Need</h2>
+  <p class="section-lead">In addition to the OpenLST Explorer Dev Kit (which provides board 0004), you need these components for the full payload pipeline.</p>
 
   <table class="spec-table" style="margin-top:40px;">
     <tr><th>Component</th><th>Notes</th><th>Link</th></tr>
     <tr>
-      <td style="color:var(--text-inv);">Raspberry Pi Pico</td>
-      <td style="color:var(--text-inv);">Original Pico (RP2040). Micro USB cable required. May need extension cable — board 0004 must be 2–4 feet from board 0001.</td>
-      <td><a href="https://www.raspberrypi.com/products/raspberry-pi-pico/" target="_blank" style="color:var(--cyan);">raspberrypi.com</a></td>
+      <td>Raspberry Pi Pico W</td>
+      <td style="color:var(--text-muted);">RP2040. Micro USB cable required.</td>
+      <td><a href="https://www.adafruit.com" target="_blank" style="color:var(--cyan);">Adafruit / Digi-Key</a></td>
     </tr>
     <tr>
-      <td style="color:var(--text-inv);">Arducam OV2640 Mini 2MP</td>
-      <td style="color:var(--text-inv);">SPI camera module. Must be direct-wired to Pico — not through a breadboard. Breadboard connections are unreliable at SPI speeds.</td>
+      <td>GPS6MV2 (NEO-6M breakout)</td>
+      <td style="color:var(--text-muted);">UART GPS module. Connect via UART1. Firmware configures airborne mode at boot — rated to 50km.</td>
+      <td><a href="https://www.amazon.com" target="_blank" style="color:var(--cyan);">Amazon ~$8</a></td>
+    </tr>
+    <tr>
+      <td>MS5611 Altimeter</td>
+      <td style="color:var(--text-muted);">Aviation-grade barometric altimeter. I2C1 address 0x76. PS pin must tie to 3.3V for I2C mode. 10–1200 hPa — rated above 45km altitude.</td>
+      <td><a href="https://www.digikey.com" target="_blank" style="color:var(--cyan);">Digi-Key ~$10</a></td>
+    </tr>
+    <tr>
+      <td>Arducam OV2640 Mini 2MP</td>
+      <td style="color:var(--text-muted);">SPI camera module. Must be direct-wired to Pico — not through a breadboard. Breadboard connections are unreliable at SPI speeds.</td>
       <td><a href="https://www.amazon.com/dp/B012UXNDOY" target="_blank" style="color:var(--cyan);">Amazon →</a></td>
     </tr>
     <tr>
-      <td style="color:var(--text-inv);">SPI MicroSD Card Adapter</td>
-      <td style="color:var(--text-inv);"><strong style="color:#FFB800;">Important:</strong> Use an adapter with 5V power input and 3.3V logic (level-shifted). Connect VCC to Pico VBUS (5V), not 3.3V.</td>
-      <td><a href="https://www.amazon.com/dp/B07MTTLF75" target="_blank" style="color:var(--cyan);">Amazon →</a></td>
+      <td>SPI MicroSD Card Adapter</td>
+      <td style="color:var(--text-muted);"><strong style="color:#FFB800;">Important:</strong> Use an adapter with 5V power input and 3.3V logic (level-shifted). Connect VCC to Pico VBUS (5V), not 3.3V.</td>
+      <td><a href="https://www.amazon.com" target="_blank" style="color:var(--cyan);">Amazon →</a></td>
     </tr>
     <tr>
-      <td style="color:var(--text-inv);">MicroSD Card</td>
-      <td style="color:var(--text-inv);">Format as FAT32 before use. 8GB or larger recommended.</td>
+      <td>MicroSD Card 32GB</td>
+      <td style="color:var(--text-muted);">Format as FAT32 before use.</td>
       <td>Any retailer</td>
     </tr>
     <tr>
-      <td style="color:var(--text-inv);">USB to Serial FTDI Adapter</td>
-      <td style="color:var(--text-inv);">3.3V TTL. Used to connect board 0001 to your Windows PC. Included with Explorer Dev Kit.</td>
-      <td><a href="https://www.amazon.com/dp/B07WX2DSVB" target="_blank" style="color:var(--cyan);">Amazon →</a></td>
-    </tr>
-    <tr>
-      <td style="color:var(--text-inv);">Jumper Wires</td>
-      <td style="color:var(--text-inv);">Male-to-female and male-to-male. Use direct wires for camera — not breadboard connections.</td>
-      <td>Any retailer</td>
+      <td>USB to Serial FTDI Adapter</td>
+      <td style="color:var(--text-muted);">3.3V TTL. Used to connect board 0001 to your Windows PC.</td>
+      <td><a href="https://www.amazon.com" target="_blank" style="color:var(--cyan);">Amazon →</a></td>
     </tr>
   </table>
 </div>
 </div>
 
 <!-- Wiring -->
-<div class="section" id="wiring">
+<div class="section-panel" id="wiring">
+<div class="section">
   <span class="eyebrow eyebrow-dark">Wiring Guide</span>
-  <h2 class="section-title">Complete Wiring Diagram</h2>
-  <p class="section-lead">All three devices share the Pico's SPI0 bus with separate chip select pins. Follow this diagram exactly — pin assignment matters.</p>
+  <h2 class="section-title">Complete Wiring — All Devices</h2>
+  <p class="section-lead">All SPI devices share the Pico's SPI0 bus with separate chip select pins. GPS and altimeter use separate I2C and UART buses. Follow this exactly — pin assignment matters.</p>
 
-  <img src="images/pico_circuit.jpg" alt="OpenLST Pico Image RF Transfer Project wiring diagram"
-    style="border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);width:100%;margin:40px 0;">
-
-  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;margin-top:16px;">
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;margin-top:40px;">
 
     <div>
       <h3 style="margin-bottom:12px;color:var(--blue);">Board 0004 → Pico</h3>
@@ -151,21 +198,46 @@
     </div>
 
     <div>
+      <h3 style="margin-bottom:12px;color:var(--gold);">GPS6MV2 (NEO-6M) → Pico</h3>
+      <table class="spec-table">
+        <tr><th>GPS Pin</th><th>Pico Pin</th></tr>
+        <tr><td>VCC</td><td>3.3V</td></tr>
+        <tr><td>GND</td><td>GND</td></tr>
+        <tr><td>TX → Pico RX</td><td>GP9 (UART1 RX)</td></tr>
+        <tr><td>RX → Pico TX</td><td>GP8 (UART1 TX)</td></tr>
+      </table>
+    </div>
+
+    <div>
+      <h3 style="margin-bottom:12px;color:var(--cyan);">MS5611 Altimeter → Pico</h3>
+      <table class="spec-table">
+        <tr><th>MS5611 Pin</th><th>Pico Pin</th></tr>
+        <tr><td>VDD</td><td>3.3V</td></tr>
+        <tr><td>PS <strong style="color:#FFB800;">⚠️</strong></td><td><strong style="color:#FFB800;">3.3V (I2C mode)</strong></td></tr>
+        <tr><td>CSB</td><td>3.3V</td></tr>
+        <tr><td>SDO</td><td>GND (addr 0x76)</td></tr>
+        <tr><td>SDA</td><td>GP2 (I2C1)</td></tr>
+        <tr><td>SCLK</td><td>GP3 (I2C1)</td></tr>
+        <tr><td>GND</td><td>GND</td></tr>
+      </table>
+    </div>
+
+    <div style="margin-top:24px;">
       <h3 style="margin-bottom:12px;color:var(--gold);">Arducam OV2640 → Pico</h3>
       <table class="spec-table">
         <tr><th>Camera Pin</th><th>Pico Pin</th></tr>
         <tr><td>VCC</td><td>3.3V</td></tr>
         <tr><td>GND</td><td>GND</td></tr>
-        <tr><td>MISO</td><td>GP16</td></tr>
-        <tr><td>MOSI</td><td>GP19</td></tr>
-        <tr><td>SCK</td><td>GP18</td></tr>
+        <tr><td>MISO</td><td>GP16 (SPI0)</td></tr>
+        <tr><td>MOSI</td><td>GP19 (SPI0)</td></tr>
+        <tr><td>SCK</td><td>GP18 (SPI0)</td></tr>
         <tr><td>CS</td><td>GP15</td></tr>
-        <tr><td>SDA</td><td>GP4</td></tr>
-        <tr><td>SCL</td><td>GP5</td></tr>
+        <tr><td>SDA</td><td>GP4 (I2C0)</td></tr>
+        <tr><td>SCL</td><td>GP5 (I2C0)</td></tr>
       </table>
     </div>
 
-    <div>
+    <div style="margin-top:24px;">
       <h3 style="margin-bottom:12px;color:var(--cyan);">SD Card Adapter → Pico</h3>
       <table class="spec-table">
         <tr><th>SD Card Pin</th><th>Pico Pin</th></tr>
@@ -178,13 +250,25 @@
       </table>
     </div>
 
+    <div style="margin-top:24px;">
+      <h3 style="margin-bottom:12px;">Status LEDs (SCK-PBL-1)</h3>
+      <table class="spec-table">
+        <tr><th>LED</th><th>Color</th><th>Pico Pin</th></tr>
+        <tr><td>Camera</td><td style="color:#4ade80;">GREEN</td><td>GP10</td></tr>
+        <tr><td>SD Card</td><td style="color:#4ade80;">GREEN</td><td>GP11</td></tr>
+        <tr><td>GPS Fix</td><td style="color:#60a5fa;">BLUE</td><td>GP12</td></tr>
+        <tr><td>Altimeter</td><td style="color:#fbbf24;">YELLOW</td><td>GP13</td></tr>
+        <tr><td>Fault</td><td style="color:#f87171;">RED</td><td>GP14</td></tr>
+      </table>
+    </div>
+
   </div>
 
   <div class="notice notice-warn" style="margin-top:24px;">
     <div class="notice-icon">⚡</div>
     <div>
       <strong>SD Card Power — Critical</strong>
-      <p>The SD card adapter VCC must connect to the Pico's VBUS pin (5V from USB), NOT the 3.3V pin. Using 3.3V will cause unreliable SD card operation. The Arducam uses 3.3V — do not connect it to VBUS.</p>
+      <p>The SD card adapter VCC must connect to the Pico's VBUS pin (5V from USB), NOT the 3.3V pin. Using 3.3V will cause unreliable SD card operation. The Arducam and MS5611 use 3.3V — do not connect them to VBUS.</p>
     </div>
   </div>
 
@@ -192,13 +276,22 @@
     <div class="notice-icon">🔌</div>
     <div>
       <strong>Camera — Direct Wire Required</strong>
-      <p>The Arducam OV2640 must be connected with direct jumper wires — not through a breadboard. Breadboard connections introduce enough resistance and capacitance to make SPI communication unreliable at 400kHz, causing FIFO read failures.</p>
+      <p>The Arducam OV2640 must be connected with direct jumper wires — not through a breadboard. Breadboard connections introduce enough resistance and capacitance to make SPI communication unreliable at 400kHz.</p>
+    </div>
+  </div>
+
+  <div class="notice notice-info" style="margin-top:12px;">
+    <div class="notice-icon">📡</div>
+    <div>
+      <strong>MS5611 PS Pin — I2C Mode Select</strong>
+      <p>The PS pin on the MS5611 must be tied HIGH (3.3V) to select I2C mode. If left floating or pulled LOW, the chip enters SPI mode and will not respond on I2C. This is the most common MS5611 wiring mistake.</p>
     </div>
   </div>
 </div>
+</div>
 
 <!-- Step by Step -->
-<div class="section-panel">
+<div class="section">
 <div class="section">
   <span class="eyebrow eyebrow-dark">Setup Guide</span>
   <h2 class="section-title">Step-by-Step Setup</h2>
@@ -217,7 +310,7 @@
       <div style="min-width:40px;height:40px;background:var(--blue);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0;">2</div>
       <div>
         <h3 style="margin-bottom:6px;">Install Pico Firmware</h3>
-        <p style="color:var(--text-muted);font-size:14px;">Open Thonny, connect to the Pico, and upload <a href="https://github.com/eor123/spacecommskit/raw/main/pico/sdcard.py" target="_blank">sdcard.py</a> first, then <a href="https://github.com/eor123/spacecommskit/raw/main/pico/main.py" target="_blank">main.py</a>. Save main.py as <code style="background:var(--panel);padding:1px 6px;border-radius:4px;">main.py</code> on the Pico — it runs automatically at boot.</p>
+        <p style="color:var(--text-muted);font-size:14px;">Open Thonny, connect to the Pico, and upload <a href="https://github.com/eor123/spacecommskit/raw/main/pico/sdcard.py" target="_blank">sdcard.py</a> first, then <a href="https://github.com/eor123/spacecommskit/raw/main/pico/main.py" target="_blank">main.py</a>. Save main.py as <code style="background:var(--panel);padding:1px 6px;border-radius:4px;">main.py</code> on the Pico root — it runs automatically at boot.</p>
       </div>
     </div>
 
@@ -225,7 +318,7 @@
       <div style="min-width:40px;height:40px;background:var(--blue);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0;">3</div>
       <div>
         <h3 style="margin-bottom:6px;">Wire Everything</h3>
-        <p style="color:var(--text-muted);font-size:14px;">Follow the wiring diagram above. Direct-wire the camera (no breadboard). Connect SD card VCC to VBUS. Connect board 0004 UART0 (P1_5 → GP1, P1_4 → GP0). Insert formatted microSD card.</p>
+        <p style="color:var(--text-muted);font-size:14px;">Follow the wiring tables above. Direct-wire the camera (no breadboard). Connect SD card VCC to VBUS. Tie MS5611 PS pin to 3.3V. Connect board 0004 UART0 (P1_5 → GP1, P1_4 → GP0). Insert formatted microSD card.</p>
       </div>
     </div>
 
@@ -233,15 +326,23 @@
       <div style="min-width:40px;height:40px;background:var(--blue);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0;">4</div>
       <div>
         <h3 style="margin-bottom:6px;">Flash Board 0004 Custom Firmware</h3>
-        <p style="color:var(--text-muted);font-size:14px;">Board 0004 needs the custom firmware with PICO_MSG support. Clone <a href="https://github.com/eor123/openlst" target="_blank">github.com/eor123/openlst</a>, build with SDCC, and flash OTA from the ground station Firmware tab. See the <a href="documentation.html">Developer Guide</a> for full build instructions.</p>
+        <p style="color:var(--text-muted);font-size:14px;">Board 0004 needs the custom firmware with PICO_MSG and CC1190 support. Clone <a href="https://github.com/eor123/openlst" target="_blank">github.com/eor123/openlst</a>, build with SDCC, and flash OTA from the ground station Firmware tab. See the <a href="documentation.html">Developer Guide</a> for full build instructions.</p>
       </div>
     </div>
 
     <div style="display:flex;gap:20px;">
       <div style="min-width:40px;height:40px;background:var(--blue);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0;">5</div>
       <div>
-        <h3 style="margin-bottom:6px;">Power Up and Test</h3>
-        <p style="color:var(--text-muted);font-size:14px;">Power board 0001 (external 5V), power board 0004, power Pico via USB. In the ground station, set HWID to 0004. Wait 5–10 seconds for Pico boot and camera init. Send <strong>PICO Ping</strong> from Custom Commands — you should see <code style="background:var(--panel);padding:1px 6px;border-radius:4px;">✓ ack → PICO:ACK</code>.</p>
+        <h3 style="margin-bottom:6px;">Power Up and Verify</h3>
+        <p style="color:var(--text-muted);font-size:14px;">Power board 0001 (5V), power board 0004, power Pico via USB. In the ground station, set HWID to 0004. Wait 5–10 seconds for Pico boot. Watch the GPS/Map tab — the fused GPS+baro beacon should start arriving every 10 seconds automatically. Status LEDs on the SCK-PBL-1 should be green.</p>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:20px;">
+      <div style="min-width:40px;height:40px;background:var(--blue);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0;">6</div>
+      <div>
+        <h3 style="margin-bottom:6px;">Test Commands</h3>
+        <p style="color:var(--text-muted);font-size:14px;">Send <strong>PICO Ping</strong> from Custom Commands — you should see <code style="background:var(--panel);padding:1px 6px;border-radius:4px;">✓ ack → PICO:ACK</code>. Then try <strong>Get GPS</strong> from the GPS/Map tab — should populate all 8 stat panels and plot on the map.</p>
       </div>
     </div>
 
@@ -266,13 +367,23 @@
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:40px;">
 
     <div class="card card-dark">
+      <h3 style="font-size:15px;margin-bottom:8px;">No GPS beacon arriving</h3>
+      <p style="font-size:13px;">Take GPS module near a window — NEO-6M needs open sky view. First fix can take 60–90 seconds cold start. Blue LED on SCK-PBL-1 illuminates when fix acquired. Beacon fires every 10 seconds after fix.</p>
+    </div>
+
+    <div class="card card-dark">
+      <h3 style="font-size:15px;margin-bottom:8px;">MS5611 not responding</h3>
+      <p style="font-size:13px;">Check PS pin is tied to 3.3V — this selects I2C mode. Without it the chip enters SPI mode and won't respond on I2C. Verify SDA/SCL on GP2/GP3 and address is 0x76 (SDO to GND).</p>
+    </div>
+
+    <div class="card card-dark">
       <h3 style="font-size:15px;margin-bottom:8px;">PICO commands return no reply</h3>
       <p style="font-size:13px;">Wait 5–10 seconds after Pico boot — camera initializes on first idle timeout. Verify UART wires (P1_5→GP1, P1_4→GP0). Confirm Pico is running main.py by checking Thonny console.</p>
     </div>
 
     <div class="card card-dark">
-      <h3 style="font-size:15px;margin-bottom:8px;">SNAP returns FIFO error</h3>
-      <p style="font-size:13px;">Camera is on breadboard — direct wire required. Or SPI was corrupted by SD mount — power cycle Pico. Check camera VCC is on 3.3V not VBUS.</p>
+      <h3 style="font-size:15px;margin-bottom:8px;">SNAP returns memory error</h3>
+      <p style="font-size:13px;">MicroPython heap fragmentation. Run gc.collect() before capture, or reduce camera resolution. The firmware automatically reduces resolution if memory allocation fails. Power cycling the Pico clears the heap.</p>
     </div>
 
     <div class="card card-dark">
@@ -282,7 +393,7 @@
 
     <div class="card card-dark">
       <h3 style="font-size:15px;margin-bottom:8px;">File transfer stalls or fails</h3>
-      <p style="font-size:13px;">Boards too close together — maintain 2–4 feet separation. Check RF link quality with Get Telem (RSSI should be above −90 dBm). Retry logic will attempt each chunk 3 times.</p>
+      <p style="font-size:13px;">Boards too close together — maintain 2–4 feet separation. Check RF link quality with Get Telem (RSSI should be above −90 dBm). Retry logic will attempt each chunk 3 times automatically.</p>
     </div>
 
   </div>
@@ -293,19 +404,26 @@
   <div class="footer-inner">
     <div class="footer-brand">
       <div class="nav-logo" style="color:#fff;">SpaceComms<span style="color:var(--cyan);">Kit</span></div>
-      <p>OpenLST inspired. SCK-915 evolved. Open-source software, hand-assembled hardware. Hand-assembled in Tennessee, USA.</p>
+      <p>OpenLST inspired. SCK-915 evolved. Open-source software, hand-assembled hardware. Tennessee, USA.</p>
     </div>
     <div class="footer-col">
       <h4>Product</h4>
       <a href="kit.html">The Kit</a>
-      <a href="kit.html#buy">Buy Now</a>
+      <a href="https://spacecommskit.myshopify.com" target="_blank">Buy Now</a>
     </div>
     <div class="footer-col">
       <h4>Resources</h4>
       <a href="documentation.html">Documentation</a>
       <a href="software.html">Software</a>
       <a href="pico.html">Pico Project</a>
+      <a href="hab-mission.html">HAB Mission</a>
       <a href="https://github.com/eor123/spacecommskit" target="_blank">GitHub</a>
+    </div>
+    <div class="footer-col">
+      <h4>Mission V1</h4>
+      <a href="mission-v1.html">Flight Data</a>
+      <a href="mission-v1.html#download">Download Flight File</a>
+      <a href="groundstation.html">Ground Station</a>
     </div>
     <div class="footer-col">
       <h4>Contact</h4>
@@ -314,7 +432,7 @@
     </div>
   </div>
   <div class="footer-bottom">
-    <p>© 2025 SpaceCommsKit · Tennessee, USA · Ships to United States only</p>
+    <p>© 2026 SpaceCommsKit · Tennessee, USA · Ships to United States only</p>
     <p>Based on OpenLST by Planet Labs Inc. (GPLv3)</p>
   </div>
 </footer>

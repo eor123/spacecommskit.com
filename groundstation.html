@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ground Station Software — SpaceCommsKit Explorer SCK-915</title>
-<meta name="description" content="OpenLST Ground Station — a full-featured Windows C# application for commanding, monitoring, and extending your OpenLST radio system. Free, open source, included with every kit.">
-<meta name="keywords" content="OpenLST ground station software, CC1110 Windows application, RF ground station, CubeSat ground station software, open source radio control">
+<meta name="description" content="SCK Ground Station v1.2.0 — live GPS map, fused telemetry, flight recorder, flight replay, OTA firmware updates, remote file management. Free, open source, included with every kit.">
+<meta name="keywords" content="OpenLST ground station software, CC1110 Windows application, RF ground station, GPS map, flight recorder, flight replay, open source radio control">
 <link rel="canonical" href="https://www.spacecommskit.com/groundstation.html">
 <link rel="stylesheet" href="style.css">
 <style>
@@ -18,38 +18,16 @@
   .feature-list li .icon { font-size: 18px; flex-shrink: 0; }
   .feature-list li strong { display: block; margin-bottom: 2px; }
   .feature-list li p { color: var(--text-muted); font-size: 13px; margin: 0; }
-
-  /* Lightbox */
   .lb-trigger { cursor: zoom-in; }
   .lb-trigger img { transition: opacity 0.15s; }
   .lb-trigger:hover img { opacity: 0.9; }
-  .lb-hint {
-    font-family: var(--font-mono); font-size: 11px;
-    color: var(--text-muted); text-align: center;
-    margin-top: 8px; letter-spacing: 0.5px;
-  }
-  .lb-overlay {
-    display: none; position: fixed; inset: 0; z-index: 9999;
-    background: rgba(0,0,0,0.92);
-    align-items: center; justify-content: center;
-    cursor: zoom-out; padding: 24px;
-  }
+  .lb-hint { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); text-align: center; margin-top: 8px; letter-spacing: 0.5px; }
+  .lb-overlay { display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.92); align-items: center; justify-content: center; cursor: zoom-out; padding: 24px; }
   .lb-overlay.open { display: flex; }
-  .lb-overlay img {
-    max-width: 95vw; max-height: 90vh;
-    border-radius: 8px; box-shadow: 0 0 80px rgba(0,0,0,0.8);
-    object-fit: contain;
-  }
-  .lb-close {
-    position: fixed; top: 20px; right: 28px;
-    color: #fff; font-size: 32px; cursor: pointer;
-    line-height: 1; opacity: 0.7;
-  }
+  .lb-overlay img { max-width: 95vw; max-height: 90vh; border-radius: 8px; box-shadow: 0 0 80px rgba(0,0,0,0.8); object-fit: contain; }
+  .lb-close { position: fixed; top: 20px; right: 28px; color: #fff; font-size: 32px; cursor: pointer; line-height: 1; opacity: 0.7; }
   .lb-close:hover { opacity: 1; }
-
-  @media (max-width: 768px) {
-    .app-row { grid-template-columns: 1fr !important; }
-  }
+  @media (max-width: 768px) { .app-row { grid-template-columns: 1fr !important; } }
 </style>
 </head>
 <body>
@@ -64,31 +42,31 @@
     <li><a href="software.html">Software</a></li>
     <li><a href="pico.html">Pico Project</a></li>
     <li><a href="groundstation.html" class="active">Ground Station</a></li>
+    <li><a href="hab-mission.html">HAB Mission</a></li>
     <li><a href="about.html">About</a></li>
     <li><a href="classified.html">⬛ Section 7</a></li>
     <li><a href="https://spacecommskit.myshopify.com" target="_blank" class="nav-cta">Buy a Kit</a></li>
   </ul>
 </nav>
 
-<!-- Hero -->
 <section class="hero">
   <div class="hero-inner">
-    <span class="eyebrow">SpaceCommsKit Explorer · Ground Station Software · OpenLST Inspired · Open Source</span>
+    <span class="eyebrow">SpaceCommsKit Explorer · Ground Station Software · v1.2.0 · Open Source</span>
     <h1 class="hero-title">A Ground Station App<br><span>Worth Shipping With the Kit</span></h1>
     <p class="hero-sub">
       Most RF development kits ship with a serial terminal or nothing at all.
       The SpaceCommsKit Explorer ships with a full Windows application —
-      professional UI, live telemetry, OTA firmware updates, remote file management,
-      and an open source C# codebase you can fork and extend.
+      live GPS map, flight recorder, flight replay, OTA firmware updates,
+      remote file management, and an open source C# codebase you can fork and extend.
     </p>
     <div class="flex gap-16" style="flex-wrap:wrap;">
-      <a href="https://github.com/eor123/spacecommskit/raw/main/installer/OpenLST_Ground_Station_Setup_v1.0.0.exe"
-         class="btn btn-primary">⬇ Download Free →</a>
+      <a href="https://github.com/eor123/spacecommskit/raw/main/installer/OpenLST_Ground_Station_Setup_v1.2.0.exe"
+         class="btn btn-primary">⬇ Download Free · v1.2.0</a>
       <a href="https://github.com/eor123/spacecommskit/tree/main/ground-station"
          class="btn btn-outline" target="_blank">View Source on GitHub</a>
     </div>
     <div class="stat-bar">
-      <div class="stat"><div class="stat-num">7</div><div class="stat-label">Application Tabs</div></div>
+      <div class="stat"><div class="stat-num">8</div><div class="stat-label">Application Tabs</div></div>
       <div class="stat"><div class="stat-num">C#</div><div class="stat-label">.NET 8 · Open Source</div></div>
       <div class="stat"><div class="stat-num">0</div><div class="stat-label">Prerequisites to Install</div></div>
       <div class="stat"><div class="stat-num">GPLv3</div><div class="stat-label">License</div></div>
@@ -96,21 +74,22 @@
   </div>
 </section>
 
-<!-- App Showcase — No-JS scrollable layout -->
+<!-- App Tour -->
 <div class="section-panel">
 <div class="section">
   <span class="eyebrow eyebrow-dark">Application Tour</span>
   <h2 class="section-title">Every Tab. Every Feature.</h2>
-  <p class="section-lead">Six tabs. Zero learning curve. Here's what you get out of the box.</p>
+  <p class="section-lead">Eight tabs. Zero learning curve. Here's what you get out of the box.</p>
 
-  <!-- Quick jump nav -->
   <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:48px;">
     <a href="#tab-home" style="padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;border:1.5px solid var(--border-lt);color:var(--text-muted);text-decoration:none;background:#fff;">🏠 Home · Telemetry</a>
     <a href="#tab-commands" style="padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;border:1.5px solid var(--border-lt);color:var(--text-muted);text-decoration:none;background:#fff;">⌨️ Commands</a>
     <a href="#tab-custom" style="padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;border:1.5px solid var(--border-lt);color:var(--text-muted);text-decoration:none;background:#fff;">🔧 Custom Commands</a>
+    <a href="#tab-gps" style="padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;border:1.5px solid var(--cyan);color:var(--cyan);text-decoration:none;background:#fff;">🗺️ GPS / Map · NEW</a>
     <a href="#tab-files" style="padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;border:1.5px solid var(--border-lt);color:var(--text-muted);text-decoration:none;background:#fff;">📁 Files · SD Card</a>
     <a href="#tab-firmware" style="padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;border:1.5px solid var(--border-lt);color:var(--text-muted);text-decoration:none;background:#fff;">⚡ Firmware · OTA</a>
     <a href="#tab-provision" style="padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;border:1.5px solid var(--border-lt);color:var(--text-muted);text-decoration:none;background:#fff;">🔑 Provision</a>
+    <a href="#tab-replay" style="padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;border:1.5px solid var(--cyan);color:var(--cyan);text-decoration:none;background:#fff;">▶️ Flight Replay · NEW</a>
   </div>
 
   <!-- Home Tab -->
@@ -121,15 +100,15 @@
           <div style="width:12px;height:12px;border-radius:50%;background:#FF5F56;flex-shrink:0;"></div>
           <div style="width:12px;height:12px;border-radius:50%;background:#FFBD2E;flex-shrink:0;"></div>
           <div style="width:12px;height:12px;border-radius:50%;background:#27C93F;flex-shrink:0;"></div>
-          <span style="font-family:var(--font-mono);font-size:12px;color:#666;margin-left:8px;">OpenLST Ground Station — Home</span>
+          <span style="font-family:var(--font-mono);font-size:12px;color:#666;margin-left:8px;">SCK Ground Station — Home</span>
         </div>
-        <img src="images/app_home.jpg" alt="OpenLST Ground Station Home tab showing live telemetry" style="width:100%;height:auto;display:block;" onclick="openLB(this)">
+        <img src="images/app_home.jpg" alt="SCK Ground Station Home tab showing live telemetry" style="width:100%;height:auto;display:block;" onclick="openLB(this)">
       </div>
       <p class="lb-hint">🔍 Click to enlarge</p>
     </div>
     <div>
       <h3 style="margin-bottom:8px;">Live Telemetry Dashboard</h3>
-      <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">The Home tab gives you a real-time view into your radio's operating state. Connect, click Get Telem, and every panel updates immediately. Auto-poll keeps data fresh every 5 seconds without any manual intervention.</p>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">The Home tab gives you a real-time view into your radio's operating state. Connect, click Get Telem, and every panel updates immediately.</p>
       <ul class="feature-list">
         <li><span class="icon">⏱️</span><div><strong>Uptime Counter</strong><p>Live seconds since last boot — helps identify unexpected reboots.</p></div></li>
         <li><span class="icon">📶</span><div><strong>RSSI & LQI</strong><p>Received signal strength and link quality from the last packet received.</p></div></li>
@@ -149,21 +128,20 @@
           <div style="width:12px;height:12px;border-radius:50%;background:#FF5F56;flex-shrink:0;"></div>
           <div style="width:12px;height:12px;border-radius:50%;background:#FFBD2E;flex-shrink:0;"></div>
           <div style="width:12px;height:12px;border-radius:50%;background:#27C93F;flex-shrink:0;"></div>
-          <span style="font-family:var(--font-mono);font-size:12px;color:#666;margin-left:8px;">OpenLST Ground Station — Commands</span>
+          <span style="font-family:var(--font-mono);font-size:12px;color:#666;margin-left:8px;">SCK Ground Station — Commands</span>
         </div>
-        <img src="images/app_commands.jpg" alt="OpenLST Ground Station Commands tab" style="width:100%;height:auto;display:block;" onclick="openLB(this)">
+        <img src="images/app_commands.jpg" alt="SCK Ground Station Commands tab" style="width:100%;height:auto;display:block;" onclick="openLB(this)">
       </div>
       <p class="lb-hint">🔍 Click to enlarge</p>
     </div>
     <div>
-      <h3 style="margin-bottom:8px;">Standard OpenLST Commands</h3>
-      <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">One-click access to all standard OpenLST protocol commands. Set the HWID in the header bar to address any board — board 0001 relays commands to board 0004 over RF automatically.</p>
+      <h3 style="margin-bottom:8px;">Standard SCK Commands</h3>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">One-click access to all standard SCK protocol commands. Set the HWID in the header bar to address any board — board 0001 relays commands to board 0004 over RF automatically.</p>
       <ul class="feature-list">
         <li><span class="icon">📡</span><div><strong>Get Telem</strong><p>Request and display full telemetry from any addressed board.</p></div></li>
         <li><span class="icon">🔁</span><div><strong>Reboot</strong><p>Remote reboot any board over RF with one click.</p></div></li>
         <li><span class="icon">🕐</span><div><strong>Get / Set Time</strong><p>Read and set the onboard RTC clock.</p></div></li>
         <li><span class="icon">📻</span><div><strong>Callsign</strong><p>Read and write the stored callsign — up to 8 characters.</p></div></li>
-        <li><span class="icon">⌨️</span><div><strong>Raw Command</strong><p>Send any arbitrary command string directly. No opcode knowledge required.</p></div></li>
       </ul>
     </div>
   </div>
@@ -178,20 +156,52 @@
           <div style="width:12px;height:12px;border-radius:50%;background:#FF5F56;flex-shrink:0;"></div>
           <div style="width:12px;height:12px;border-radius:50%;background:#FFBD2E;flex-shrink:0;"></div>
           <div style="width:12px;height:12px;border-radius:50%;background:#27C93F;flex-shrink:0;"></div>
-          <span style="font-family:var(--font-mono);font-size:12px;color:#666;margin-left:8px;">OpenLST Ground Station — Custom Commands</span>
+          <span style="font-family:var(--font-mono);font-size:12px;color:#666;margin-left:8px;">SCK Ground Station — Custom Commands</span>
         </div>
-        <img src="images/app_custom_commands.jpg" alt="OpenLST Ground Station Custom Commands tab" style="width:100%;height:auto;display:block;" onclick="openLB(this)">
+        <img src="images/app_custom_commands.jpg" alt="SCK Ground Station Custom Commands tab" style="width:100%;height:auto;display:block;" onclick="openLB(this)">
       </div>
       <p class="lb-hint">🔍 Click to enlarge</p>
     </div>
     <div>
       <h3 style="margin-bottom:8px;">Extensible Custom Command System</h3>
-      <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">The most powerful tab in the application. Define any opcode with any hex payload, save it with a name, and send it with one click. Commands persist between sessions. Pre-loaded with the full Pico imaging command set.</p>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">The most powerful tab in the application. Define any opcode with any hex payload, save it with a name, and send it with one click. Pre-loaded with the full Pico command set.</p>
       <ul class="feature-list">
-        <li><span class="icon">💾</span><div><strong>JSON Persistent</strong><p>All commands saved automatically. Your command library is always there when you reopen the app.</p></div></li>
-        <li><span class="icon">📷</span><div><strong>Pico Imaging Commands</strong><p>PING, READ TEMP, SNAP, LIST FILES — all pre-loaded and ready to use with board 0004.</p></div></li>
+        <li><span class="icon">💾</span><div><strong>JSON Persistent</strong><p>All commands saved automatically between sessions.</p></div></li>
+        <li><span class="icon">📷</span><div><strong>Pico Commands Pre-Loaded</strong><p>PING, READ TEMP, SNAP, GET GPS, GET BARO, LIST FILES — all ready to use.</p></div></li>
         <li><span class="icon">🔤</span><div><strong>Auto-Decoded Responses</strong><p>ASCII responses from the Pico are automatically decoded and displayed.</p></div></li>
-        <li><span class="icon">🧩</span><div><strong>Any Opcode, Any Payload</strong><p>Not limited to pre-defined commands. Enter any hex bytes and send. Perfect for custom firmware development.</p></div></li>
+        <li><span class="icon">🧩</span><div><strong>Any Opcode, Any Payload</strong><p>Not limited to pre-defined commands. Perfect for custom firmware development.</p></div></li>
+      </ul>
+    </div>
+  </div>
+
+  <hr style="border:none;border-top:1px solid var(--border-lt);margin-bottom:64px;">
+
+  <!-- GPS / Map Tab — NEW -->
+  <div id="tab-gps" class="app-row" style="display:grid;grid-template-columns:3fr 2fr;gap:40px;align-items:start;margin-bottom:64px;">
+    <div>
+      <div style="background:#1A1A2E;border:1px solid #2A2A4A;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+        <div style="background:#111122;padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2A2A4A;">
+          <div style="width:12px;height:12px;border-radius:50%;background:#FF5F56;flex-shrink:0;"></div>
+          <div style="width:12px;height:12px;border-radius:50%;background:#FFBD2E;flex-shrink:0;"></div>
+          <div style="width:12px;height:12px;border-radius:50%;background:#27C93F;flex-shrink:0;"></div>
+          <span style="font-family:var(--font-mono);font-size:12px;color:#666;margin-left:8px;">SCK Ground Station — GPS / Map · Live telemetry</span>
+        </div>
+        <img src="images/app_gps_map.jpg" alt="SCK Ground Station GPS Map tab showing live telemetry and flight track" style="width:100%;height:auto;display:block;" onclick="openLB(this)">
+      </div>
+      <p class="lb-hint">🔍 Click to enlarge</p>
+    </div>
+    <div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+        <h3 style="margin:0;">GPS / Map — Live Telemetry</h3>
+        <span class="tag tag-cyan" style="font-size:10px;">New in v1.2.0</span>
+      </div>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">The GPS tab is the heart of the HAB mission experience. Fused GPS + barometric telemetry plots live on Google Maps every 10 seconds. All 8 sensor channels displayed, recorded, and exported.</p>
+      <ul class="feature-list">
+        <li><span class="icon">🗺️</span><div><strong>Live Google Maps</strong><p>Autonomous beacon plots position every 10 seconds. Cyan track builds throughout the flight.</p></div></li>
+        <li><span class="icon">📊</span><div><strong>8 Stat Panels</strong><p>Lat, Lon, GPS Alt, Sats (row 1) + Pressure hPa, Baro Alt, Baro Temp, Fix/Pkts (row 2).</p></div></li>
+        <li><span class="icon">📈</span><div><strong>Altitude Display</strong><p>Animated bar graphs, ascent rate with arrows, max altitude session high, GPS/baro delta, burst detection.</p></div></li>
+        <li><span class="icon">⏺️</span><div><strong>Flight Recorder</strong><p>One click to start recording. Saves .sckflight + auto-generates KML on stop. Opens Flights folder automatically.</p></div></li>
+        <li><span class="icon">🗺️</span><div><strong>Export KML</strong><p>Full flight track with launch, apogee, and landing pins for Google Earth.</p></div></li>
       </ul>
     </div>
   </div>
@@ -206,15 +216,15 @@
           <div style="width:12px;height:12px;border-radius:50%;background:#FF5F56;flex-shrink:0;"></div>
           <div style="width:12px;height:12px;border-radius:50%;background:#FFBD2E;flex-shrink:0;"></div>
           <div style="width:12px;height:12px;border-radius:50%;background:#27C93F;flex-shrink:0;"></div>
-          <span style="font-family:var(--font-mono);font-size:12px;color:#666;margin-left:8px;">OpenLST Ground Station — Files</span>
+          <span style="font-family:var(--font-mono);font-size:12px;color:#666;margin-left:8px;">SCK Ground Station — Files</span>
         </div>
-        <img src="images/app_files.jpg" alt="OpenLST Ground Station Files tab showing SD card file listing" style="width:100%;height:auto;display:block;" onclick="openLB(this)">
+        <img src="images/app_files.jpg" alt="SCK Ground Station Files tab showing SD card file listing" style="width:100%;height:auto;display:block;" onclick="openLB(this)">
       </div>
       <p class="lb-hint">🔍 Click to enlarge</p>
     </div>
     <div>
       <h3 style="margin-bottom:8px;">Remote SD Card File Manager</h3>
-      <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">A complete file manager for the Pico's SD card — over RF. Browse, download, and delete files without touching the remote hardware. Images transfer in 200-byte chunks with progress tracking and automatic retry.</p>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">A complete file manager for the Pico's SD card — over RF. Browse, download, and delete files without touching the remote hardware.</p>
       <ul class="feature-list">
         <li><span class="icon">↺</span><div><strong>Refresh List</strong><p>Requests file listing from Pico SD card over RF. Populates the file list in under a second.</p></div></li>
         <li><span class="icon">⬇️</span><div><strong>Get File</strong><p>Chunked transfer — 200 bytes at a time. Progress bar shows every chunk. Auto-opens Images folder on completion.</p></div></li>
@@ -234,9 +244,9 @@
           <div style="width:12px;height:12px;border-radius:50%;background:#FF5F56;flex-shrink:0;"></div>
           <div style="width:12px;height:12px;border-radius:50%;background:#FFBD2E;flex-shrink:0;"></div>
           <div style="width:12px;height:12px;border-radius:50%;background:#27C93F;flex-shrink:0;"></div>
-          <span style="font-family:var(--font-mono);font-size:12px;color:#666;margin-left:8px;">OpenLST Ground Station — Firmware</span>
+          <span style="font-family:var(--font-mono);font-size:12px;color:#666;margin-left:8px;">SCK Ground Station — Firmware</span>
         </div>
-        <img src="images/app_firmware.jpg" alt="OpenLST Ground Station Firmware tab with OTA flash" style="width:100%;height:auto;display:block;" onclick="openLB(this)">
+        <img src="images/app_firmware.jpg" alt="SCK Ground Station Firmware tab with OTA flash" style="width:100%;height:auto;display:block;" onclick="openLB(this)">
       </div>
       <p class="lb-hint">🔍 Click to enlarge</p>
     </div>
@@ -244,27 +254,86 @@
       <h3 style="margin-bottom:8px;">Build, Sign & Flash Over The Air</h3>
       <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">The complete firmware development pipeline in one tab. Build your custom CC1110 firmware with SDCC, sign it with your AES key, and flash it to the remote board over RF — without touching the hardware.</p>
       <ul class="feature-list">
-        <li><span class="icon">🔨</span><div><strong>Build / Clean + Build</strong><p>Runs mingw32-make on your OpenLST source tree. Clean button safely removes only radio app build artifacts.</p></div></li>
-        <li><span class="icon">🔐</span><div><strong>AES-CBC-MAC Signing</strong><p>Signs your firmware hex with the board's AES key before flashing. Bootloader verifies signature before accepting the update.</p></div></li>
+        <li><span class="icon">🔨</span><div><strong>Build / Clean + Build</strong><p>Runs mingw32-make on your OpenLST source tree. Builds bootloader and radio application.</p></div></li>
+        <li><span class="icon">🔐</span><div><strong>AES-CBC-MAC Signing</strong><p>Signs your firmware hex with the board's AES key. Bootloader verifies signature before accepting.</p></div></li>
         <li><span class="icon">📡</span><div><strong>Flash OTA</strong><p>Sends firmware page-by-page over RF. Retry logic per page. Progress bar tracks every 128-byte page write.</p></div></li>
-        <li><span class="icon">⚡</span><div><strong>Build + Flash</strong><p>One-button workflow — build, sign, and flash in sequence. Fastest path from source code to running firmware.</p></div></li>
+        <li><span class="icon">✕</span><div><strong>Cancel Button</strong><p>Cancel any in-progress OTA flash cleanly. Board returns to application after cancellation.</p></div></li>
       </ul>
     </div>
   </div>
 
   <hr style="border:none;border-top:1px solid var(--border-lt);margin-bottom:64px;">
 
-  <!-- Provision Tab -->
-  <div id="tab-provision" class="app-row" style="display:grid;grid-template-columns:3fr 2fr;gap:40px;align-items:start;margin-bottom:16px;">
+  <!-- Flight Replay -->
+  <div id="tab-replay" class="app-row" style="display:grid;grid-template-columns:3fr 2fr;gap:40px;align-items:start;margin-bottom:64px;">
     <div>
       <div class="lb-trigger" style="background:#1A1A2E;border:1px solid #2A2A4A;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
         <div style="background:#111122;padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2A2A4A;">
           <div style="width:12px;height:12px;border-radius:50%;background:#FF5F56;flex-shrink:0;"></div>
           <div style="width:12px;height:12px;border-radius:50%;background:#FFBD2E;flex-shrink:0;"></div>
           <div style="width:12px;height:12px;border-radius:50%;background:#27C93F;flex-shrink:0;"></div>
-          <span style="font-family:var(--font-mono);font-size:12px;color:#666;margin-left:8px;">OpenLST Ground Station — Provision</span>
+          <span style="font-family:var(--font-mono);font-size:12px;color:#666;margin-left:8px;">SCK Ground Station — Flight Replay</span>
         </div>
-        <img src="images/app_provision.jpg" alt="OpenLST Ground Station Provision tab for bootloader flashing" style="width:100%;height:auto;display:block;" onclick="openLB(this)">
+        <img src="images/app_flight_replay.jpg" alt="SCK Ground Station Flight Replay showing animated map and altitude chart" style="width:100%;height:auto;display:block;" onclick="openLB(this)">
+      </div>
+      <p class="lb-hint">🔍 Click to enlarge</p>
+    </div>
+    <div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+        <h3 style="margin:0;">Flight Replay</h3>
+        <span class="tag tag-cyan" style="font-size:10px;">New in v1.2.0</span>
+      </div>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">Every flight is automatically saved to a .sckflight file — on the ground station AND on the SD card in the payload. Load any flight file after recovery and replay the entire mission with animated map, altitude chart, and event timeline.</p>
+      <ul class="feature-list">
+        <li><span class="icon">▶️</span><div><strong>Animated Playback</strong><p>Step through every beacon packet. Map marker moves in real time. Variable speed — 1x to 10x.</p></div></li>
+        <li><span class="icon">📈</span><div><strong>Altitude Chart</strong><p>Barometric altitude plotted across the full flight. Apogee marked automatically.</p></div></li>
+        <li><span class="icon">📷</span><div><strong>Image Events</strong><p>SNAP commands shown on the timeline — see exactly where each photo was taken.</p></div></li>
+        <li><span class="icon">💾</span><div><strong>SD Black Box</strong><p>Even if RF was lost mid-flight the SD card has every packet. Pull the card after recovery and replay the complete mission.</p></div></li>
+      </ul>
+    </div>
+  </div>
+
+  <hr style="border:none;border-top:1px solid var(--border-lt);margin-bottom:64px;">
+
+  <!-- RF QA Tab -->
+  <div id="tab-rfqa" class="app-row" style="display:grid;grid-template-columns:3fr 2fr;gap:40px;align-items:start;margin-bottom:64px;">
+    <div>
+      <div class="lb-trigger" style="background:#1A1A2E;border:1px solid #2A2A4A;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+        <div style="background:#111122;padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2A2A4A;">
+          <div style="width:12px;height:12px;border-radius:50%;background:#FF5F56;flex-shrink:0;"></div>
+          <div style="width:12px;height:12px;border-radius:50%;background:#FFBD2E;flex-shrink:0;"></div>
+          <div style="width:12px;height:12px;border-radius:50%;background:#27C93F;flex-shrink:0;"></div>
+          <span style="font-family:var(--font-mono);font-size:12px;color:#666;margin-left:8px;">SCK Ground Station — RF QA</span>
+        </div>
+        <img src="images/app_rf_qa.jpg" alt="SCK Ground Station RF QA tab showing spectrum scan and PASS result" style="width:100%;height:auto;display:block;" onclick="openLB(this)">
+      </div>
+      <p class="lb-hint">🔍 Click to enlarge</p>
+    </div>
+    <div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+        <h3 style="margin:0;">RF QA — Automated Spectrum Verification</h3>
+        <span class="tag tag-cyan" style="font-size:10px;">New in v1.2.0</span>
+      </div>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">Every SCK-915 board that leaves our lab gets a printed RF QA certificate. The RF QA tab automates the entire process — spectrum scan, 2-FSK center frequency detection, harmonic check, and a printable PASS/FAIL certificate. Requires an RTL-SDR Blog V3/V4 dongle.</p>
+      <ul class="feature-list">
+        <li><span class="icon">📡</span><div><strong>One-Click QA Scan</strong><p>Triggers board TX, runs rtl_power sweep, detects 2-FSK center frequency automatically. 9 second total test time.</p></div></li>
+        <li><span class="icon">📊</span><div><strong>Live Spectrum Chart</strong><p>Frequency vs dBm drawn live. Green peak marker shows detected center frequency.</p></div></li>
+        <li><span class="icon">✅</span><div><strong>PASS / FAIL Per Board</strong><p>Center frequency, peak power, 2nd and 3rd harmonic levels checked. Overall PASS/FAIL banner.</p></div></li>
+        <li><span class="icon">🖨️</span><div><strong>Printable Certificate</strong><p>Professional HTML certificate opens in browser — print to PDF. Included with every board we ship.</p></div></li>
+        <li><span class="icon">📁</span><div><strong>Snapshot Archive</strong><p>Every scan auto-saved as SCK915_SERIAL_snap001_fund.csv. Browse and reload any previous snapshot.</p></div></li>
+      </ul>
+    </div>
+  </div>
+  <div id="tab-provision" class="app-row" style="display:grid;grid-template-columns:3fr 2fr;gap:40px;align-items:start;margin-bottom:64px;">
+    <div>
+      <div class="lb-trigger" style="background:#1A1A2E;border:1px solid #2A2A4A;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+        <div style="background:#111122;padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2A2A4A;">
+          <div style="width:12px;height:12px;border-radius:50%;background:#FF5F56;flex-shrink:0;"></div>
+          <div style="width:12px;height:12px;border-radius:50%;background:#FFBD2E;flex-shrink:0;"></div>
+          <div style="width:12px;height:12px;border-radius:50%;background:#27C93F;flex-shrink:0;"></div>
+          <span style="font-family:var(--font-mono);font-size:12px;color:#666;margin-left:8px;">SCK Ground Station — Provision</span>
+        </div>
+        <img src="images/app_provision.jpg" alt="SCK Ground Station Provision tab for bootloader flashing" style="width:100%;height:auto;display:block;" onclick="openLB(this)">
       </div>
       <p class="lb-hint">🔍 Click to enlarge</p>
     </div>
@@ -273,10 +342,58 @@
       <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">Flash the bootloader onto fresh CC1110 boards using the TI CC Debugger. Sets the hardware ID, embeds AES signing keys, and programs the bootloader image — all from one interface.</p>
       <ul class="feature-list">
         <li><span class="icon">🔑</span><div><strong>HWID Assignment</strong><p>Assign any hardware ID (e.g. 0001, 0004) that becomes the board's permanent RF address.</p></div></li>
-        <li><span class="icon">🔒</span><div><strong>AES Key Embedding</strong><p>Three 16-byte AES signing keys embedded in the bootloader. Lab keys (all-F) used for development.</p></div></li>
-        <li><span class="icon">💾</span><div><strong>SmartRF Integration</strong><p>Calls TI SmartRF Flash Programmer automatically via CC Debugger to erase, program, and verify the bootloader image.</p></div></li>
-        <li><span class="icon">✅</span><div><strong>Verify After Flash</strong><p>SmartRF verifies the written image byte-for-byte. Board is ready for OTA firmware updates immediately after provisioning.</p></div></li>
+        <li><span class="icon">🔒</span><div><strong>AES Key Embedding</strong><p>Three 16-byte AES signing keys embedded in the bootloader.</p></div></li>
+        <li><span class="icon">💾</span><div><strong>SmartRF Integration</strong><p>Calls TI SmartRF Flash Programmer automatically via CC Debugger to erase, program, and verify.</p></div></li>
+        <li><span class="icon">✅</span><div><strong>Verify After Flash</strong><p>SmartRF verifies the written image byte-for-byte. Board is ready for OTA firmware updates immediately.</p></div></li>
       </ul>
+    </div>
+  </div>
+
+  <hr style="border:none;border-top:1px solid var(--border-lt);margin-bottom:64px;">
+
+  <!-- Flight Replay -->
+  <div id="tab-replay" class="app-row" style="display:grid;grid-template-columns:3fr 2fr;gap:40px;align-items:start;margin-bottom:16px;">
+    <div>
+      <div style="background:#1A1A2E;border:1px solid #2A2A4A;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+        <div style="background:#111122;padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #2A2A4A;">
+          <div style="width:12px;height:12px;border-radius:50%;background:#FF5F56;flex-shrink:0;"></div>
+          <div style="width:12px;height:12px;border-radius:50%;background:#FFBD2E;flex-shrink:0;"></div>
+          <div style="width:12px;height:12px;border-radius:50%;background:#27C93F;flex-shrink:0;"></div>
+          <span style="font-family:var(--font-mono);font-size:12px;color:#666;margin-left:8px;">◈ Flight Replay — FLT-Mission-V1 · Dickson, TN</span>
+        </div>
+        <div style="background:#0d0d1a;padding:20px;font-family:var(--font-mono);font-size:11px;">
+          <div style="color:var(--cyan);margin-bottom:12px;">▶ Play &nbsp;|&nbsp; ◀◀ Rewind &nbsp;|&nbsp; Speed: 10x &nbsp;|&nbsp; t: 01:22:04 &nbsp;|&nbsp; Packet: 492/814</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
+            <div style="background:#111122;border:1px solid #1e1e35;border-radius:6px;padding:8px;"><div style="color:#555;font-size:9px;">MAX ALT</div><div style="color:var(--cyan);font-size:16px;font-weight:700;">30,847m</div></div>
+            <div style="background:#111122;border:1px solid #1e1e35;border-radius:6px;padding:8px;"><div style="color:#555;font-size:9px;">FLIGHT TIME</div><div style="color:#7eb8f7;font-size:16px;font-weight:700;">2:14:33</div></div>
+            <div style="background:#111122;border:1px solid #1e1e35;border-radius:6px;padding:8px;"><div style="color:#555;font-size:9px;">MIN TEMP</div><div style="color:#4da6ff;font-size:16px;font-weight:700;">−54.2°C</div></div>
+            <div style="background:#111122;border:1px solid #1e1e35;border-radius:6px;padding:8px;"><div style="color:#555;font-size:9px;">BURST</div><div style="color:#ff6b6b;font-size:16px;font-weight:700;">DETECTED</div></div>
+          </div>
+          <div style="background:#080812;border-radius:6px;padding:10px;margin-bottom:10px;">
+            <div style="color:#555;font-size:9px;margin-bottom:6px;">◈ EVENT TIMELINE</div>
+            <div style="color:#a0e080;margin-bottom:4px;">t+8s &nbsp;&nbsp;&nbsp; ● LAUNCH</div>
+            <div style="color:var(--cyan);margin-bottom:4px;">t+4920s ● APOGEE 30,847m</div>
+            <div style="color:#ff6b6b;margin-bottom:4px;">t+4988s ⚡ BURST DETECTED</div>
+            <div style="color:#ffd700;">t+8073s ● LANDING</div>
+          </div>
+          <div style="background:#1a2a35;border-radius:6px;height:60px;display:flex;align-items:center;justify-content:center;color:#2a4a5a;font-size:11px;">[ Animated Google Maps · position marker moving ]</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+        <h3 style="margin:0;">Flight Replay</h3>
+        <span class="tag tag-cyan" style="font-size:10px;">New in v1.2.0</span>
+      </div>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px;">Opens any .sckflight recording and plays it back with full animation. Load Mission V1 real flight data before you buy a kit.</p>
+      <ul class="feature-list">
+        <li><span class="icon">🗺️</span><div><strong>Animated Map Track</strong><p>Position marker moves on Google Maps in real time during playback. Launch, apogee, and landing pins always visible.</p></div></li>
+        <li><span class="icon">📈</span><div><strong>Altitude Profile Chart</strong><p>Baro alt (cyan), GPS alt (blue dashed), temperature (orange dotted) with moving cursor.</p></div></li>
+        <li><span class="icon">⏩</span><div><strong>Variable Speed Playback</strong><p>1x, 5x, 10x, 30x, 60x. Scrub bar for instant jump to any point in the flight.</p></div></li>
+        <li><span class="icon">📋</span><div><strong>Event Timeline</strong><p>LAUNCH, APOGEE, BURST, LANDING auto-detected with timestamps and statistics.</p></div></li>
+        <li><span class="icon">⬇️</span><div><strong>Try Before You Buy</strong><p>Download Mission V1 flight file and experience a real stratospheric flight before purchasing a kit.</p></div></li>
+      </ul>
+      <a href="mission-v1.html" class="btn btn-outline btn-sm" style="margin-top:16px;border-color:var(--cyan);color:var(--cyan);">Load Mission V1 Flight File →</a>
     </div>
   </div>
 
@@ -292,7 +409,8 @@
       <h2 class="section-title-inv section-title">Fork It. Extend It. Make It Yours.</h2>
       <p class="section-lead-inv section-lead">
         The ground station is a Visual Studio 2022 C# .NET 8 WinForms project.
-        Clean architecture — all UI in MainForm.cs, all protocol logic in OpenLstProtocol.cs.
+        Clean architecture — all UI in MainForm.cs, flight replay in FlightReplayForm.cs,
+        all protocol logic in OpenLstProtocol.cs.
         Adding a new tab, a new command, or a new protocol feature takes minutes, not days.
       </p>
       <div class="flex gap-16" style="flex-wrap:wrap;">
@@ -329,17 +447,17 @@
   <h2 class="section-title">Free. No Prerequisites. No Strings.</h2>
   <p class="section-lead" style="margin-left:auto;margin-right:auto;">
     The ground station application is free to download and use — with or without a kit.
-    Try it out, explore the source code, and see what you'd build with it.
+    Load Mission V1 real flight data and experience the replay before you spend a dollar.
   </p>
   <div class="flex gap-16" style="justify-content:center;flex-wrap:wrap;margin-top:8px;">
-    <a href="https://github.com/eor123/spacecommskit/raw/main/installer/OpenLST_Ground_Station_Setup_v1.0.0.exe"
-       class="btn btn-primary">⬇ Download Installer · Free</a>
+    <a href="https://github.com/eor123/spacecommskit/raw/main/installer/OpenLST_Ground_Station_Setup_v1.2.0.exe"
+       class="btn btn-primary">⬇ Download Installer · v1.2.0 · Free</a>
+    <a href="mission-v1.html" class="btn btn-outline" style="border-color:var(--cyan);color:var(--cyan);">Mission V1 Flight File →</a>
     <a href="https://spacecommskit.myshopify.com" target="_blank" class="btn btn-gold">Buy a Kit →</a>
   </div>
   <p class="text-muted mt-16">Windows 10/11 · x64 · Self-contained · ~50MB</p>
 </div>
 
-<!-- Lightbox overlay -->
 <div class="lb-overlay" id="lb-overlay" onclick="closeLB()">
   <span class="lb-close" onclick="closeLB()">✕</span>
   <img id="lb-img" src="" alt="Screenshot fullsize">
@@ -349,7 +467,7 @@
   <div class="footer-inner">
     <div class="footer-brand">
       <div class="nav-logo" style="color:#fff;">SpaceComms<span style="color:var(--cyan);">Kit</span></div>
-      <p>OpenLST inspired. SCK-915 evolved. Open-source software, hand-assembled hardware. Hand-assembled in Tennessee, USA.</p>
+      <p>OpenLST inspired. SCK-915 evolved. Open-source software, hand-assembled hardware. Tennessee, USA.</p>
     </div>
     <div class="footer-col">
       <h4>Product</h4>
@@ -361,7 +479,14 @@
       <a href="documentation.html">Documentation</a>
       <a href="software.html">Software</a>
       <a href="pico.html">Pico Project</a>
+      <a href="hab-mission.html">HAB Mission</a>
       <a href="https://github.com/eor123/spacecommskit" target="_blank">GitHub</a>
+    </div>
+    <div class="footer-col">
+      <h4>Mission V1</h4>
+      <a href="mission-v1.html">Flight Data</a>
+      <a href="mission-v1.html#download">Download Flight File</a>
+      <a href="groundstation.html">Ground Station</a>
     </div>
     <div class="footer-col">
       <h4>Contact</h4>
@@ -370,12 +495,10 @@
     </div>
   </div>
   <div class="footer-bottom">
-    <p>© 2025 SpaceCommsKit · Tennessee, USA · Ships to United States only</p>
+    <p>© 2026 SpaceCommsKit · Tennessee, USA · Ships to United States only</p>
     <p>Based on OpenLST by Planet Labs Inc. (GPLv3)</p>
   </div>
 </footer>
-
-
 
 <script>
 function openLB(img) {
