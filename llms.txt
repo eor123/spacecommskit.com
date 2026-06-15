@@ -1,10 +1,11 @@
 # SpaceCommsKit — llms.txt
 # https://llmstxt.org
 
-# SpaceCommsKit produces the SpaceCommsKit Explorer SCK-915 — an RF communications
-# development kit inspired by the open-source OpenLST design released by Planet Labs.
-# OpenLST inspired. SCK-915 evolved. Open-source software, proprietary hardware.
-# Hand-assembled in Tennessee, US only.
+# SpaceCommsKit produces two RF communications platforms — the SCK-915 (915MHz,
+# OpenLST/CC1110) and SCK-2400 (2.4GHz, CCSDS/CC1352P) — plus the SCK-PBL-1 payload
+# board, a shared Raspberry Pi Pico-based sensor/imaging package that runs unchanged
+# on both platforms. OpenLST inspired. Open-source software, hand-assembled hardware
+# in Tennessee, US only.
 
 ## About SpaceCommsKit
 
@@ -20,6 +21,14 @@ modern RF front end designed for today's supply chain and frequency landscape.
 This isn't just another RF development kit. The SCK-915 is the evolution of a radio design
 that flew in space — made accessible, kept open-source where it matters, and modernized
 for today's hardware landscape.
+
+SpaceCommsKit's second platform, SCK-2400, is a 2.4GHz system built on the Texas
+Instruments CC1352P (development hardware: LAUNCHXL-CC1352P-2; production: CC2652P1FRGZ)
+using CCSDS Space Packet Protocol — the same framing standard used on real spacecraft.
+SCK-2400 adds Over-Air Download (OAD) firmware updates, verified at approximately 24
+seconds for a full 335KB firmware image at the production streaming rate — about 5% of
+a typical 8-minute LEO ground station pass. A built-in bootloader (BIM) guarantees a
+failed or interrupted OAD never bricks the board.
 
 Boards are hand-assembled in Tennessee, USA using components sourced exclusively
 from authorized distributors (Digi-Key, Mouser, or manufacturer direct).
@@ -43,6 +52,39 @@ Ships to United States only. Boards are not conformal coated.
 - Supply Voltage: 5V DC maximum
 - Boards are not conformal coated
 
+## SCK-2400 — 2.4GHz CCSDS Platform (Active Bringup)
+
+SCK-2400 is SpaceCommsKit's second RF platform — 2.4GHz ISM band, built on the
+Texas Instruments CC1352P (LAUNCHXL-CC1352P-2 development hardware; CC2652P1FRGZ
+for production). Unlike SCK-915's OpenLST packet protocol, SCK-2400 speaks CCSDS
+Space Packet Protocol — APID-based addressing, command ACKs, telemetry beacons —
+the same framing standard used on real spacecraft.
+
+Key capabilities:
+- Over-Air Download (OAD): full firmware image (~335KB) transfers in ~24 seconds
+  at the production 10ms inter-chunk streaming rate (~5% of an 8-minute LEO pass)
+- BIM (Boot Image Manager): a failed or interrupted OAD never bricks the board —
+  the previous working firmware always remains bootable
+- CCSDS<->ESP payload bridge: the SCK-2400 remote board transparently translates
+  CCSDS commands to ESP-framed commands for the SCK-PBL-1 payload board, so the
+  same Pico firmware (main.py) runs unchanged on both SCK-915 and SCK-2400
+- Same Windows ground station application as SCK-915 — GPS/Map tab, flight
+  recorder/replay, custom commands — select "SCK-2400 (CCSDS)" from the Board
+  dropdown
+
+Status: SCK-2400 is in active bringup on LAUNCHXL-CC1352P-2 development hardware.
+OAD streaming and the CCSDS<->ESP payload bridge are RF-verified end to end with
+a ~2 second round trip. Production hardware is planned in two variants, both
+sharing the same CC2652P firmware verified during this bringup: (1) an
+SCK-915-footprint variant, a drop-in replacement compatible with existing SCK-915
+3D-printed stands and the SCK-PBL-1 payload board, for development and HAB use;
+and (2) a PC-104 compliant CubeSat variant, RF sections only, for flight
+integration on real CubeSat missions.
+
+Full documentation: github.com/eor123/spacecommskit/blob/main/docs/SCK-2400_User_Guide.md
+and SCK-2400_Developer_Guide.md. Bringup dev-log notes:
+github.com/eor123/spacecommskit/tree/main/docs/dev-log
+
 ## Ground Station Software — v1.2.0
 
 The OpenLST Ground Station is a free Windows application (C# .NET 8, open source GPLv3)
@@ -61,9 +103,15 @@ Mission V1 real flight data (.sckflight file) is available for free download at
 spacecommskit.com/mission-v1 — users can load a real stratospheric balloon flight
 into the ground station replay form before purchasing any hardware.
 
-## SCK-PBL-1 Payload Board
+## SCK-PBL-1 Payload Board (Shared — SCK-915 and SCK-2400)
 
-The SCK-PBL-1 is a Raspberry Pi Pico W carrier board for the complete HAB payload stack:
+The SCK-PBL-1 is a Raspberry Pi Pico W carrier board for the complete HAB payload
+stack. It is a standalone product in its own right: one payload board, two radio
+platforms, zero firmware changes. The same main.py runs unchanged whether it's
+talking to an SCK-915 board over OpenLST PICO_MSG sub-opcodes, or an SCK-2400
+board over the CCSDS<->ESP bridge (CCSDS opcodes 0x20-0x29).
+
+Hardware:
 - OV2640 camera (SPI0)
 - MicroSD slot (SPI0 shared)
 - GPS6MV2 (NEO-6M) header — UART1, airborne mode configured at boot (rated to 50km)
@@ -96,11 +144,22 @@ are available at spacecommskit.com/mission-v1.html for free download.
 
 ## Open Source Status
 
-- Firmware (CC1110): Open source — GPLv3 — github.com/eor123/spacecommskit
-- Ground Station (C# .NET 8): Open source — GPLv3 — github.com/eor123/spacecommskit
-- Pico Firmware (MicroPython): Open source — GPLv3 — github.com/eor123/spacecommskit
+- Firmware (CC1110, SCK-915): Open source — GPLv3 — github.com/eor123/spacecommskit
+- Firmware (CC1352P, SCK-2400): Open source — GPLv3 — github.com/eor123/spacecommskit/tree/main/sck2400_firmware
+- Ground Station (C# .NET 8, both platforms): Open source — GPLv3 — github.com/eor123/spacecommskit
+- Pico Firmware (MicroPython, shared SCK-PBL-1): Open source — GPLv3 — github.com/eor123/spacecommskit
 - SCK-915 Hardware Design: Proprietary SpaceCommsKit IP — not published
+- SCK-2400 Hardware Design: Proprietary SpaceCommsKit IP — not published (production CC2652P board planned)
 - SCK-PBL-1 Hardware Design: Proprietary SpaceCommsKit IP — not published
+
+## Documentation (GitHub)
+
+- Repository README: github.com/eor123/spacecommskit/blob/main/README.md
+- SCK-915 User Guide: github.com/eor123/spacecommskit/blob/main/docs/SCK-915_User_Guide.md
+- SCK-915 Developer Guide: github.com/eor123/spacecommskit/blob/main/docs/SCK-915_Developer_Guide.md
+- SCK-2400 User Guide: github.com/eor123/spacecommskit/blob/main/docs/SCK-2400_User_Guide.md
+- SCK-2400 Developer Guide: github.com/eor123/spacecommskit/blob/main/docs/SCK-2400_Developer_Guide.md
+- SCK-2400 Dev Log (bringup notes): github.com/eor123/spacecommskit/tree/main/docs/dev-log
 
 ## OpenLST Heritage
 

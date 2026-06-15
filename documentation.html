@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Documentation — SpaceCommsKit Explorer SCK-915</title>
-<meta name="description" content="SpaceCommsKit Explorer SCK-915 documentation — User Guide, Developer Guide, HAB mission guide, schematics, and links to the original Planet Labs OpenLST project.">
+<title>Documentation — SpaceCommsKit SCK-915 &amp; SCK-2400</title>
+<meta name="description" content="SpaceCommsKit documentation — User Guides and Developer Guides for the SCK-915 (915MHz, OpenLST/CC1110) and SCK-2400 (2.4GHz, CCSDS/CC1352P) platforms, plus the SCK-PBL-1 payload board, HAB mission guide, schematics, and dev-log bringup notes.">
 <link rel="canonical" href="https://www.spacecommskit.com/documentation.html">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -39,7 +39,7 @@
 <div class="section-panel">
 <div class="section">
   <span class="eyebrow eyebrow-dark">SpaceCommsKit Documentation</span>
-  <h2 class="section-title">SpaceCommsKit Explorer · SCK-915 Guides</h2>
+  <h2 class="section-title">SCK-915 · 915MHz OpenLST Platform Guides</h2>
   <p class="section-lead">Written specifically for the SpaceCommsKit Explorer SCK-915 — covering the ground station application, hardware setup, Pico payload pipeline, flight recording, and firmware extension.</p>
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:40px;">
@@ -48,7 +48,7 @@
       <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;">
         <div style="font-size:36px;">📘</div>
         <div>
-          <div class="tag tag-blue mb-8">PDF · User Guide</div>
+          <div class="tag tag-blue mb-8">User Guide</div>
           <h3>SpaceCommsKit Explorer<br>SCK-915 User Guide</h3>
         </div>
       </div>
@@ -64,7 +64,7 @@
         <li style="font-size:13px;color:var(--text-muted);padding:4px 0;">✓ Troubleshooting section</li>
         <li style="font-size:13px;color:var(--text-muted);padding:4px 0;">✓ Complete specifications</li>
       </ul>
-      <a href="SCK-915_User_Guide.html"
+      <a href="https://github.com/eor123/spacecommskit/blob/main/docs/SCK-915_User_Guide.md"
          class="btn btn-primary" target="_blank">View Guide →</a>
     </div>
 
@@ -72,7 +72,7 @@
       <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;">
         <div style="font-size:36px;">📗</div>
         <div>
-          <div class="tag tag-cyan mb-8">PDF · Developer Guide</div>
+          <div class="tag tag-cyan mb-8">Developer Guide</div>
           <h3>SpaceCommsKit Explorer<br>SCK-915 Developer Guide</h3>
         </div>
       </div>
@@ -88,10 +88,84 @@
         <li style="font-size:13px;color:var(--text-muted);padding:4px 0;">✓ C# project architecture</li>
         <li style="font-size:13px;color:var(--text-muted);padding:4px 0;">✓ Complete opcode table</li>
       </ul>
-      <a href="SCK-915_Developer_Guide.html"
+      <a href="https://github.com/eor123/spacecommskit/blob/main/docs/SCK-915_Developer_Guide.md"
          class="btn btn-primary" target="_blank">View Guide →</a>
     </div>
 
+  </div>
+</div>
+</div>
+
+<!-- SCK-2400 Docs -->
+<div class="section-panel">
+<div class="section">
+  <span class="eyebrow eyebrow-dark">SCK-2400 Documentation</span>
+  <h2 class="section-title">SCK-2400 · CCSDS Platform Guides</h2>
+  <p class="section-lead">SCK-2400 is the next-generation 2.4GHz platform — built on the TI CC1352P, speaking CCSDS Space Packet Protocol (the same framing used on real spacecraft), with Over-Air Download firmware updates verified at ~24 seconds per image over RF. Currently in active bringup on LAUNCHXL-CC1352P-2 development hardware.</p>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:40px;">
+
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;">
+        <div style="font-size:36px;">📘</div>
+        <div>
+          <div class="tag tag-blue mb-8">User Guide</div>
+          <h3>SCK-2400<br>User Guide</h3>
+        </div>
+      </div>
+      <p style="color:var(--text-muted);font-size:14px;line-height:1.6;margin-bottom:20px;">
+        Operating guide for the SCK-2400 CCSDS platform. Covers hardware connections, CCSDS
+        commands, Over-Air Download (OAD) firmware updates, the GPS/Map and Files tabs for
+        the SCK-PBL-1 payload board, troubleshooting, and specifications.
+      </p>
+      <ul style="list-style:none;margin-bottom:24px;">
+        <li style="font-size:13px;color:var(--text-muted);padding:4px 0;">✓ Hardware wiring + CCSDS addressing</li>
+        <li style="font-size:13px;color:var(--text-muted);padding:4px 0;">✓ OAD firmware update walkthrough</li>
+        <li style="font-size:13px;color:var(--text-muted);padding:4px 0;">✓ Payload board commands (GPS, baro, camera, files)</li>
+        <li style="font-size:13px;color:var(--text-muted);padding:4px 0;">✓ Troubleshooting section</li>
+        <li style="font-size:13px;color:var(--text-muted);padding:4px 0;">✓ Complete specifications</li>
+      </ul>
+      <a href="https://github.com/eor123/spacecommskit/blob/main/docs/SCK-2400_User_Guide.md"
+         class="btn btn-primary" target="_blank">View Guide →</a>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;">
+        <div style="font-size:36px;">📗</div>
+        <div>
+          <div class="tag tag-cyan mb-8">Developer Guide</div>
+          <h3>SCK-2400<br>Developer Guide</h3>
+        </div>
+      </div>
+      <p style="color:var(--text-muted);font-size:14px;line-height:1.6;margin-bottom:20px;">
+        Technical reference for engineers extending the CCSDS platform. Covers CCSDS packet
+        structure and opcodes, the OAD streaming transport with performance benchmarks, the
+        CCSDS↔ESP payload bridge architecture, SysConfig hardware reference, and a complete
+        table of hard-won lessons from bringup.
+      </p>
+      <ul style="list-style:none;margin-bottom:24px;">
+        <li style="font-size:13px;color:var(--text-muted);padding:4px 0;">✓ CCSDS protocol + opcode reference</li>
+        <li style="font-size:13px;color:var(--text-muted);padding:4px 0;">✓ OAD streaming transport (24s/335KB)</li>
+        <li style="font-size:13px;color:var(--text-muted);padding:4px 0;">✓ CCSDS↔ESP payload bridge architecture</li>
+        <li style="font-size:13px;color:var(--text-muted);padding:4px 0;">✓ SysConfig / TI-RTOS7 hardware reference</li>
+        <li style="font-size:13px;color:var(--text-muted);padding:4px 0;">✓ Hard-won lessons table</li>
+      </ul>
+      <a href="https://github.com/eor123/spacecommskit/blob/main/docs/SCK-2400_Developer_Guide.md"
+         class="btn btn-primary" target="_blank">View Guide →</a>
+    </div>
+
+  </div>
+
+  <div style="margin-top:24px;">
+    <div class="card" style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+      <div style="font-size:32px;">🧪</div>
+      <div style="flex:1;min-width:200px;">
+        <h3 style="margin-bottom:6px;">SCK-2400 Dev Log — Bringup Notes</h3>
+        <p style="font-size:14px;color:var(--text-muted);margin:0;">Real debugging narratives from SCK-2400 bringup — OAD streaming optimization and the CCSDS↔ESP payload bridge, including the SysConfig pitfalls and stack-overflow root causes behind the Developer Guide's hard-won lessons table.</p>
+      </div>
+      <a href="https://github.com/eor123/spacecommskit/tree/main/docs/dev-log"
+         class="btn btn-outline btn-sm" target="_blank" style="border-color:var(--border-lt);color:var(--blue);white-space:nowrap;">Read Dev Log →</a>
+    </div>
   </div>
 </div>
 </div>
@@ -115,6 +189,13 @@
       <div style="font-size:32px;margin-bottom:14px;">🔌</div>
       <h3>Pico Payload Guide</h3>
       <p style="font-size:14px;color:var(--text-muted);margin-bottom:20px;">Complete wiring guide, sub-opcode reference, step-by-step setup, and troubleshooting for the full GPS + baro + camera + SD pipeline.</p>
+      <a href="pico.html" class="btn btn-outline btn-sm" style="border-color:var(--border-lt);color:var(--blue);">View Guide →</a>
+    </div>
+
+    <div class="card">
+      <div style="font-size:32px;margin-bottom:14px;">🛰️</div>
+      <h3>SCK-PBL-1 Payload Board</h3>
+      <p style="font-size:14px;color:var(--text-muted);margin-bottom:20px;">One payload board, two radio platforms — zero firmware changes. The same <code>main.py</code> runs unchanged on SCK-915 (OpenLST) and SCK-2400 (CCSDS). Camera, GPS, barometric altimeter, and SD flight logging.</p>
       <a href="pico.html" class="btn btn-outline btn-sm" style="border-color:var(--border-lt);color:var(--blue);">View Guide →</a>
     </div>
 
