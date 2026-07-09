@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCK-915 Developer Guide — SpaceCommsKit</title>
+<meta name="description" content="SpaceCommsKit SCK-915 Developer Guide — firmware architecture, ESP framing, adding commands, chunking, SCK-PBL-1 hardware reference, and hard-won lessons.">
+<link rel="canonical" href="https://www.spacecommskit.com/docs/SCK-915_Developer_Guide.html">
+<link rel="stylesheet" href="../style.css">
+<style>
+.doc-content { max-width: 900px; margin: 0 auto; }
+.doc-content h1 { display:none; }
+.doc-content h2 {
+  font-size: 28px; font-weight: 700; color: var(--text-hero);
+  letter-spacing: -0.5px; margin: 56px 0 18px; padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+.doc-content > h2:first-of-type { border-top: none; margin-top: 0; }
+.doc-content h3 {
+  font-size: 20px; font-weight: 600; color: var(--cyan);
+  margin: 36px 0 12px;
+}
+.doc-content h4 {
+  font-size: 15px; font-weight: 600; color: var(--text-hero);
+  margin: 24px 0 10px; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.doc-content p { color: var(--text-inv); font-size: 15px; line-height: 1.75; margin-bottom: 16px; }
+.doc-content ul, .doc-content ol { color: var(--text-inv); font-size: 15px; line-height: 1.8; margin: 0 0 16px 22px; }
+.doc-content li { margin-bottom: 4px; }
+.doc-content li > p { margin-bottom: 4px; }
+.doc-content a { color: var(--cyan); }
+.doc-content strong { color: #fff; }
+.doc-content hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+.doc-content code {
+  font-family: var(--font-mono); font-size: 13px;
+  background: rgba(0,200,224,0.1); color: var(--cyan);
+  padding: 2px 6px; border-radius: 4px;
+}
+.doc-content pre {
+  background: var(--void); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 20px 24px;
+  overflow-x: auto; margin: 0 0 20px;
+}
+.doc-content pre code {
+  background: none; color: #cbd5e1; padding: 0;
+  font-size: 13px; line-height: 1.7;
+}
+.doc-content table {
+  width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 0 0 24px;
+}
+.doc-content th {
+  background: var(--blue); color: #fff; padding: 10px 14px; text-align: left;
+  font-size: 11.5px; font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase;
+  font-family: var(--font-mono);
+}
+.doc-content td {
+  padding: 9px 14px; border-bottom: 1px solid var(--border);
+  color: var(--text-inv); vertical-align: top;
+}
+.doc-content tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+.doc-content td:first-child { font-weight: 500; color: #fff; }
+.doc-content blockquote {
+  border-left: 4px solid var(--blue); background: rgba(26,111,212,0.08);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 20px; margin: 0 0 20px; color: var(--text-inv); font-size: 14px;
+}
+.doc-content blockquote.warn { border-left-color: var(--gold); background: rgba(240,165,0,0.08); }
+.doc-content blockquote.crit { border-left-color: var(--red); background: rgba(224,60,46,0.08); }
+.doc-content blockquote p:last-child { margin-bottom: 0; }
+.doc-meta {
+  font-family: var(--font-mono); font-size: 12px; color: var(--text-inv);
+  letter-spacing: 0.5px; margin-bottom: 8px;
+}
+.doc-toc {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 24px 28px; margin: 40px 0 56px;
+}
+.doc-toc-title {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--cyan); margin-bottom: 14px;
+}
+.doc-toc ul { list-style: none; margin: 0; columns: 2; column-gap: 32px; }
+.doc-toc li { margin-bottom: 6px; break-inside: avoid; }
+.doc-toc a { color: var(--text-inv); font-size: 13.5px; text-decoration: none; }
+.doc-toc a:hover { color: var(--cyan); text-decoration: underline; }
+@media (max-width: 700px) { .doc-toc ul { columns: 1; } }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="../index.html" class="nav-logo">SpaceComms<span>Kit</span><span class="logo-tag">Docs</span></a>
+  <ul class="nav-links">
+    <li><a href="../index.html">Home</a></li>
+    <li><a href="../kit.html">SCK-915</a></li>
+    <li><a href="../sck2400.html">SCK-2400</a></li>
+    <li><a href="../pico.html">SCK-PBL-1</a></li>
+    <li><a href="../documentation.html" class="active">Documentation</a></li>
+    <li><a href="../quickstart.html">Quick Start</a></li>
+    <li><a href="../software.html">Software</a></li>
+    <li><a href="../groundstation.html">Ground Station</a></li>
+    <li><a href="../about.html">About</a></li>
+    <li><a href="https://spacecommskit.myshopify.com" target="_blank" class="nav-cta">Buy a Kit</a></li>
+  </ul>
+</nav>
+
+<section class="hero" style="padding-bottom:40px;">
+  <div class="hero-inner" style="padding-bottom:40px;">
+    <span class="eyebrow">SCK-915 &amp;middot; Documentation &amp;middot; Developer Guide</span>
+    <h1 class="hero-title" style="font-size:clamp(28px,4vw,44px);">SCK-915 Developer Guide</h1>
+  </div>
+</section>
+
+<div class="section-dark">
+<div class="section">
+<div class="doc-content">
+<div class="doc-toc"><div class="doc-toc-title">On This Page</div><ul><li><a href="#quick-reference-search-tags">Quick Reference — Search Tags</a></li>
+<li><a href="#10-system-overview">1.0 System Overview</a></li>
+<li><a href="#20-hardware-configuration-reference">2.0 Hardware Configuration Reference</a></li>
+<li><a href="#30-firmware-extension-reference">3.0 Firmware Extension Reference</a></li>
+<li><a href="#40-payload-board-hardware-reference">4.0 Payload Board Hardware Reference</a></li>
+<li><a href="#50-c-ground-station-extension-reference">5.0 C# Ground Station Extension Reference</a></li>
+<li><a href="#60-build-and-flash-reference">6.0 Build and Flash Reference</a></li>
+<li><a href="#70-hard-won-lessons">7.0 Hard-Won Lessons</a></li></ul></div>
+<h1 id="spacecommskit-sck-915-developer-guide">SpaceCommsKit SCK-915 Developer Guide</h1>
+<p><strong>Version 2.0 — May 2026</strong>
+<strong>SpaceCommsKit — https://spacecommskit.com/docs</strong></p>
+<blockquote>
+<p>This document covers the full SCK-915 development stack — from the
+OpenLST protocol foundation through the production SCK-PBL-1 hardware.
+If you are new to the system, read Section 1 before anything else.</p>
+</blockquote>
+<hr />
+<h2 id="quick-reference-search-tags">Quick Reference — Search Tags</h2>
+<p>Every cross-reference in the firmware source uses a <code>[SCK-DEV: TAG]</code> comment.
+Search for any tag in the codebase to jump directly to the relevant section:</p>
+<table>
+<thead>
+<tr>
+<th>Tag</th>
+<th>Topic</th>
+<th>Section</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SCK-DEV: BOARD_CONFIG</code></td>
+<td>Hardware configuration overview</td>
+<td>2.1</td>
+</tr>
+<tr>
+<td><code>SCK-DEV: RF_FRONTEND</code></td>
+<td>CC1190 PA/LNA control</td>
+<td>2.2</td>
+</tr>
+<tr>
+<td><code>SCK-DEV: RF_CONFIG</code></td>
+<td>915MHz register values</td>
+<td>2.3</td>
+</tr>
+<tr>
+<td><code>SCK-DEV: TX_POWER</code></td>
+<td>Power mode / bench vs field</td>
+<td>2.4</td>
+</tr>
+<tr>
+<td><code>SCK-DEV: BOOTLOADER</code></td>
+<td>Bootloader timeout</td>
+<td>2.5</td>
+</tr>
+<tr>
+<td><code>SCK-DEV: ADD_COMMAND</code></td>
+<td>Adding new commands</td>
+<td>3.1</td>
+</tr>
+<tr>
+<td><code>SCK-DEV: CHUNKING</code></td>
+<td>Chunking large responses</td>
+<td>3.2</td>
+</tr>
+<tr>
+<td><code>SCK-DEV: TIMING</code></td>
+<td>Prototype board timing issues</td>
+<td>3.3</td>
+</tr>
+<tr>
+<td><code>SCK-DEV: ESP_FRAMING</code></td>
+<td>UART framing protocol</td>
+<td>3.4</td>
+</tr>
+<tr>
+<td><code>SCK-DEV: RESPONSE_FORMAT</code></td>
+<td>Response string conventions</td>
+<td>3.5</td>
+</tr>
+<tr>
+<td><code>SCK-DEV: BEACON</code></td>
+<td>Autonomous GPS beacon</td>
+<td>3.6</td>
+</tr>
+<tr>
+<td><code>SCK-DEV: SD_FLIGHT_LOG</code></td>
+<td>SD card flight log format</td>
+<td>3.7</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="10-system-overview">1.0 System Overview</h2>
+<h3 id="11-architecture">1.1 Architecture</h3>
+<pre><code>Ground Station (Windows C#)
+    ↕ USB / Serial — COM port — 115200 baud — ESP framing
+SCK-915 RF Board (CC1110 + CC1190)        ← ground unit
+    ↕ 915MHz RF — 7.4 kBaud — 2-FSK + FEC
+SCK-915 RF Board (CC1110 + CC1190)        ← remote / payload unit
+    ↕ UART0 — 115200 baud — ESP framing
+SCK-PBL-1 Payload Board (Raspberry Pi Pico)
+    ├── OV2640 Camera    (SPI0 + I2C0)
+    ├── MicroSD Card     (SPI0)
+    ├── GPS NEO-6M       (UART1)
+    └── BMP581 Altimeter (I2C1)
+</code></pre>
+<p>The ground unit RF board relays packets transparently between the ground
+station and the remote unit. Only the remote unit requires the custom
+<code>PICO_MSG</code> handler in <code>board.c</code>. This mirrors the original OpenLST
+Explorer Kit architecture where Board 0001 was the transparent relay
+and Board 0004 ran the custom firmware.</p>
+<h3 id="12-hardware-variants">1.2 Hardware Variants</h3>
+<table>
+<thead>
+<tr>
+<th>Board</th>
+<th>Description</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SCK-915 Prototype</td>
+<td>Hand-wired jumper development board</td>
+<td>Dev/test only — see Section 3.3</td>
+</tr>
+<tr>
+<td>SCK-915 RF Board</td>
+<td>CC1110 + CC1190 RF front end PCB</td>
+<td>Production</td>
+</tr>
+<tr>
+<td>SCK-PBL-1 v1.0 Payload</td>
+<td>Pico + camera + GPS + BMP581 + SD PCB</td>
+<td>Production — BMP581 altimeter</td>
+</tr>
+<tr>
+<td>SCK-PBL-1 v1.1 Payload</td>
+<td>Pico + camera + GPS + MS5611 + SD PCB</td>
+<td>Production — MS5611 altimeter</td>
+</tr>
+</tbody>
+</table>
+<h3 id="13-firmware-components">1.3 Firmware Components</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Language</th>
+<th>Runs On</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>board.h</code></td>
+<td>C</td>
+<td>CC1110</td>
+<td>Hardware configuration and defines</td>
+</tr>
+<tr>
+<td><code>board.c</code></td>
+<td>C</td>
+<td>CC1110</td>
+<td>Board init and PICO_MSG relay</td>
+</tr>
+<tr>
+<td><code>main.py</code></td>
+<td>MicroPython</td>
+<td>Pico</td>
+<td>Payload pipeline and command handlers (MS5611 active, BMP581 preserved as comments)</td>
+</tr>
+<tr>
+<td><code>sdcard.py</code></td>
+<td>MicroPython</td>
+<td>Pico</td>
+<td>MicroPython SD card SPI driver</td>
+</tr>
+</tbody>
+</table>
+<h3 id="14-repository-layout">1.4 Repository Layout</h3>
+<pre><code>openlst-master/
+├── Makefile                    ← top-level build
+├── open-lst/                   ← DO NOT MODIFY
+│   ├── common/                 ← uart0.c uart1.c radio.c ...
+│   ├── radio/                  ← main.c commands.c ...
+│   └── bootloader/
+└── radios/openlst_437/         ← YOUR CODE LIVES HERE
+    ├── Board.mk                ← build config
+    ├── board.h                 ← hardware defines + custom_commands declaration
+    └── board.c                 ← board_init() + custom_commands()
+</code></pre>
+<blockquote>
+<p><strong>Never modify files inside <code>open-lst/</code>.</strong> All customization goes in
+<code>radios/openlst_437/</code>. This keeps your changes clean and upstream
+updates safe.</p>
+</blockquote>
+<hr />
+<h2 id="20-hardware-configuration-reference">2.0 Hardware Configuration Reference</h2>
+<h3 id="21-board-configuration-boardh">2.1 Board Configuration — <code>board.h</code> [SCK-DEV: BOARD_CONFIG]</h3>
+<p><code>board.h</code> configures the OpenLST firmware for SCK-915 hardware.
+Key defines:</p>
+<table>
+<thead>
+<tr>
+<th>Define</th>
+<th>Value</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>F_CLK</code></td>
+<td>27000000</td>
+<td>Crystal frequency — must match physical crystal</td>
+</tr>
+<tr>
+<td><code>CUSTOM_BOARD_INIT</code></td>
+<td>1</td>
+<td>Enables <code>board_init()</code> in board.c</td>
+</tr>
+<tr>
+<td><code>BOARD_HAS_TX_HOOK</code></td>
+<td>1</td>
+<td>Enables <code>board_pre_tx()</code> macro</td>
+</tr>
+<tr>
+<td><code>BOARD_HAS_RX_HOOK</code></td>
+<td>1</td>
+<td>Enables <code>board_pre_rx()</code> macro</td>
+</tr>
+<tr>
+<td><code>ADCCFG_CONFIG</code></td>
+<td>0b00000011</td>
+<td>Enables AN0 and AN1 for voltage sense</td>
+</tr>
+<tr>
+<td><code>RADIO_RANGING_RESPONDER</code></td>
+<td>1</td>
+<td>Enables ranging response</td>
+</tr>
+<tr>
+<td><code>CUSTOM_COMMANDS</code></td>
+<td>1</td>
+<td>Enables custom command dispatch</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Build flags</strong> (set in <code>Board.mk</code>):</p>
+<pre><code class="language-makefile">openlst_437_CFLAGS := \
+    -DCUSTOM_BOARD_INIT   \
+    -DCUSTOM_COMMANDS     \
+    -DUART0_ENABLED=1     \
+    -I$(openlst_437_DIR)
+</code></pre>
+<blockquote>
+<p><strong>Always use Clean + Build after any source change.</strong> Stale <code>.rel</code>
+object files are the most common cause of mysterious firmware behavior
+that is difficult to trace. This is not optional — it is required.</p>
+</blockquote>
+<h3 id="22-cc1190-rf-front-end">2.2 CC1190 RF Front End [SCK-DEV: RF_FRONTEND]</h3>
+<p>The CC1190 provides PA and LNA functions between the CC1110 and antenna.</p>
+<p><strong>Physical connections:</strong></p>
+<table>
+<thead>
+<tr>
+<th>CC1190 Pin</th>
+<th>Signal</th>
+<th>CC1110 Pin</th>
+<th>Control Method</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pin 8 (PA_EN)</td>
+<td>PA enable</td>
+<td>P1.6 (GDO1)</td>
+<td>Automatic via IOCFG1</td>
+</tr>
+<tr>
+<td>Pin 7 (LNA_EN)</td>
+<td>LNA enable</td>
+<td>P1.7 (GDO2)</td>
+<td>Automatic via IOCFG2</td>
+</tr>
+<tr>
+<td>Pin 6 (HGM)</td>
+<td>High gain mode</td>
+<td>P2.0</td>
+<td>Software via <code>_rf_high_gain</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>HGM power modes:</strong></p>
+<table>
+<thead>
+<tr>
+<th><code>_rf_high_gain</code></th>
+<th>HGM State</th>
+<th>Total Output Power</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>LOW</td>
+<td>~+10 dBm</td>
+<td>Bench / indoor testing</td>
+</tr>
+<tr>
+<td>1</td>
+<td>HIGH</td>
+<td>~+27 dBm</td>
+<td>Field / HAB / LEO mission</td>
+</tr>
+</tbody>
+</table>
+<p>GDO pins are configured using inverted power-down signals so the CC1190
+enable lines go HIGH automatically when the corresponding stage is active.
+The firmware never manually toggles PA_EN or LNA_EN — the CC1110 radio
+hardware manages this through the IOCFG register settings.</p>
+<h3 id="23-rf-configuration-915mhz">2.3 RF Configuration — 915MHz [SCK-DEV: RF_CONFIG]</h3>
+<p>All register values were derived using SmartRF Studio 7 for the CC1110
+with a 27MHz crystal.</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Base Frequency</td>
+<td>914.999512 MHz</td>
+</tr>
+<tr>
+<td>Crystal</td>
+<td>27.000 MHz</td>
+</tr>
+<tr>
+<td>Modulation</td>
+<td>2-FSK</td>
+</tr>
+<tr>
+<td>Data Rate</td>
+<td>7.415 kBaud</td>
+</tr>
+<tr>
+<td>Deviation</td>
+<td>3.708 kHz</td>
+</tr>
+<tr>
+<td>RX Filter BW</td>
+<td>60.268 kHz</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Frequency control word calculation:</strong></p>
+<pre><code>FREQ[23:0] = (Fcarrier / Fxtal) × 65536
+           = (914999512 / 27000000) × 65536
+           = 0x21E38D
+</code></pre>
+<p>So <code>RF_FREQ2 = 0x21</code>, <code>RF_FREQ1 = 0xE3</code>, <code>RF_FREQ0 = 0x8D</code>.</p>
+<p><strong>To change frequency:</strong></p>
+<ol>
+<li>Open SmartRF Studio 7, select CC1110</li>
+<li>Enter desired frequency and 27MHz crystal</li>
+<li>Export register values</li>
+<li>Update <code>RF_FREQ2</code>, <code>RF_FREQ1</code>, <code>RF_FREQ0</code> in <code>board.h</code></li>
+<li>Update <code>RF_FSCTRL1</code> if moving to a different frequency band</li>
+</ol>
+<h3 id="24-tx-power-configuration">2.4 TX Power Configuration [SCK-DEV: TX_POWER]</h3>
+<p>Power mode is set at flash time — not at runtime.</p>
+<table>
+<thead>
+<tr>
+<th><code>RF_PA_CONFIG</code></th>
+<th>CC1110 Output</th>
+<th>Total w/CC1190</th>
+<th>Firmware Build</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0xC0</code></td>
+<td>~0 dBm</td>
+<td>~18 dBm</td>
+<td>Bench / indoor (default)</td>
+</tr>
+<tr>
+<td><code>0xC2</code></td>
+<td>~10 dBm</td>
+<td>~28 dBm</td>
+<td>Field / HAB / LEO</td>
+</tr>
+</tbody>
+</table>
+<p>The ground station patches <code>RF_PA_CONFIG</code> automatically when flashing
+bench or field firmware.</p>
+<blockquote class="crit">
+<p><strong>Critical:</strong> There must be exactly <strong>one</strong> <code>#define RF_PA_CONFIG</code> line
+in <code>board.h</code>. The ground station patching tool searches for this exact
+string. Adding duplicates or moving this line will break the patching
+tool silently.</p>
+</blockquote>
+<h3 id="25-bootloader-timeout">2.5 Bootloader Timeout [SCK-DEV: BOOTLOADER]</h3>
+<p><code>COMMAND_WATCHDOG_DELAY = 1350000</code> ≈ 600ms at 27MHz.</p>
+<p>The OpenLST default (45000 ≈ 20ms) is too short for RF OTA flashing.
+The 600ms window gives the ground station time to detect the bootloader
+beacon and transmit a flash command before the bootloader times out and
+jumps to the application. Do not reduce below 1,000,000 for OTA-capable
+deployments.</p>
+<p>After a direct serial flash, warm up the board with 2–3 <code>get_telemetry</code>
+commands before attempting OTA operations. This allows the RF synthesizer
+to stabilize fully.</p>
+<hr />
+<h2 id="30-firmware-extension-reference">3.0 Firmware Extension Reference</h2>
+<h3 id="31-adding-new-commands">3.1 Adding New Commands [SCK-DEV: ADD_COMMAND]</h3>
+<p>Adding a new command requires changes in three places. The CC1110 is a
+transparent relay for all <code>PICO_MSG</code> (0x20) commands — it forwards any
+payload to the Pico regardless of sub-opcode, so <code>board.c</code> typically
+requires no changes.</p>
+<h4 id="step-1-assign-a-sub-opcode-in-mainpy">Step 1 — Assign a sub-opcode in <code>main.py</code></h4>
+<pre><code class="language-python"># Add to the sub-opcode constants at the top of main.py
+CMD_MY_COMMAND = 0x0A   # Next available opcode after 0x09
+</code></pre>
+<h4 id="step-2-add-handler-in-mainpy-command-dispatch-loop">Step 2 — Add handler in <code>main.py</code> command dispatch loop</h4>
+<pre><code class="language-python">elif sub_opcode == CMD_MY_COMMAND:
+    try:
+        # payload[0] = sub_opcode
+        # payload[1:] = command-specific data
+        param = payload[1:].decode('utf-8').strip()
+
+        result = do_something(param)
+
+        # Must fit in MAX_PAYLOAD (251 bytes)
+        # For larger responses implement chunking — see Section 3.2
+        msg = f&quot;MYRESP:{result}&quot;
+        send_esp(msg.encode())
+        blink(1)
+        print(f&quot;MY_COMMAND → {msg}&quot;)
+
+    except Exception as e:
+        send_esp(b&quot;MYRESP:ERR:FAIL&quot;)
+        print(f&quot;MY_COMMAND error: {e}&quot;)
+</code></pre>
+<h4 id="step-3-add-to-c-ground-station">Step 3 — Add to C# ground station</h4>
+<pre><code class="language-csharp">// In CommandOpcode enum
+MyCommand = 0x0A,
+
+// Command method
+private async Task MyCommandAsync() {
+    if (!CheckConnected()) return;
+    ushort hwid = ActiveHwid;
+    ushort seq  = IncSeqNum();
+    FlushRxQueue();
+    WritePacket(OpenLstProtocol.BuildPacket(
+        hwid, seq, 0x20, new byte[] { 0x0A }));
+    var pkt = await WaitForReply(hwid, seq, 10000);
+    if (pkt?.PicoPayload != null)
+        Log($&quot;Response: {pkt.PicoPayload}&quot;, Theme.Green);
+    else
+        Log(&quot;No response&quot;, Theme.Red);
+}
+</code></pre>
+<h4 id="step-4-boardc-changes-only-if-needed">Step 4 — board.c changes (only if needed)</h4>
+<p>Only modify <code>board.c</code> if your command needs a timeout longer than the
+standard 800ms (e.g. commands involving SD card writes):</p>
+<pre><code class="language-c">// Add timeout constant
+#define PICO_TIMEOUT_OUTER_MY_SLOW_CMD  300  // ~3 seconds
+
+// Add sub-opcode check in custom_commands()
+outer_max = (payload_len &gt; 0 &amp;&amp; cmd-&gt;data[0] == PICO_SUB_MY_SLOW_CMD)
+            ? PICO_TIMEOUT_OUTER_MY_SLOW_CMD
+            : PICO_TIMEOUT_OUTER;
+</code></pre>
+<h4 id="critical-rules-for-boardc">Critical rules for board.c</h4>
+<p>These rules come from hard experience. Violating any of them produces
+difficult-to-trace failures:</p>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Consequence if violated</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Never set <code>reply-&gt;header.hwid</code>, <code>seqnum</code>, or <code>system</code></td>
+<td>Memory corruption — RF stops working</td>
+</tr>
+<tr>
+<td>Only set <code>reply-&gt;header.command</code></td>
+<td>It is the only field <code>custom_commands</code> owns</td>
+</tr>
+<tr>
+<td>Never use <code>WATCHDOG_CLEAR</code> macro</td>
+<td>Corrupts RF receive via register conflict</td>
+</tr>
+<tr>
+<td>Never declare <code>static __xdata</code> buffers</td>
+<td>XDATA RAM overflow — board crashes</td>
+</tr>
+<tr>
+<td>Use <code>uint8_t</code>/<code>uint16_t</code> only for counters</td>
+<td><code>uint32_t</code> causes RAM overflow crash</td>
+</tr>
+<tr>
+<td>Use nested loops for timeouts &gt;65535</td>
+<td><code>uint16_t</code> wraps silently — timeout too short</td>
+</tr>
+<tr>
+<td>Always send ≥1 byte payload</td>
+<td>Zero-length ESP frames are silently rejected</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="32-chunking-large-responses">3.2 Chunking Large Responses [SCK-DEV: CHUNKING]</h3>
+<p>The maximum RF packet payload is <strong>251 bytes</strong> (<code>MAX_PAYLOAD</code>). Responses
+larger than this must be split into chunks.</p>
+<h4 id="pattern-a-text-list-chunking-used-by-cmd_list">Pattern A — Text List Chunking (used by CMD_LIST)</h4>
+<pre><code>&quot;LIST:file1.jpg,file2.jpg,&quot;     ← first chunk — trailing comma
+&quot;LIST+:file3.jpg,file4.jpg,&quot;    ← continuation — trailing comma
+&quot;LIST+:file5.jpg&quot;               ← final chunk — NO trailing comma = end signal
+</code></pre>
+<p>The ground station accumulates chunks until a packet with no trailing
+comma arrives, then reassembles.</p>
+<p><strong>Implementation template:</strong></p>
+<pre><code class="language-python">CHUNK = MAX_PAYLOAD - 8   # Reserve space for prefix
+chunk_items = []
+chunk_len   = 0
+first_chunk = True
+
+for item in items:
+    entry = item + &quot;,&quot;
+    if chunk_len + len(entry) &gt; CHUNK and chunk_items:
+        prefix = &quot;MYLIST:&quot; if first_chunk else &quot;MYLIST+:&quot;
+        send_esp((prefix + &quot;,&quot;.join(chunk_items) + &quot;,&quot;).encode())
+        first_chunk = False
+        chunk_items = [item]
+        chunk_len   = len(item) + 1
+    else:
+        chunk_items.append(item)
+        chunk_len += len(entry)
+
+# Final chunk — no trailing comma signals end of list
+if chunk_items:
+    prefix = &quot;MYLIST:&quot; if first_chunk else &quot;MYLIST+:&quot;
+    send_esp((prefix + &quot;,&quot;.join(chunk_items)).encode())
+</code></pre>
+<h4 id="pattern-b-binary-file-chunking-used-by-cmd_get_info-cmd_get_chunk">Pattern B — Binary File Chunking (used by CMD_GET_INFO + CMD_GET_CHUNK)</h4>
+<p>Used for transferring binary files such as JPEG images and <code>.sckflight</code> logs.</p>
+<p><strong>Protocol sequence:</strong></p>
+<ol>
+<li>Ground station sends <code>CMD_GET_INFO</code> with filename</li>
+<li>Pico responds <code>"INFO:&lt;filename&gt;:&lt;total_bytes&gt;:&lt;chunk_count&gt;"</code></li>
+<li>Ground station sends <code>CMD_GET_CHUNK</code> for index 0, 1 … chunk_count-1</li>
+<li>Pico responds <code>"CHUNK:&lt;index&gt;:&lt;200 bytes binary&gt;"</code> for each</li>
+<li>Ground station reassembles in order</li>
+</ol>
+<p><strong>Chunk size:</strong> 200 bytes (<code>CHUNK_SIZE</code>) — leaves 51 bytes for the
+<code>"CHUNK:65535:"</code> prefix within the 251-byte limit.</p>
+<pre><code class="language-python"># GET_INFO handler
+size   = uos.stat(f&quot;/sd/{filename}&quot;)[6]
+chunks = (size + CHUNK_SIZE - 1) // CHUNK_SIZE
+send_esp(f&quot;INFO:{filename}:{size}:{chunks}&quot;.encode())
+
+# GET_CHUNK handler
+chunk_index = payload[1] | (payload[2] &lt;&lt; 8)   # little-endian uint16
+filename    = payload[3:].decode('utf-8').strip()
+with open(f&quot;/sd/{filename}&quot;, 'rb') as f:
+    f.seek(chunk_index * CHUNK_SIZE)
+    data = f.read(CHUNK_SIZE)
+send_esp(f&quot;CHUNK:{chunk_index}:&quot;.encode() + data)
+</code></pre>
+<hr />
+<h3 id="33-timing-issues-prototype-board">3.3 Timing Issues — Prototype Board [SCK-DEV: TIMING]</h3>
+<blockquote>
+<p><strong>This section applies to the hand-wired SCK-915 prototype board only.</strong>
+The SCK-PBL-1 production PCB resolves all of these issues through proper
+PCB routing and direct trace connections.</p>
+</blockquote>
+<h4 id="issue-1-spi-bus-speed">Issue 1 — SPI Bus Speed</h4>
+<p>Jumper wire capacitance and crosstalk limit the SPI bus to 400kHz on the
+prototype. The production target on SCK-PBL-1 is 1.32MHz (the <code>sdcard.py</code>
+design speed).</p>
+<p><strong>Symptoms:</strong> SD card mount fails, camera produces corrupt images,
+<code>SD mount failed:</code> in serial output.</p>
+<p><strong>SCK-PBL-1 fix:</strong> Change in <code>main.py</code>:</p>
+<pre><code class="language-python"># Prototype (400kHz — safe for jumper wires)
+spi = SPI(0, baudrate=400000, ...)
+
+# SCK-PBL-1 production (1.32MHz — sdcard.py design speed)
+spi = SPI(0, baudrate=1320000, ...)
+
+# Also update slow init in mount_sd():
+# Prototype: baudrate=100000
+# SCK-PBL-1: baudrate=400000
+</code></pre>
+<p>Verify SD card reliability at 1.32MHz before deploying. Some cards support
+up to 4MHz over short PCB traces for faster file transfers.</p>
+<h4 id="issue-2-uart-response-timing">Issue 2 — UART Response Timing</h4>
+<p>Jumper wire noise can delay Pico UART responses enough to trigger the
+CC1110 timeout, causing intermittent NACKs even though the Pico completed
+the command correctly.</p>
+<p><strong>Symptoms:</strong> Commands NACK intermittently. Pico serial output shows
+command completed. Same command sometimes succeeds, sometimes fails.</p>
+<p><strong>Fix:</strong> Increase <code>PICO_TIMEOUT_OUTER</code> in <code>board.c</code>:</p>
+<pre><code class="language-c">#define PICO_TIMEOUT_OUTER  40    // ~800ms standard
+#define PICO_TIMEOUT_OUTER  80    // ~1600ms for prototype
+</code></pre>
+<h4 id="issue-3-spi-bus-sharing-camera-sd">Issue 3 — SPI Bus Sharing (Camera + SD)</h4>
+<p>Camera and SD card share SPI0. Both CS pins must be HIGH before switching
+between devices. Missing a CS deselect causes data corruption on both devices.</p>
+<pre><code class="language-python"># Always do this before switching between camera and SD
+cam_cs(1); sd_cs(1)
+time.sleep_ms(10)
+# Then select the device you need
+</code></pre>
+<p>Do not remove the explicit <code>cs(1)</code> calls — they are required on both
+prototype and production boards.</p>
+<h4 id="issue-4-camera-initialization-blocking-uart">Issue 4 — Camera Initialization Blocking UART</h4>
+<p>Camera initialization over I2C takes several hundred milliseconds.
+Initializing at boot blocks UART0 and can cause the CC1110 to miss the
+first command after power-on.</p>
+<p><strong>Fix (already implemented):</strong> Camera init is deferred to the first idle
+timeout in the main loop, not at boot. Do not move <code>init_camera()</code> back
+to the startup sequence.</p>
+<h4 id="issue-5-arducam-signal-integrity">Issue 5 — Arducam Signal Integrity</h4>
+<p>The Arducam OV2640 requires direct wire connections with minimal capacitance.
+Breadboard connections add enough capacitance to cause intermittent SPI
+read failures on the FIFO readout.</p>
+<p><strong>Fix:</strong> Use direct wired connections or the SCK-PBL-1 PCB traces.
+Do not use breadboard for the camera SPI connections.</p>
+<hr />
+<h3 id="34-esp-framing-protocol">3.4 ESP Framing Protocol [SCK-DEV: ESP_FRAMING]</h3>
+<p>All UART0 communication between CC1110 and Pico uses ESP framing:</p>
+<pre><code>[0x22][0x69][length][payload bytes...]
+  ↑      ↑      ↑         ↑
+Start  Start  1 byte   1-251 bytes
+byte0  byte1  payload  command data
+              length
+</code></pre>
+<p><strong>OpenLST packet structure inside the payload:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Byte</th>
+<th>Field</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0-1</td>
+<td>HWID</td>
+<td>Little-endian destination hardware ID</td>
+</tr>
+<tr>
+<td>2-3</td>
+<td>Sequence</td>
+<td>Little-endian seq number (16–64000)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>System</td>
+<td>0x01 = MSG_TYPE_RADIO_IN (required)</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Opcode</td>
+<td>Command opcode byte</td>
+</tr>
+<tr>
+<td>6+</td>
+<td>Data</td>
+<td>Command-specific payload</td>
+</tr>
+</tbody>
+</table>
+<blockquote class="crit">
+<p><strong>Critical:</strong> Length must be ≥ 1. Zero-length ESP frames are silently
+rejected by the RX interrupt service routine.</p>
+</blockquote>
+<p><strong>MicroPython implementation:</strong></p>
+<pre><code class="language-python">ESP_START_0 = 0x22
+ESP_START_1 = 0x69
+MAX_PAYLOAD = 251
+
+def send_esp(payload_bytes):
+    uart.write(bytes([ESP_START_0, ESP_START_1,
+                      len(payload_bytes)]) + payload_bytes)
+
+def recv_esp(timeout_ms=5000):
+    S0, S1, SL, SP = 0, 1, 2, 3
+    state, payload, remaining = S0, bytearray(), 0
+    deadline = time.ticks_add(time.ticks_ms(), timeout_ms)
+    while time.ticks_diff(deadline, time.ticks_ms()) &gt; 0:
+        if uart.any():
+            b = uart.read(1)[0]
+            if state == S0:
+                if b == ESP_START_0: state = S1
+            elif state == S1:
+                if b == ESP_START_1:   state = SL
+                elif b == ESP_START_0: state = S1
+                else:                  state = S0
+            elif state == SL:
+                if 1 &lt;= b &lt;= 251:
+                    remaining, payload, state = b, bytearray(), SP
+                else: state = S0
+            elif state == SP:
+                payload.append(b); remaining -= 1
+                if remaining == 0: return bytes(payload)
+        else:
+            time.sleep_ms(1)
+    return None
+</code></pre>
+<hr />
+<h3 id="35-response-string-format-conventions">3.5 Response String Format Conventions [SCK-DEV: RESPONSE_FORMAT]</h3>
+<p>All Pico responses follow this format:</p>
+<pre><code>PREFIX:field1,field2,...
+</code></pre>
+<p><strong>Conventions:</strong></p>
+<ul>
+<li>Prefix uniquely identifies the response type (<code>PICO</code>, <code>SNAP</code>, <code>GPS</code>, etc.)</li>
+<li>Fields are comma-separated</li>
+<li>Error responses use <code>PREFIX:ERR:REASON</code> format</li>
+<li>No spaces anywhere in the string</li>
+<li>Ground station splits on <code>:</code> and <code>,</code></li>
+<li>All responses fit within 251 bytes unless explicitly chunked</li>
+</ul>
+<p><strong>Complete response table:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Opcode</th>
+<th>Success Response</th>
+<th>Error Response</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PING</td>
+<td>0x00</td>
+<td><code>PICO:ACK</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td>READ_TEMP</td>
+<td>0x01</td>
+<td><code>TEMP:23.45C</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td>SNAP</td>
+<td>0x02</td>
+<td><code>SNAP:OK:snap_001.jpg:24576</code></td>
+<td><code>SNAP:ERR:NO_SD</code> / <code>SNAP:ERR:NO_CAM</code></td>
+</tr>
+<tr>
+<td>LIST</td>
+<td>0x03</td>
+<td><code>LIST:file1.jpg,file2.jpg</code></td>
+<td><code>LIST:ERR:NO_SD</code> / <code>LIST:EMPTY</code></td>
+</tr>
+<tr>
+<td>GET_INFO</td>
+<td>0x04</td>
+<td><code>INFO:snap_001.jpg:24576:123</code></td>
+<td><code>INFO:ERR:NOTFOUND</code></td>
+</tr>
+<tr>
+<td>GET_CHUNK</td>
+<td>0x05</td>
+<td><code>CHUNK:0:&lt;200 bytes&gt;</code></td>
+<td><code>CHUNK:ERR:FAIL</code></td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td>0x06</td>
+<td><code>DEL:OK:snap_001.jpg</code></td>
+<td><code>DEL:ERR:FAIL</code></td>
+</tr>
+<tr>
+<td>GET_GPS</td>
+<td>0x07</td>
+<td><code>GPS:35.12,-97.56,1523,8,1,1013.25,1521.3,22.5</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td>GET_BARO</td>
+<td>0x08</td>
+<td><code>BARO:1013.25,1521.3,22.5</code></td>
+<td><code>BARO:ERR:NOT_READY</code></td>
+</tr>
+<tr>
+<td>BEACON_CTRL</td>
+<td>0x09</td>
+<td><code>BEACON:ON</code> / <code>BEACON:OFF</code></td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="36-autonomous-gps-beacon">3.6 Autonomous GPS Beacon [SCK-DEV: BEACON]</h3>
+<p>The Pico transmits a fused GPS+barometric packet autonomously every 10
+seconds when no command is being processed and the beacon is enabled.</p>
+<p><strong>Beacon interval:</strong> <code>GPS_BEACON_INTERVAL_MS = 10000</code> (10 seconds)</p>
+<p><strong>Beacon format:</strong></p>
+<pre><code>GPS:lat,lon,gps_alt,sats,fix,hpa,baro_alt,temp_c
+</code></pre>
+<p><strong>Controlling the beacon:</strong></p>
+<pre><code>CMD_BEACON_CTRL (0x09) + 0x01 → enable
+CMD_BEACON_CTRL (0x09) + 0x00 → disable
+</code></pre>
+<p>Disable during high-rate file transfers to prevent beacon packets from
+interleaving with file chunk responses. Re-enable after the transfer.</p>
+<p>Every beacon packet is also written to the SD flight log — see Section 3.7.</p>
+<hr />
+<h3 id="37-sd-card-flight-log-format">3.7 SD Card Flight Log Format [SCK-DEV: SD_FLIGHT_LOG]</h3>
+<p>One <code>.sckflight</code> file is created per power cycle.
+Naming: <code>FLT-001.sckflight</code>, <code>FLT-002.sckflight</code>, etc.</p>
+<p><strong>File format (JSON):</strong></p>
+<pre><code class="language-json">{&quot;flight_id&quot;:&quot;FLT-001&quot;,&quot;hardware&quot;:&quot;SCK-915+SCK-PBL-1&quot;,&quot;packets&quot;:[
+{&quot;t&quot;:0.0,&quot;lat&quot;:0.0,&quot;lon&quot;:0.0,&quot;gps_alt&quot;:0.0,&quot;sats&quot;:0,&quot;fix&quot;:0,
+ &quot;baro_hpa&quot;:1013.25,&quot;baro_alt&quot;:215.3,&quot;baro_temp&quot;:22.5,&quot;event&quot;:&quot;&quot;},
+{&quot;t&quot;:10.1,&quot;lat&quot;:35.123456,&quot;lon&quot;:-97.654321,&quot;gps_alt&quot;:1523.4,
+ &quot;sats&quot;:8,&quot;fix&quot;:1,&quot;baro_hpa&quot;:849.12,&quot;baro_alt&quot;:1521.3,
+ &quot;baro_temp&quot;:18.2,&quot;event&quot;:&quot;SNAP:snap_001.jpg&quot;}
+],
+&quot;summary&quot;:{&quot;total_packets&quot;:42,&quot;flight_duration_s&quot;:420.0}}
+</code></pre>
+<p><strong>Adding new fields:</strong></p>
+<p>In <code>write_flight_packet()</code> in <code>main.py</code>:</p>
+<pre><code class="language-python">line = (f'{sep}{{&quot;t&quot;:{t},'
+        f'&quot;lat&quot;:{gps_fix[&quot;lat&quot;]:.6f},'
+        # existing fields...
+        f'&quot;my_new_field&quot;:{my_value},'   # ← add here
+        f'&quot;event&quot;:&quot;{event}&quot;}}\n')
+</code></pre>
+<p>Also update the ground station <code>FlightReplayForm</code> parser.</p>
+<hr />
+<h2 id="40-payload-board-hardware-reference">4.0 Payload Board Hardware Reference</h2>
+<h3 id="41-sck-pbl-1-gpio-assignments">4.1 SCK-PBL-1 GPIO Assignments</h3>
+<table>
+<thead>
+<tr>
+<th>GPIO</th>
+<th>Function</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>UART0 TX → CC1110</td>
+<td>ESP framing to RF board</td>
+</tr>
+<tr>
+<td>1</td>
+<td>UART0 RX ← CC1110</td>
+<td>ESP framing from RF board</td>
+</tr>
+<tr>
+<td>2</td>
+<td>I2C1 SDA (MS5611)</td>
+<td>400kHz — same pins as previous BMP581</td>
+</tr>
+<tr>
+<td>3</td>
+<td>I2C1 SCL (MS5611)</td>
+<td>400kHz</td>
+</tr>
+<tr>
+<td>4</td>
+<td>I2C0 SDA (Camera)</td>
+<td>100kHz</td>
+</tr>
+<tr>
+<td>5</td>
+<td>I2C0 SCL (Camera)</td>
+<td>100kHz</td>
+</tr>
+<tr>
+<td>8</td>
+<td>UART1 TX → GPS</td>
+<td>9600 baud — UBX config only</td>
+</tr>
+<tr>
+<td>9</td>
+<td>UART1 RX ← GPS</td>
+<td>9600 baud — NMEA stream in</td>
+</tr>
+<tr>
+<td>10</td>
+<td>LED Camera (GREEN)</td>
+<td>Solid = camera initialized OK</td>
+</tr>
+<tr>
+<td>11</td>
+<td>LED SD Card (GREEN)</td>
+<td>Solid = SD mounted OK</td>
+</tr>
+<tr>
+<td>12</td>
+<td>LED GPS (BLUE)</td>
+<td>Slow flash = searching / Solid = fix</td>
+</tr>
+<tr>
+<td>13</td>
+<td>LED Altimeter (YELLOW)</td>
+<td>Solid = BMP581 initialized OK</td>
+</tr>
+<tr>
+<td>14</td>
+<td>LED Fault (RED)</td>
+<td>Solid = any subsystem failed</td>
+</tr>
+<tr>
+<td>15</td>
+<td>Camera CS</td>
+<td>Active LOW — deselect before SD access</td>
+</tr>
+<tr>
+<td>16</td>
+<td>SD Card CS</td>
+<td>Active LOW — deselect before camera access</td>
+</tr>
+<tr>
+<td>17</td>
+<td>SPI0 MOSI</td>
+<td>Shared camera + SD</td>
+</tr>
+<tr>
+<td>18</td>
+<td>SPI0 SCLK</td>
+<td>Shared camera + SD</td>
+</tr>
+<tr>
+<td>19</td>
+<td>SPI0 MISO</td>
+<td>Shared camera + SD</td>
+</tr>
+<tr>
+<td>20–24</td>
+<td>Free GPIO</td>
+<td>Available for expansion payloads</td>
+</tr>
+<tr>
+<td>25</td>
+<td>Onboard LED</td>
+<td>Boot confirmation blinks</td>
+</tr>
+<tr>
+<td>26–28</td>
+<td>Free GPIO</td>
+<td>Available for expansion payloads</td>
+</tr>
+</tbody>
+</table>
+<h3 id="42-expansion-headers-220-pin-breakout">4.2 Expansion Headers — 2×20 Pin Breakout</h3>
+<p>The SCK-PBL-1 payload board includes two 2×20 pin headers that break out
+all Raspberry Pi Pico GPIO pins — including pins already in use by the
+on-board subsystems. This allows researchers and developers to attach
+additional payload hardware without requiring a new PCB revision for each
+mission variant.</p>
+<p><strong>J_EXP1 and J_EXP2</strong> — full Pico pin breakout:</p>
+<ul>
+<li>All 26 GPIO pins accessible (including in-use pins)</li>
+<li>3.3V, 5V (VBUS), and GND power rails available</li>
+<li>Do not conflict with in-use pins (GPIO 0–19, 25) unless you understand
+  the bus sharing implications</li>
+</ul>
+<p><strong>J_DEBUG</strong> — dedicated debug header:</p>
+<ul>
+<li>UART0 TX/RX (GPIO 0/1) — monitor CC1110 ↔ Pico communication</li>
+<li>UART1 TX/RX (GPIO 8/9) — monitor raw GPS NMEA stream</li>
+<li>GND reference</li>
+</ul>
+<p><strong>Free GPIOs for expansion:</strong> 20–24 and 26–28 (seven free GPIO pins)</p>
+<p><strong>When attaching expansion hardware:</strong></p>
+<ul>
+<li>SPI0 can be shared — add a new CS GPIO and manage it explicitly</li>
+<li>I2C buses support multiple devices — ensure unique I2C addresses</li>
+<li>Do not drive in-use pins as outputs without disconnecting the on-board
+  subsystem first</li>
+</ul>
+<hr />
+<h2 id="50-c-ground-station-extension-reference">5.0 C# Ground Station Extension Reference</h2>
+<h3 id="51-key-methods">5.1 Key Methods</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ActiveHwid</code></td>
+<td>Property: current HWID from header bar</td>
+</tr>
+<tr>
+<td><code>IncSeqNum()</code></td>
+<td>Increment and return next sequence number</td>
+</tr>
+<tr>
+<td><code>FlushRxQueue()</code></td>
+<td>Discard queued received packets before sending</td>
+</tr>
+<tr>
+<td><code>WritePacket(byte[])</code></td>
+<td>Send raw bytes to serial port</td>
+</tr>
+<tr>
+<td><code>WaitForReply(hwid,seq,ms)</code></td>
+<td>Async: wait for matching ack/response</td>
+</tr>
+<tr>
+<td><code>Log(message, color)</code></td>
+<td>Append line to main log panel</td>
+</tr>
+<tr>
+<td><code>LogTx(message, hwid)</code></td>
+<td>Log transmitted packet in yellow TX format</td>
+</tr>
+<tr>
+<td><code>CheckConnected()</code></td>
+<td>Returns false and logs error if not connected</td>
+</tr>
+<tr>
+<td><code>MkButton(text,x,y,w,fg,bg)</code></td>
+<td>Create styled flat button</td>
+</tr>
+<tr>
+<td><code>MkLabel(text,x,y,w,color,font)</code></td>
+<td>Create styled label</td>
+</tr>
+<tr>
+<td><code>MkSectionLabel(text,x,y)</code></td>
+<td>Create cyan section divider</td>
+</tr>
+<tr>
+<td><code>MkTab(text)</code></td>
+<td>Create styled tab page</td>
+</tr>
+</tbody>
+</table>
+<h3 id="52-adding-a-custom-command-c-template">5.2 Adding a Custom Command (C# Template)</h3>
+<pre><code class="language-csharp">private async Task MyCommandAsync() {
+    if (!CheckConnected()) return;
+    ushort hwid = ActiveHwid;
+    ushort seq  = IncSeqNum();
+    FlushRxQueue();
+    WritePacket(OpenLstProtocol.BuildPacket(
+        hwid, seq, 0x20, new byte[] { 0x0A }));  // sub-opcode 0x0A
+    var pkt = await WaitForReply(hwid, seq, 10000);
+    if (pkt?.PicoPayload != null)
+        Log($&quot;Response: {pkt.PicoPayload}&quot;, Theme.Green);
+    else
+        Log(&quot;No response&quot;, Theme.Red);
+}
+</code></pre>
+<h3 id="53-opcode-reference">5.3 Opcode Reference</h3>
+<table>
+<thead>
+<tr>
+<th>Opcode</th>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0x10</td>
+<td><code>common_msg_ack</code></td>
+<td>Acknowledge response</td>
+</tr>
+<tr>
+<td>0xFF</td>
+<td><code>common_msg_nack</code></td>
+<td>Not-acknowledge response</td>
+</tr>
+<tr>
+<td>0x11</td>
+<td><code>common_msg_ascii</code></td>
+<td>ASCII debug text</td>
+</tr>
+<tr>
+<td>0x12</td>
+<td><code>radio_msg_reboot</code></td>
+<td>Reboot (optional 4-byte postpone_sec)</td>
+</tr>
+<tr>
+<td>0x13</td>
+<td><code>radio_msg_get_time</code></td>
+<td>Request RTC time</td>
+</tr>
+<tr>
+<td>0x14</td>
+<td><code>radio_msg_set_time</code></td>
+<td>Set RTC time</td>
+</tr>
+<tr>
+<td>0x17</td>
+<td><code>radio_msg_get_telem</code></td>
+<td>Request telemetry</td>
+</tr>
+<tr>
+<td>0x18</td>
+<td><code>radio_msg_telem</code></td>
+<td>Telemetry response (83 bytes)</td>
+</tr>
+<tr>
+<td>0x19</td>
+<td><code>radio_msg_get_callsign</code></td>
+<td>Request callsign</td>
+</tr>
+<tr>
+<td>0x1A</td>
+<td><code>radio_msg_set_callsign</code></td>
+<td>Set callsign (8 bytes)</td>
+</tr>
+<tr>
+<td>0x20</td>
+<td><code>PICO_MSG</code></td>
+<td>Forward payload to Pico via UART0</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="60-build-and-flash-reference">6.0 Build and Flash Reference</h2>
+<h3 id="61-building-cc1110-firmware">6.1 Building CC1110 Firmware</h3>
+<pre><code class="language-bash"># Bench firmware (safe indoor power — default)
+mingw32-make openlst_437_radio RF_PA_CONFIG=0xC0
+
+# Field firmware (full mission power)
+mingw32-make openlst_437_radio RF_PA_CONFIG=0xC2
+</code></pre>
+<p>Or use the ground station "Flash Firmware" button which handles build
+selection and patching automatically.</p>
+<blockquote>
+<p><strong>Always Clean + Build</strong> after any source change. Never trust an
+incremental build after modifying <code>board.h</code> or <code>board.c</code>.</p>
+</blockquote>
+<h3 id="62-flashing-pico-firmware">6.2 Flashing Pico Firmware</h3>
+<pre><code class="language-bash"># Using mpremote
+mpremote cp main.py :main.py
+mpremote cp sdcard.py :sdcard.py
+</code></pre>
+<p>Or hold BOOTSEL on power-up and drag-and-drop files to the USB mass
+storage drive.</p>
+<h3 id="63-ota-firmware-update-cc1110">6.3 OTA Firmware Update (CC1110)</h3>
+<ol>
+<li>Power cycle the SCK-915 board</li>
+<li>Ground station detects bootloader beacon within the 600ms window</li>
+<li>Click "Flash Firmware" — select bench or field build</li>
+<li>Board reflashes and restarts with new firmware</li>
+<li>Send 2–3 <code>get_telemetry</code> commands after OTA flash before other operations</li>
+</ol>
+<p>The 600ms window is controlled by <code>COMMAND_WATCHDOG_DELAY</code> in <code>board.h</code>.</p>
+<hr />
+<h2 id="70-hard-won-lessons">7.0 Hard-Won Lessons</h2>
+<p>These lessons were accumulated during development of the SCK-915 system
+starting from the OpenLST Explorer Kit prototype. Each one cost real
+debugging time. Read them before starting any firmware work.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Lesson</th>
+<th>Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L1</td>
+<td>UART1 is the ground station interface — use UART0 for Pico</td>
+<td>Critical</td>
+</tr>
+<tr>
+<td>L2</td>
+<td>Custom commands must be in <code>board.c</code> — not a separate file</td>
+<td>Critical</td>
+</tr>
+<tr>
+<td>L3</td>
+<td>Never reinitialize <code>reply-&gt;header</code> in <code>custom_commands</code></td>
+<td>Critical</td>
+</tr>
+<tr>
+<td>L4</td>
+<td><code>WATCHDOG_CLEAR</code> corrupts RF receive — never use it</td>
+<td>High</td>
+</tr>
+<tr>
+<td>L5</td>
+<td><code>uint32_t</code> causes XDATA RAM crash — use <code>uint16_t</code> only</td>
+<td>High</td>
+</tr>
+<tr>
+<td>L6</td>
+<td><code>uint16_t</code> wraps at 65535 — use nested loops for long timeouts</td>
+<td>High</td>
+</tr>
+<tr>
+<td>L7</td>
+<td>Zero-length ESP payload silently rejected by RX ISR</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>L8</td>
+<td>SD mount corrupts SPI state for Arducam — reinit SPI after mount</td>
+<td>High</td>
+</tr>
+<tr>
+<td>L9</td>
+<td>Arducam needs direct wire connection — breadboard adds too much capacitance</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>L10</td>
+<td>Camera init blocks UART — defer to first idle timeout, never at boot</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>L11</td>
+<td>Ground unit must run original unmodified OpenLST firmware</td>
+<td>High</td>
+</tr>
+<tr>
+<td>L12</td>
+<td>After direct serial flash: send 2–3 <code>get_telemetry</code> before RF ops</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>L13</td>
+<td>Always Clean + Build — stale <code>.rel</code> files cause silent firmware bugs</td>
+<td>High</td>
+</tr>
+<tr>
+<td>L14</td>
+<td>SPI bus shared between camera and SD — always deselect both CS before switching</td>
+<td>High</td>
+</tr>
+<tr>
+<td>L15</td>
+<td>Prototype board SPI limited to 400kHz — jumper wire noise corrupts at higher speeds</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>L16</td>
+<td>PICO_TIMEOUT values tuned for production PCB — double them on prototype board</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>L17</td>
+<td><code>RF_PA_CONFIG</code> must appear exactly once in <code>board.h</code> — ground station patching tool requires it</td>
+<td>High</td>
+</tr>
+<tr>
+<td>L18</td>
+<td>Bootloader window is 600ms — ground station must detect beacon and respond within this window</td>
+<td>High</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>SpaceCommsKit Developer Guide v2.0</em>
+<em>For updates and latest version see https://spacecommskit.com/docs</em></p>
+</div>
+</div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="nav-logo" style="color:#fff;">SpaceComms<span style="color:var(--cyan);">Kit</span></div>
+      <p>OpenLST inspired. SCK-915 evolved. Open-source software, hand-assembled hardware. Tennessee, USA.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Products</h4>
+      <a href="../kit.html">SCK-915</a>
+      <a href="../sck2400.html">SCK-2400</a>
+      <a href="../pico.html">SCK-PBL-1</a>
+    </div>
+    <div class="footer-col">
+      <h4>Resources</h4>
+      <a href="../documentation.html">Documentation</a>
+      <a href="../software.html">Software</a>
+      <a href="https://github.com/eor123/spacecommskit" target="_blank">GitHub</a>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <a href="mailto:info@spacecommskit.com">info@spacecommskit.com</a>
+      <a href="mailto:support@spacecommskit.com">support@spacecommskit.com</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2026 SpaceCommsKit &middot; Tennessee, USA &middot; Ships to United States only</p>
+    <p>Based on OpenLST by Planet Labs Inc. (GPLv3)</p>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -18,7 +18,7 @@
     <li><a href="documentation.html" class="active">Documentation</a></li>
     <li><a href="quickstart.html">Quick Start</a></li>
     <li><a href="software.html">Software</a></li>
-    <li><a href="pico.html">Pico Project</a></li>
+    <li><a href="pico.html">SCK-PBL-1</a></li>
     <li><a href="groundstation.html">Ground Station</a></li>
     <li><a href="hab-mission.html">HAB Mission</a></li>
     <li><a href="about.html">About</a></li>
@@ -64,8 +64,8 @@
         <li style="font-size:13px;color:var(--text-muted);padding:4px 0;">✓ Troubleshooting section</li>
         <li style="font-size:13px;color:var(--text-muted);padding:4px 0;">✓ Complete specifications</li>
       </ul>
-      <a href="https://github.com/eor123/spacecommskit/blob/main/docs/SCK-915_User_Guide.md"
-         class="btn btn-primary" target="_blank">View Guide →</a>
+      <a href="docs/SCK-915_User_Guide.html"
+         class="btn btn-primary">View Guide →</a>
     </div>
 
     <div class="card">
@@ -88,8 +88,8 @@
         <li style="font-size:13px;color:var(--text-muted);padding:4px 0;">✓ C# project architecture</li>
         <li style="font-size:13px;color:var(--text-muted);padding:4px 0;">✓ Complete opcode table</li>
       </ul>
-      <a href="https://github.com/eor123/spacecommskit/blob/main/docs/SCK-915_Developer_Guide.md"
-         class="btn btn-primary" target="_blank">View Guide →</a>
+      <a href="docs/SCK-915_Developer_Guide.html"
+         class="btn btn-primary">View Guide →</a>
     </div>
 
   </div>
@@ -125,8 +125,8 @@
         <li style="font-size:13px;color:var(--text-muted);padding:4px 0;">✓ Troubleshooting section</li>
         <li style="font-size:13px;color:var(--text-muted);padding:4px 0;">✓ Complete specifications</li>
       </ul>
-      <a href="https://github.com/eor123/spacecommskit/blob/main/docs/SCK-2400_User_Guide.md"
-         class="btn btn-primary" target="_blank">View Guide →</a>
+      <a href="docs/SCK-2400_User_Guide.html"
+         class="btn btn-primary">View Guide →</a>
     </div>
 
     <div class="card">
@@ -150,8 +150,8 @@
         <li style="font-size:13px;color:var(--text-muted);padding:4px 0;">✓ SysConfig / TI-RTOS7 hardware reference</li>
         <li style="font-size:13px;color:var(--text-muted);padding:4px 0;">✓ Hard-won lessons table</li>
       </ul>
-      <a href="https://github.com/eor123/spacecommskit/blob/main/docs/SCK-2400_Developer_Guide.md"
-         class="btn btn-primary" target="_blank">View Guide →</a>
+      <a href="docs/SCK-2400_Developer_Guide.html"
+         class="btn btn-primary">View Guide →</a>
     </div>
 
   </div>
@@ -166,6 +166,54 @@
       <a href="https://github.com/eor123/spacecommskit/tree/main/docs/dev-log"
          class="btn btn-outline btn-sm" target="_blank" style="border-color:var(--border-lt);color:var(--blue);white-space:nowrap;">Read Dev Log →</a>
     </div>
+  </div>
+</div>
+</div>
+
+<!-- SCK-PBL-1 Docs -->
+<div class="section-panel">
+<div class="section">
+  <span class="eyebrow eyebrow-dark">SCK-PBL-1 Documentation</span>
+  <h2 class="section-title">SCK-PBL-1 · Payload Board Guide</h2>
+  <p class="section-lead">The Raspberry Pi Pico payload board — bolts onto SCK-915 or SCK-2400, or runs standalone with every pin broken out. One firmware, two radios, or none at all.</p>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:40px;">
+
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;">
+        <div style="font-size:36px;">📘</div>
+        <div>
+          <div class="tag tag-blue mb-8">User Guide</div>
+          <h3>SCK-PBL-1<br>User Guide</h3>
+        </div>
+      </div>
+      <p style="color:var(--text-muted);font-size:14px;line-height:1.6;margin-bottom:20px;">
+        Covers bolt-on and standalone use, the full bill of materials, command
+        protocol reference, complete pinout for every subsystem and breakout
+        header, and prototype-vs-production timing notes.
+      </p>
+      <ul style="list-style:none;margin-bottom:24px;">
+        <li style="font-size:13px;color:var(--text-muted);padding:4px 0;">✓ Bolt-on + standalone modes</li>
+        <li style="font-size:13px;color:var(--text-muted);padding:4px 0;">✓ Full bill of materials</li>
+        <li style="font-size:13px;color:var(--text-muted);padding:4px 0;">✓ Command protocol reference</li>
+        <li style="font-size:13px;color:var(--text-muted);padding:4px 0;">✓ Complete pinout + breakout headers</li>
+      </ul>
+      <a href="docs/SCK-PBL-1_User_Guide.html"
+         class="btn btn-primary">View Guide →</a>
+    </div>
+
+    <div class="card" style="display:flex;flex-direction:column;justify-content:center;">
+      <div style="font-size:32px;margin-bottom:14px;">🧩</div>
+      <h3 style="margin-bottom:8px;">Extending the Firmware</h3>
+      <p style="font-size:14px;color:var(--text-muted);margin-bottom:20px;">
+        <code>main.py</code> is open source and built for extension — independent
+        subsystem init/fault flags, a documented opcode extension pattern, and
+        the same firmware whether you're bolted to SCK-915, SCK-2400, or
+        running standalone. See §9 of the User Guide.
+      </p>
+      <a href="pico.html" class="btn btn-outline btn-sm" style="border-color:var(--border-lt);color:var(--blue);align-self:flex-start;">SCK-PBL-1 Product Page →</a>
+    </div>
+
   </div>
 </div>
 </div>
@@ -324,7 +372,7 @@
       <h4>Resources</h4>
       <a href="documentation.html">Documentation</a>
       <a href="software.html">Software</a>
-      <a href="pico.html">Pico Project</a>
+      <a href="pico.html">SCK-PBL-1</a>
       <a href="hab-mission.html">HAB Mission</a>
       <a href="https://github.com/eor123/spacecommskit" target="_blank">GitHub</a>
     </div>

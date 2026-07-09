@@ -1,0 +1,1730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCK-2400 Developer Guide — SpaceCommsKit</title>
+<meta name="description" content="SpaceCommsKit SCK-2400 Developer Guide — CCSDS packet structure, OAD transport, CCSDS/ESP bridge architecture, SysConfig reference, and hard-won lessons.">
+<link rel="canonical" href="https://www.spacecommskit.com/docs/SCK-2400_Developer_Guide.html">
+<link rel="stylesheet" href="../style.css">
+<style>
+.doc-content { max-width: 900px; margin: 0 auto; }
+.doc-content h1 { display:none; }
+.doc-content h2 {
+  font-size: 28px; font-weight: 700; color: var(--text-hero);
+  letter-spacing: -0.5px; margin: 56px 0 18px; padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+.doc-content > h2:first-of-type { border-top: none; margin-top: 0; }
+.doc-content h3 {
+  font-size: 20px; font-weight: 600; color: var(--cyan);
+  margin: 36px 0 12px;
+}
+.doc-content h4 {
+  font-size: 15px; font-weight: 600; color: var(--text-hero);
+  margin: 24px 0 10px; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.doc-content p { color: var(--text-inv); font-size: 15px; line-height: 1.75; margin-bottom: 16px; }
+.doc-content ul, .doc-content ol { color: var(--text-inv); font-size: 15px; line-height: 1.8; margin: 0 0 16px 22px; }
+.doc-content li { margin-bottom: 4px; }
+.doc-content li > p { margin-bottom: 4px; }
+.doc-content a { color: var(--cyan); }
+.doc-content strong { color: #fff; }
+.doc-content hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+.doc-content code {
+  font-family: var(--font-mono); font-size: 13px;
+  background: rgba(0,200,224,0.1); color: var(--cyan);
+  padding: 2px 6px; border-radius: 4px;
+}
+.doc-content pre {
+  background: var(--void); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 20px 24px;
+  overflow-x: auto; margin: 0 0 20px;
+}
+.doc-content pre code {
+  background: none; color: #cbd5e1; padding: 0;
+  font-size: 13px; line-height: 1.7;
+}
+.doc-content table {
+  width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 0 0 24px;
+}
+.doc-content th {
+  background: var(--blue); color: #fff; padding: 10px 14px; text-align: left;
+  font-size: 11.5px; font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase;
+  font-family: var(--font-mono);
+}
+.doc-content td {
+  padding: 9px 14px; border-bottom: 1px solid var(--border);
+  color: var(--text-inv); vertical-align: top;
+}
+.doc-content tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+.doc-content td:first-child { font-weight: 500; color: #fff; }
+.doc-content blockquote {
+  border-left: 4px solid var(--blue); background: rgba(26,111,212,0.08);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 20px; margin: 0 0 20px; color: var(--text-inv); font-size: 14px;
+}
+.doc-content blockquote.warn { border-left-color: var(--gold); background: rgba(240,165,0,0.08); }
+.doc-content blockquote.crit { border-left-color: var(--red); background: rgba(224,60,46,0.08); }
+.doc-content blockquote p:last-child { margin-bottom: 0; }
+.doc-meta {
+  font-family: var(--font-mono); font-size: 12px; color: var(--text-inv);
+  letter-spacing: 0.5px; margin-bottom: 8px;
+}
+.doc-toc {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 24px 28px; margin: 40px 0 56px;
+}
+.doc-toc-title {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--cyan); margin-bottom: 14px;
+}
+.doc-toc ul { list-style: none; margin: 0; columns: 2; column-gap: 32px; }
+.doc-toc li { margin-bottom: 6px; break-inside: avoid; }
+.doc-toc a { color: var(--text-inv); font-size: 13.5px; text-decoration: none; }
+.doc-toc a:hover { color: var(--cyan); text-decoration: underline; }
+@media (max-width: 700px) { .doc-toc ul { columns: 1; } }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="../index.html" class="nav-logo">SpaceComms<span>Kit</span><span class="logo-tag">Docs</span></a>
+  <ul class="nav-links">
+    <li><a href="../index.html">Home</a></li>
+    <li><a href="../kit.html">SCK-915</a></li>
+    <li><a href="../sck2400.html">SCK-2400</a></li>
+    <li><a href="../pico.html">SCK-PBL-1</a></li>
+    <li><a href="../documentation.html" class="active">Documentation</a></li>
+    <li><a href="../quickstart.html">Quick Start</a></li>
+    <li><a href="../software.html">Software</a></li>
+    <li><a href="../groundstation.html">Ground Station</a></li>
+    <li><a href="../about.html">About</a></li>
+    <li><a href="https://spacecommskit.myshopify.com" target="_blank" class="nav-cta">Buy a Kit</a></li>
+  </ul>
+</nav>
+
+<section class="hero" style="padding-bottom:40px;">
+  <div class="hero-inner" style="padding-bottom:40px;">
+    <span class="eyebrow">SCK-2400 &amp;middot; Documentation &amp;middot; Developer Guide</span>
+    <h1 class="hero-title" style="font-size:clamp(28px,4vw,44px);">SCK-2400 Developer Guide</h1>
+  </div>
+</section>
+
+<div class="section-dark">
+<div class="section">
+<div class="doc-content">
+<div class="doc-toc"><div class="doc-toc-title">On This Page</div><ul><li><a href="#quick-reference-search-tags">Quick Reference — Search Tags</a></li>
+<li><a href="#10-system-overview">1.0 System Overview</a></li>
+<li><a href="#20-hardware-configuration-reference">2.0 Hardware Configuration Reference</a></li>
+<li><a href="#30-firmware-extension-reference">3.0 Firmware Extension Reference</a></li>
+<li><a href="#40-payload-board-hardware-reference">4.0 Payload Board Hardware Reference</a></li>
+<li><a href="#50-c-ground-station-extension-reference">5.0 C# Ground Station Extension Reference</a></li>
+<li><a href="#60-build-and-flash-reference">6.0 Build and Flash Reference</a></li>
+<li><a href="#70-hard-won-lessons">7.0 Hard-Won Lessons</a></li>
+<li><a href="#80-ground-station-sck-2400-integration-notes">8.0 Ground Station — SCK-2400 Integration Notes</a></li></ul></div>
+<h1 id="spacecommskit-sck-2400-developer-guide">SpaceCommsKit SCK-2400 Developer Guide</h1>
+<p><strong>Version 1.10 — July 2026</strong>
+<strong>SpaceCommsKit — https://spacecommskit.com/docs</strong></p>
+<blockquote>
+<p>This document covers the SCK-2400 development stack — from the CCSDS
+protocol foundation through the CC1352P firmware, OAD (Over-Air
+Download) system, and the CCSDS↔ESP payload bridge to the Raspberry Pi
+Pico payload board. If you are new to the system, read Section 1
+before anything else.</p>
+<p>The SCK-2400 shares its payload board architecture with the SCK-915.
+If you have read the SCK-915 Developer Guide, Section 4 (Payload Board
+Hardware Reference) will be familiar — the Pico firmware (<code>main.py</code>) is
+unchanged between the two products.</p>
+</blockquote>
+<hr />
+<h2 id="quick-reference-search-tags">Quick Reference — Search Tags</h2>
+<p>Every cross-reference in the firmware source uses a <code>[SCK-DEV: TAG]</code>
+comment. Search for any tag in the codebase to jump directly to the
+relevant section:</p>
+<table>
+<thead>
+<tr>
+<th>Tag</th>
+<th>Topic</th>
+<th>Section</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SCK-DEV: BOARD_ADDRESSING</code></td>
+<td>CCSDS APID board addressing</td>
+<td>2.1</td>
+</tr>
+<tr>
+<td><code>SCK-DEV: TX_POWER</code></td>
+<td>Bench vs field power modes</td>
+<td>2.2</td>
+</tr>
+<tr>
+<td><code>SCK-DEV: PAYLOAD_UART</code></td>
+<td>CC1352P↔Pico UART bridge</td>
+<td>2.3</td>
+</tr>
+<tr>
+<td><code>SCK-DEV: BIM_OAD</code></td>
+<td>Bootloader / OAD boot chain</td>
+<td>2.4</td>
+</tr>
+<tr>
+<td><code>SCK-DEV: ADD_COMMAND</code></td>
+<td>Adding new commands</td>
+<td>3.1</td>
+</tr>
+<tr>
+<td><code>SCK-DEV: OAD_STREAMING</code></td>
+<td>OAD Phase 3 streaming transport</td>
+<td>3.2</td>
+</tr>
+<tr>
+<td><code>SCK-DEV: CHUNKING</code></td>
+<td>Chunking large payload responses</td>
+<td>3.3</td>
+</tr>
+<tr>
+<td><code>SCK-DEV: ESP_FRAMING</code></td>
+<td>ESP framing on the payload UART</td>
+<td>3.4</td>
+</tr>
+<tr>
+<td><code>SCK-DEV: RESPONSE_FORMAT</code></td>
+<td>Pico response string conventions</td>
+<td>3.5</td>
+</tr>
+<tr>
+<td><code>SCK-DEV: BEACON</code></td>
+<td>Autonomous GPS beacon</td>
+<td>3.6</td>
+</tr>
+<tr>
+<td><code>SCK-DEV: SD_FLIGHT_LOG</code></td>
+<td>SD card flight log format</td>
+<td>3.7</td>
+</tr>
+<tr>
+<td><code>SCK-DEV: WATCHDOG</code></td>
+<td>Hardware watchdog timer — LEO fault recovery</td>
+<td>3.8</td>
+</tr>
+<tr>
+<td><code>SCK-DEV: CRYPTO</code></td>
+<td>AES-128-CCM RF encryption</td>
+<td>3.9</td>
+</tr>
+<tr>
+<td><code>SCK-DEV: NV_STORAGE</code></td>
+<td>Non-volatile reset counter / safe mode</td>
+<td>3.10</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="10-system-overview">1.0 System Overview</h2>
+<h3 id="11-architecture">1.1 Architecture</h3>
+<pre><code>Ground Station (Windows C#)
+    ↕ USB — XDS110 — 921600 baud — CCSDS framing
+SCK-2400 GS Board (CC1352P, APID 0x010)
+    ↕ 2.4GHz RF — CCSDS framing
+SCK-2400 Remote Board (CC1352P, APID 0x011)
+    ↕ UART — 115200 baud — ESP framing
+SCK-PBL-1 Payload Board (Raspberry Pi Pico)
+    ├── OV2640 Camera    (SPI0 + I2C0)
+    ├── MicroSD Card     (SPI0)
+    ├── GPS NEO-6M       (UART1)
+    └── BMP581/MS5611    (I2C1)
+</code></pre>
+<p>The GS board relays CCSDS commands transparently over RF to the remote
+board's APID. The remote board is a <strong>CCSDS↔ESP bridge</strong> — it speaks
+CCSDS on the RF side and ESP framing on the payload UART side, exactly
+mirroring the Pico's existing protocol from SCK-915.</p>
+<p><strong>Key architectural decision:</strong> the Pico's <code>main.py</code> requires <strong>zero
+changes</strong> from SCK-915. The CC1352P translates CCSDS commands into ESP
+frames the Pico already understands, and translates ESP responses back
+into CCSDS ACKs for the Ground Station. The Pico never knows whether it's
+talking to a CC1110 (SCK-915) or a CC1352P (SCK-2400).</p>
+<h3 id="12-hardware-variants">1.2 Hardware Variants</h3>
+<table>
+<thead>
+<tr>
+<th>Board</th>
+<th>Description</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LAUNCHXL-CC1352P-2 ×2</td>
+<td>TI LaunchPad — bringup validation platform</td>
+<td>Firmware validated here before custom PCB spin</td>
+</tr>
+<tr>
+<td>SCK-2400 Mini</td>
+<td>CC2652P1FRGZ, SCK-915 footprint — drop-in for existing 3D-printed stands and SCK-PBL-1</td>
+<td>In production</td>
+</tr>
+<tr>
+<td>SCK-2400</td>
+<td>CC2652P1FRGZ, RF sections only, PC-104 compliant</td>
+<td>In design</td>
+</tr>
+<tr>
+<td>SCK-PBL-1 Payload</td>
+<td>Pico + camera + GPS + altimeter + SD PCB</td>
+<td>Shared with SCK-915</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Both production variants share identical firmware to what's being bringup-tested
+on SCK-2400 Mini in this guide — the CC1352P and CC2652P are
+pin/peripheral-compatible within the SimpleLink family, so the CCSDS dispatch,
+OAD transport, and payload bridge code carries forward unchanged. The
+<strong>SCK-2400 Mini variant</strong> is a footprint-compatible drop-in replacement for
+SCK-915 — same mounting, same payload board connector — intended for
+development work and HAB missions. The <strong>SCK-2400 variant</strong> strips the
+board to RF sections only on a PC-104 compliant form factor, for integration
+into real CubeSat flight stacks.</p>
+</blockquote>
+<h3 id="13-firmware-components">1.3 Firmware Components</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Language</th>
+<th>Runs On</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>main.c</code></td>
+<td>C</td>
+<td>CC1352P</td>
+<td>RTOS task creation, rfTask (RF + beacon + routing)</td>
+</tr>
+<tr>
+<td><code>uart.c</code> / <code>uart.h</code></td>
+<td>C</td>
+<td>CC1352P</td>
+<td>CCSDS dispatch, payload UART bridge, OAD handlers</td>
+</tr>
+<tr>
+<td><code>ccsds.h</code></td>
+<td>C</td>
+<td>CC1352P</td>
+<td>CCSDS packet structures and command opcodes</td>
+</tr>
+<tr>
+<td><code>radio.c</code> / <code>radio.h</code></td>
+<td>C</td>
+<td>CC1352P</td>
+<td>RF driver wrapper (TX/RX, RX queue)</td>
+</tr>
+<tr>
+<td><code>telemetry.c</code> / <code>.h</code></td>
+<td>C</td>
+<td>CC1352P</td>
+<td>Telemetry collection (uptime, RX/TX counters, VCC)</td>
+</tr>
+<tr>
+<td><code>oad_*.c</code></td>
+<td>C</td>
+<td>CC1352P</td>
+<td>OAD ext-flash transport and image header</td>
+</tr>
+<tr>
+<td><code>main.py</code></td>
+<td>MicroPython</td>
+<td>Pico</td>
+<td>Payload pipeline — <strong>unchanged from SCK-915</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="14-repository-layout">1.4 Repository Layout</h3>
+<pre><code>sck2400_firmware/                ← CCS Theia project root
+├── sck2400.syscfg               ← SysConfig — UART/SPI/RF pin assignments
+├── main.c / main.h               ← RTOS tasks, rfTask
+├── uart.c / uart.h                ← CCSDS dispatch + payload bridge
+├── ccsds.h                       ← packet structs + command opcodes
+├── radio.c / radio.h              ← RF driver wrapper
+├── telemetry.c / telemetry.h      ← telemetry collection
+├── oad_task.c / oad_task.h        ← OAD ext-flash session
+├── oad_flash_stub.c               ← ext flash SPI (MX25R8035F)
+├── oad_image_header_app.c         ← OAD image metadata (auto-patched by GS)
+└── Debug/                         ← build output (sck2400_firmware.hex etc.)
+</code></pre>
+<blockquote>
+<p><strong>Never hand-edit <code>oad_image_header_app.c</code> placeholder values.</strong> The
+Ground Station's build pipeline patches <code>.prgEntry</code> and <code>.len</code>
+automatically after each build. See Section 6.3.</p>
+</blockquote>
+<hr />
+<h2 id="20-hardware-configuration-reference">2.0 Hardware Configuration Reference</h2>
+<h3 id="21-ccsds-board-addressing">2.1 CCSDS Board Addressing [SCK-DEV: BOARD_ADDRESSING]</h3>
+<p>The SCK-2400 reuses OpenLST-style board addressing, but encodes the
+board address in the CCSDS <strong>APID</strong> field instead of a separate HWID.</p>
+<table>
+<thead>
+<tr>
+<th>APID</th>
+<th>Role</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0x010</code></td>
+<td>Ground Station board</td>
+<td>Connects via USB to the GS app, relays RF traffic</td>
+</tr>
+<tr>
+<td><code>0x011</code></td>
+<td>Remote 1</td>
+<td>First remote/payload board</td>
+</tr>
+<tr>
+<td><code>0x012</code></td>
+<td>Remote 2</td>
+<td>Second remote board (multi-board missions)</td>
+</tr>
+<tr>
+<td><code>0x001</code></td>
+<td>Telemetry beacon</td>
+<td><code>CCSDS_APID_TLM_BEACON</code> — used for <code>tlm_beacon</code> responses</td>
+</tr>
+<tr>
+<td><code>0x002</code></td>
+<td>Legacy command path</td>
+<td><code>CCSDS_APID_COMMAND</code> — generic command APID</td>
+</tr>
+<tr>
+<td><code>0x003</code></td>
+<td>Command ACK</td>
+<td><code>CCSDS_APID_CMD_ACK</code> — all command responses</td>
+</tr>
+</tbody>
+</table>
+<p>Each board's address is set at compile time via <code>SCK_APID_THIS_BOARD</code> in
+<code>ccsds.h</code>. The Ground Station's Firmware tab patches this value
+automatically based on the selected <strong>Board Role</strong>.</p>
+<p><strong>Routing logic (<code>uart_dispatch_ccsds_packet</code> in <code>uart.c</code>):</strong></p>
+<ul>
+<li>
+<p>GS board + packet addressed to a remote APID → forward over RF via
+  <code>rf_forward_enqueue()</code>, do not dispatch locally</p>
+</li>
+<li>
+<p>GS board + packet addressed to <code>0x010</code> or <code>CCSDS_APID_COMMAND</code> →
+  dispatch locally</p>
+</li>
+<li>
+<p>Remote board + packet addressed to its own APID (pre-filtered by
+  <code>rfTask</code>) → dispatch locally</p>
+</li>
+<li>
+<p>Any board + unrecognized APID → discard silently</p>
+</li>
+</ul>
+<h3 id="22-rf-power-modes">2.2 RF Power Modes [SCK-DEV: TX_POWER]</h3>
+<p>Power mode is set at flash time via <code>TX_POWER</code> in <code>radio.h</code>, patched
+automatically by the Ground Station's Firmware tab.</p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th><code>TX_POWER</code></th>
+<th>Output</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bench</td>
+<td><code>BENCH</code> (0 dBm)</td>
+<td>~0 dBm</td>
+<td>Indoor/bench testing — default</td>
+</tr>
+<tr>
+<td>Field</td>
+<td><code>MAX</code></td>
+<td>Full CC1352P output</td>
+<td>Field / HAB / LEO mission</td>
+</tr>
+</tbody>
+</table>
+<blockquote class="crit">
+<p><strong>Critical:</strong> There must be exactly <strong>one</strong> <code>#define TX_POWER</code> line in
+<code>radio.h</code>. The Ground Station's patching tool searches for this exact
+string — duplicating or relocating it breaks patching silently.</p>
+</blockquote>
+<h3 id="23-payload-uart-cc1352ppico-bridge">2.3 Payload UART — CC1352P↔Pico Bridge [SCK-DEV: PAYLOAD_UART]</h3>
+<p>The remote board bridges CCSDS (RF side) to ESP framing (Pico side) over
+a dedicated UART.</p>
+<p><strong>SysConfig UART2 instances (<code>sck2400.syscfg</code>):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Instance</th>
+<th>List Order / Index</th>
+<th>Peripheral</th>
+<th>TX Pin</th>
+<th>RX Pin</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PAYLOAD_UART</code></td>
+<td><strong>0</strong> (must be listed first)</td>
+<td>UART1</td>
+<td>DIO13</td>
+<td>DIO12</td>
+<td>GS↔CC1352P — XDS110 backchannel</td>
+</tr>
+<tr>
+<td><code>DEBUG_UART</code></td>
+<td>1</td>
+<td>UART0</td>
+<td>DIO5</td>
+<td>DIO16</td>
+<td>CC1352P↔Pico payload bridge</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Naming is historical and confusing — read carefully.</strong> Despite its
+name, <code>PAYLOAD_UART</code> is the <strong>Ground Station link</strong> (it was the
+original UART before the Pico bridge existed). <code>DEBUG_UART</code> is the one
+repurposed for the <strong>Pico payload link</strong>. Do not rename these in
+SysConfig — the Ground Station patching tool and <code>uart.h</code> defines
+assume these exact names and this exact list order.</p>
+</blockquote>
+<p><strong><code>uart.h</code> configuration:</strong></p>
+<pre><code class="language-c">#define SCK_UART_IDX          0   /* PAYLOAD_UART — GS↔CC1352P (DIO12/13) */
+#define SCK_PAYLOAD_UART_IDX  1   /* DEBUG_UART   — CC1352P↔Pico (DIO5/16) */
+#define SCK_UART_BAUD         921600
+#define SCK_PAYLOAD_UART_BAUD 115200  /* Matches Pico main.py */
+</code></pre>
+<p><strong>LaunchPad → Pico wiring:</strong></p>
+<pre><code>DIO5  (package pin 10) TX  →  Pico GPIO1 (UART0 RX, physical pin 2)
+DIO16 (package pin 26) RX  ←  Pico GPIO0 (UART0 TX, physical pin 1)
+GND                        →  Pico GND
+</code></pre>
+<blockquote>
+<p><strong>CORRECTION (2026-07):</strong> an earlier revision of this guide listed
+DIO16 as "header pin 32." That was a units error — 32 was actually a
+LaunchPad BoosterPack connector position (SysConfig's
+<code>boosterpack.32</code> notation), not a CC2652P package pin number.
+Confirmed directly against the CC2652P RGZ-48 datasheet pin diagram
+(Figure 6-1): <strong>DIO16 is package pin 26.</strong> DIO5 (package pin 10) was
+correct in both numbering systems, which is what made the DIO16 error
+easy to miss initially.</p>
+</blockquote>
+<p>Both boards are 3.3V — no level shifter required.</p>
+<h3 id="231-physical-connector-pinouts-sck-2400-mini-production-board">2.3.1 Physical Connector Pinouts — SCK-2400 Mini Production Board</h3>
+<p><strong>UART0 header (Pico payload link, <code>DEBUG_UART</code>):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Pin</th>
+<th>Signal</th>
+<th>Net</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>GND</td>
+<td>GND</td>
+</tr>
+<tr>
+<td>2</td>
+<td>RX</td>
+<td>DIO16 (package pin 26)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>TX</td>
+<td>DIO5 (package pin 10)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>+3V3</td>
+<td>+3V3</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>RTS/CTS pads exist on this header from the original layout but are
+<strong>not used by current firmware</strong> — <code>uart_init()</code> configures plain 8N1
+with no flow control. Present in hardware for future use, not
+currently wired into the UART2 driver config.</p>
+</blockquote>
+<p><strong>UART1 header (Ground Station link, <code>PAYLOAD_UART</code>), 5-pin:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Pin</th>
+<th>Signal</th>
+<th>Net</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>GND</td>
+<td>GND</td>
+</tr>
+<tr>
+<td>2</td>
+<td>RX</td>
+<td>DIO12 (package pin 18)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>TX</td>
+<td>DIO13 (package pin 19)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>+3V3</td>
+<td>+3V3</td>
+</tr>
+<tr>
+<td>5</td>
+<td>BACKDOOR</td>
+<td>DIO6 (package pin 11), 10kΩ pull-up to +3V3</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Layout correction (2026-07):</strong> this header was originally wired to
+package pins 10/11 (DIO5/DIO6) on the SCK-2400 Mini — the LaunchPad's
+proven Pico-bridge pins, wired here by mistake. Corrected to
+DIO12(RX)/DIO13(TX), matching <code>PAYLOAD_UART</code>'s actual SysConfig/
+firmware definition. No firmware or SysConfig changes were needed —
+only the physical net assignment on this header.</p>
+<p><strong>Bootloader backdoor pin 5 added 2026-07.</strong> DIO6 (package pin 11) —
+freed up by the header correction above — was selected for the CCFG
+bootloader backdoor rather than reusing DIO16. CCFG settings:
+<code>enableBootloader = true</code>, <code>enableBootloaderBackdoor = true</code>,
+<code>dioBootloaderBackdoor = 6</code>, <code>levelBootloaderBackdoor = "Active low"</code>.
+Requires an external 10kΩ pull-up to +3V3 on DIO6 (a static, low-speed
+sense pin — 10kΩ is appropriate; a lower value like 2.2kΩ is unneeded
+and just wastes current on a pin sampled only at reset). Moving the
+backdoor off DIO16 also reduces DIO16 to two roles (J2 debug connector
++ <code>DEBUG_UART</code> RX) instead of three — see Section 2.5 note on J2/DIO16
+sharing.</p>
+</blockquote>
+<p><strong>Lazy initialization is mandatory.</strong> The payload UART is opened on
+first use via <code>payload_uart_open()</code>, never at boot:</p>
+<pre><code class="language-c">static bool payload_uart_open(void)
+{
+    if (sPayloadUartHandle != NULL) return true;
+
+    UART2_Params p;
+    UART2_Params_init(&amp;p);
+    p.baudRate   = SCK_PAYLOAD_UART_BAUD;
+    p.readMode   = UART2_Mode_NONBLOCKING;
+    p.writeMode  = UART2_Mode_BLOCKING;
+    sPayloadUartHandle = UART2_open(SCK_PAYLOAD_UART_IDX, &amp;p);
+    return (sPayloadUartHandle != NULL);
+}
+</code></pre>
+<p>If the Pico is not connected, <code>UART2_open</code> on a floating RX line can
+block indefinitely if attempted at boot — opening lazily on the first
+payload command avoids this entirely. Also enable <strong>"Enable Nonblocking
+Mode"</strong> on <code>DEBUG_UART</code> in SysConfig — this allocates the RX ring buffer
+required for <code>UART2_Mode_NONBLOCKING</code> reads to return immediately when no
+data is available.</p>
+<h3 id="24-bim-oad-boot-chain">2.4 BIM / OAD Boot Chain [SCK-DEV: BIM_OAD]</h3>
+<pre><code>Power-on reset
+    ↓
+BIM (Boot Image Manager) — runs first, permanent, never updated by OAD
+    ↓ scans ext flash page 0 for OAD_EFL_MAGIC + imgCpStat == NEED_COPY
+    ├─ found valid image → copy ext flash → internal flash → boot it
+    └─ not found / invalid → boot existing internal flash application
+</code></pre>
+<p>BIM is flashed once during board provisioning and is <strong>never</strong> touched by
+application builds or OAD transfers. This is the safety net: a failed or
+corrupted OAD image simply isn't copied, and the board boots whatever was
+already in internal flash.</p>
+<p>OAD writes the new application image to <strong>external flash</strong> (MX25R8035F,
+1MB SPI flash) starting at <code>OAD_IMG_OFFSET = 0x001000</code>, then writes an
+<code>ExtImageInfo_t</code> metadata header to <code>OAD_SLOT_OFFSET = 0x000000</code> with
+<code>imgCpStat = NEED_COPY</code>. On next boot, BIM finds this header, copies the
+image to internal flash, and the new firmware runs.</p>
+<p>See Section 3.2 for the full OAD streaming protocol.</p>
+<h3 id="25-programming-debug-connector-j2">2.5 Programming / Debug Connector (J2)</h3>
+<p>The SCK-2400 Mini carries a <strong>2×5 (10-pin), 0.05" pitch programming/debug
+header (J2)</strong>, matching the standard <strong>TI LaunchPad XDS110 debug-out</strong>
+pinout used on LAUNCHXL-CC1352P-2 boards. It allows an external XDS110
+(including a LaunchPad's onboard XDS110 in pass-through mode) to
+program/debug boards that don't carry their own onboard debug probe.</p>
+<blockquote>
+<p><strong>This is not a JTAG connector</strong>, despite two of its signal labels
+(<code>TCKC</code>, <code>TMSC</code>) being inherited from the CC1352P pin-naming in TI's
+pinout tool. Those names describe SWD-capable pins on the die, not a
+JTAG-standard header pinout. Refer to J2 as the <strong>Programming/Debug
+connector</strong> or <strong>XDS110 debug header</strong> in documentation and silkscreen
+— not "JTAG."</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Pin</th>
+<th>Signal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>U1-Reset_N</td>
+</tr>
+<tr>
+<td>2</td>
+<td>GND</td>
+</tr>
+<tr>
+<td>3</td>
+<td>U1-DIO_17</td>
+</tr>
+<tr>
+<td>4</td>
+<td>GND</td>
+</tr>
+<tr>
+<td>5</td>
+<td>U1-DIO_16</td>
+</tr>
+<tr>
+<td>6</td>
+<td>+3V3</td>
+</tr>
+<tr>
+<td>7</td>
+<td>U1-JTAG_TCKC</td>
+</tr>
+<tr>
+<td>8</td>
+<td>GND</td>
+</tr>
+<tr>
+<td>9</td>
+<td>U1-JTAG_TMSC</td>
+</tr>
+<tr>
+<td>10</td>
+<td>+3V3</td>
+</tr>
+</tbody>
+</table>
+<p>A standard 10-pin ribbon cable from any LaunchPad's debug-out header
+plugs directly into J2 for external programming/debug.</p>
+<blockquote>
+<p><strong>DIO16 sharing note (2026-07):</strong> J2 pin 5 (DIO_16) is also <code>DEBUG_UART</code>
+RX — the Pico payload link (see Section 2.3.1). This is intentional,
+not a conflict: J2 is used during development/programming sessions,
+while the Pico is the operational payload processor — the two are not
+normally live at the same time. <strong>Operational rule: do not have a
+debug probe connected to J2 while the Pico is also connected on the
+UART0 payload header</strong>, since both would drive DIO16 simultaneously.</p>
+</blockquote>
+<hr />
+<h2 id="30-firmware-extension-reference">3.0 Firmware Extension Reference</h2>
+<h3 id="31-adding-new-commands">3.1 Adding New Commands [SCK-DEV: ADD_COMMAND]</h3>
+<p>Adding a new command requires changes in up to four places.</p>
+<h4 id="step-1-assign-a-ccsds-opcode-in-ccsdsh">Step 1 — Assign a CCSDS opcode in <code>ccsds.h</code></h4>
+<pre><code class="language-c">/* Payload board commands occupy 0x20-0x29.
+
+ * General commands occupy 0x01-0x04, OAD occupies 0x10-0x14.
+ * Pick the next free opcode in the appropriate range. */
+#define CMD_MY_COMMAND  0x2A
+</code></pre>
+<h4 id="step-2-add-a-case-in-uart_dispatch_ccsds_packet-uartc">Step 2 — Add a case in <code>uart_dispatch_ccsds_packet()</code> (<code>uart.c</code>)</h4>
+<p>For a <strong>payload board command</strong> (forwards to the Pico), use the generic
+bridge helper:</p>
+<pre><code class="language-c">case CMD_MY_COMMAND:
+    handle_pico_cmd(seqCount, /* picoSub */ 0x0A,
+                    dataField + 1, (uint8_t)(dataFieldLen - 1),
+                    CMD_MY_COMMAND, /* respMax */ 64);
+    break;
+</code></pre>
+<p>For a <strong>board-local command</strong> (no Pico involved), write a dedicated
+handler following the pattern of <code>handle_get_telem()</code> or
+<code>handle_cmd_ack()</code>.</p>
+<h4 id="step-3-add-the-matching-sub-opcode-to-pico-mainpy">Step 3 — Add the matching sub-opcode to Pico <code>main.py</code></h4>
+<pre><code class="language-python">CMD_MY_COMMAND = 0x0A   # Next available ESP sub-opcode
+
+# In the main command dispatch loop:
+elif sub_opcode == CMD_MY_COMMAND:
+    try:
+        result = do_something(payload[1:])
+        msg = f&quot;MYRESP:{result}&quot;
+        send_esp(msg.encode())
+        blink(1)
+    except Exception as e:
+        send_esp(b&quot;MYRESP:ERR:FAIL&quot;)
+</code></pre>
+<p>If the response may exceed the static buffer size used by
+<code>handle_pico_cmd()</code> (220 bytes), implement chunking — see Section 3.3.</p>
+<h4 id="step-4-add-to-the-c-ground-station">Step 4 — Add to the C# Ground Station</h4>
+<pre><code class="language-csharp">// In CcsdsProtocol.cs — add the opcode constant
+public const byte CMD_MY_COMMAND = 0x2A;
+
+// In CustomCommand.cs Defaults() — add a pre-loaded entry
+new CustomCommand { Name = &quot;My Command&quot;, Opcode = 0x2A, Payload = &quot;&quot;,
+                     Notes = &quot;Description — expects MYRESP:...&quot; },
+</code></pre>
+<p><code>SendCustomCommandAsync()</code> already handles SCK-2400 CCSDS framing — no
+further GS changes needed for a simple request/response command.</p>
+<h4 id="critical-rules">Critical rules</h4>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Consequence if violated</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>handle_pico_cmd()</code> buffers must stay <code>static</code></td>
+<td>Stack overflow — <code>uart_task</code> crashes silently (see L6)</td>
+</tr>
+<tr>
+<td><code>SCK_TASK_STACK_UART</code> must be ≥2048</td>
+<td>Payload command call chain overflows a 512-byte stack</td>
+</tr>
+<tr>
+<td>Never call <code>payload_uart_open()</code> at boot</td>
+<td>Floating RX line can block <code>UART2_open</code> indefinitely</td>
+</tr>
+<tr>
+<td>One opcode = one CCSDS sub-opcode</td>
+<td>Do not reuse 0x20 with different payload bytes — each command needs its own CCSDS opcode (see L4)</td>
+</tr>
+<tr>
+<td><code>ccsds.h</code> opcode defines must be in sync across firmware AND GS</td>
+<td>Mismatched/undefined opcodes compile silently with wrong values</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="32-oad-streaming-transport">3.2 OAD Streaming Transport [SCK-DEV: OAD_STREAMING]</h3>
+<p>OAD (Over-Air Download) transfers a complete firmware image to a remote
+board over RF in three phases.</p>
+<p><strong>Performance (335KB image):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Time</th>
+<th>Throughput</th>
+<th>% of 8-min LEO pass</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Per-chunk ACK (legacy)</td>
+<td>168s</td>
+<td>2.0 KB/s</td>
+<td>35%</td>
+</tr>
+<tr>
+<td>Streaming, 20ms delay</td>
+<td>43.5s</td>
+<td>7.7 KB/s</td>
+<td>9%</td>
+</tr>
+<tr>
+<td><strong>Streaming, 10ms delay (production)</strong></td>
+<td><strong>24.1s</strong></td>
+<td><strong>13.9 KB/s</strong></td>
+<td><strong>5%</strong></td>
+</tr>
+</tbody>
+</table>
+<h4 id="phase-1-cmd_oad_start-0x10">Phase 1 — <code>CMD_OAD_START</code> (0x10)</h4>
+<pre><code>Payload: [4B imgSize BE][2B crc16 BE]
+</code></pre>
+<p>Remote board:</p>
+<ol>
+<li>Opens ext flash (<code>extFlashOpen()</code>)</li>
+<li>
+<p>Erases the OAD slot — <code>OAD_SLOT_OFFSET</code> through <code>imgSize + 4KB</code>,
+   rounded to sector boundary</p>
+</li>
+<li>
+<p>Initializes session state, sets <code>gOadActive = true</code></p>
+</li>
+<li><strong>Leaves flash open</strong> for the duration of the session — closing and
+   reopening on every chunk triggers Deep Power-Down cycling at 50Hz,
+   which is unreliable (see L7)</li>
+</ol>
+<p>ACK payload: <code>[subOp][status][flashErrCode][manfId][devId]</code></p>
+<h4 id="phase-2-cmd_oad_chunk-0x11-streamed">Phase 2 — <code>CMD_OAD_CHUNK</code> (0x11), streamed</h4>
+<pre><code>Payload: [4B offset BE][1B chunkLen][chunkData...]
+</code></pre>
+<p><strong>Streaming mode — no per-chunk ACK.</strong> The Ground Station sends all
+chunks back-to-back at the configured inter-chunk delay (10ms production
+default). The remote board writes each chunk to
+<code>OAD_IMG_OFFSET + offset</code> and returns immediately — no response.</p>
+<p><code>OAD_CHUNK_SIZE = 240</code> bytes. <strong>This must match the Ground Station's
+chunk size exactly</strong> — a mismatch causes every chunk to fail the
+<code>chunkLen &gt; OAD_CHUNK_SIZE</code> check silently (see L1).</p>
+<p><strong><code>gOadActive</code> and the rfTask sleep:</strong> during OAD, <code>rfTask</code> must drain
+the RX queue fast enough to keep up with incoming chunks (~100Hz at 10ms).
+The RX queue holds only 4 entries.</p>
+<pre><code class="language-c">/* main.c — rfTask main loop, remote board only */
+#if !SCK_IS_GS_BOARD
+usleep(gOadActive ? 1000 : SCK_BEACON_REST_US);
+#else
+usleep(SCK_BEACON_REST_US);
+#endif
+</code></pre>
+<p>Without this, the 950ms beacon sleep causes the RX queue to overflow and
+chunks are silently dropped (see L2).</p>
+<p>Diagnostic NACK (only sent on error):</p>
+<pre><code>[CMD_OAD_CHUNK][0x01][flashErrCode][4B offset BE]
+</code></pre>
+<h4 id="phase-3-cmd_oad_end-0x12">Phase 3 — <code>CMD_OAD_END</code> (0x12)</h4>
+<pre><code>Payload: [4B crc32 BE]  (legacy field — actual verification uses CRC16)
+</code></pre>
+<p>Remote board:</p>
+<ol>
+<li>Verifies <code>bytesReceived == imgSize</code></li>
+<li>Reads back the full image from ext flash and computes CRC16</li>
+<li>
+<p>If CRC matches, writes <code>ExtImageInfo_t</code> metadata to <code>EFL_ADDR_META</code>
+   with <code>imgCpStat = NEED_COPY</code></p>
+</li>
+<li>
+<p>Closes ext flash, sends ACK <code>[CMD_OAD_END][status]</code></p>
+</li>
+<li><code>Task_sleep(200)</code> then <code>SysCtrlSystemReset()</code></li>
+</ol>
+<p>The 200ms delay lets the ACK transmit before reset. The Ground Station's
+<code>oad_end</code> wait timeout is <code>8000 + (imgSize/1024) * 50</code> ms — for 335KB
+this is ~24.4s. If no ACK arrives within this window (the board may have
+already reset), the Ground Station treats this as success and waits for
+the board to reboot and resume beaconing.</p>
+<h4 id="cmd_oad_abort-0x13-and-cmd_oad_status-0x14"><code>CMD_OAD_ABORT</code> (0x13) and <code>CMD_OAD_STATUS</code> (0x14)</h4>
+<p>Abort clears session state and closes ext flash with no further action.
+Status returns <code>[1B active][4B bytesReceived][4B imgSize]</code> for progress
+monitoring.</p>
+<hr />
+<h3 id="33-chunking-large-payload-responses">3.3 Chunking Large Payload Responses [SCK-DEV: CHUNKING]</h3>
+<p>The CCSDS↔ESP bridge (<code>handle_pico_cmd</code>) uses static 220/222-byte
+buffers. Responses from the Pico larger than this — e.g. <code>LIST:</code> with
+many files — are truncated at the buffer boundary in the current
+implementation.</p>
+<p>For responses that must exceed this limit, follow the SCK-915 chunking
+pattern in <code>main.py</code> (unchanged):</p>
+<pre><code class="language-python"># &quot;LIST:&quot; prefix = first chunk, &quot;LIST+:&quot; = continuation
+# Final chunk has NO trailing comma — signals end of list
+CHUNK = MAX_PAYLOAD - 8
+# ... build and send_esp() each chunk ...
+</code></pre>
+<p><strong>Ground Station reassembly for SCK-2400 chunked responses is not yet
+implemented</strong> — this is a known gap for the Files tab when listing SD
+cards with many files. See Section 7, item pending.</p>
+<hr />
+<h3 id="34-esp-framing-on-the-payload-uart">3.4 ESP Framing on the Payload UART [SCK-DEV: ESP_FRAMING]</h3>
+<p>Identical to SCK-915 — the Pico's <code>send_esp()</code> / <code>recv_esp()</code> are
+unchanged.</p>
+<pre><code>[0x22][0x69][length][payload bytes...]
+  ↑      ↑      ↑         ↑
+Start  Start  1 byte   1-251 bytes
+byte0  byte1  payload  command data
+              length
+</code></pre>
+<p><strong>CC1352P-side implementation (<code>pico_send_recv</code> in <code>uart.c</code>):</strong></p>
+<pre><code class="language-c">#define PICO_ESP_BYTE0   0x22
+#define PICO_ESP_BYTE1   0x69
+#define PICO_TIMEOUT_MS  5000
+
+/* Send: [0x22][0x69][1+argsLen][subOpcode][args...] */
+/* Receive: poll UART2_read() non-blocking, 1ms sleep between polls,
+
+ * state machine: sync0 → sync1 → length → payload */
+</code></pre>
+<blockquote class="crit">
+<p><strong>Critical:</strong> unlike the SCK-915 CC1110 implementation (interrupt-driven
+UART), the CC1352P implementation here uses a <strong>polling loop</strong> with
+<code>usleep(1000)</code> between non-blocking read attempts. This works correctly
+but ties up <code>uart_task</code> for up to <code>PICO_TIMEOUT_MS</code> (5 seconds) per
+payload command. Other CCSDS commands queued during this window will
+wait. This is acceptable for the current command set but should be
+revisited if low-latency commands need to interleave with payload
+commands.</p>
+</blockquote>
+<hr />
+<h3 id="35-pico-response-string-conventions">3.5 Pico Response String Conventions [SCK-DEV: RESPONSE_FORMAT]</h3>
+<p>Unchanged from SCK-915 — <code>PREFIX:field1,field2,...</code>. The CCSDS↔ESP bridge
+maps each CCSDS opcode to a Pico ESP sub-opcode by the pattern
+<strong>CCSDS <code>0x2N</code> → ESP <code>0x0N</code></strong>:</p>
+<table>
+<thead>
+<tr>
+<th>CCSDS Opcode</th>
+<th>Pico ESP Sub-opcode</th>
+<th>Success Response</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CMD_PICO_PING</code> (0x20)</td>
+<td>0x00</td>
+<td><code>PICO:ACK</code></td>
+</tr>
+<tr>
+<td><code>CMD_PICO_TEMP</code> (0x21)</td>
+<td>0x01</td>
+<td><code>TEMP:23.45C</code></td>
+</tr>
+<tr>
+<td><code>CMD_PICO_SNAP</code> (0x22)</td>
+<td>0x02</td>
+<td><code>SNAP:OK:snap_001.jpg:24576</code></td>
+</tr>
+<tr>
+<td><code>CMD_PICO_LIST</code> (0x23)</td>
+<td>0x03</td>
+<td><code>LIST:file1.jpg,file2.jpg</code></td>
+</tr>
+<tr>
+<td><code>CMD_PICO_INFO</code> (0x24)</td>
+<td>0x04</td>
+<td><code>INFO:snap_001.jpg:24576:123</code></td>
+</tr>
+<tr>
+<td><code>CMD_PICO_CHUNK</code> (0x25)</td>
+<td>0x05</td>
+<td><code>CHUNK:0:&lt;200 bytes&gt;</code></td>
+</tr>
+<tr>
+<td><code>CMD_PICO_DELETE</code> (0x26)</td>
+<td>0x06</td>
+<td><code>DEL:OK:snap_001.jpg</code></td>
+</tr>
+<tr>
+<td><code>CMD_GET_GPS</code> (0x27)</td>
+<td>0x07</td>
+<td><code>GPS:lat,lon,gps_alt,sats,fix,hpa,baro_alt,temp_c</code></td>
+</tr>
+<tr>
+<td><code>CMD_GET_BARO</code> (0x28)</td>
+<td>0x08</td>
+<td><code>BARO:hpa,baro_alt,temp_c</code></td>
+</tr>
+<tr>
+<td><code>CMD_PICO_BEACON</code> (0x29)</td>
+<td>0x09</td>
+<td><code>BEACON:ON</code> / <code>BEACON:OFF</code></td>
+</tr>
+</tbody>
+</table>
+<p>All responses are wrapped in a CCSDS <code>cmd_ack</code> (APID <code>0x003</code>) by
+<code>handle_pico_cmd()</code>: <code>[ccsdsCmd][status][response bytes...]</code>.</p>
+<hr />
+<h3 id="36-autonomous-gps-beacon">3.6 Autonomous GPS Beacon [SCK-DEV: BEACON]</h3>
+<p>Unchanged from SCK-915 — the Pico transmits a fused GPS+baro packet every
+10 seconds (<code>GPS_BEACON_INTERVAL_MS = 10000</code>) when enabled and idle.</p>
+<p><strong>Controlling the beacon from SCK-2400:</strong></p>
+<pre><code>CMD_PICO_BEACON (0x29) + payload 0x01 → ESP 0x09 + 0x01 → enable
+CMD_PICO_BEACON (0x29) + payload 0x00 → ESP 0x09 + 0x00 → disable
+</code></pre>
+<blockquote>
+<p><strong>Race condition:</strong> because the bridge UART (Section 3.4) polls with a
+5-second timeout, an autonomous beacon transmitted by the Pico during
+this window can be captured by <code>pico_send_recv()</code> instead of the
+intended command response — the Ground Station will then display the
+beacon's <code>GPS:...</code> string instead of the expected response (e.g.
+<code>TEMP:...</code>). <strong>Always send <code>CMD_PICO_BEACON OFF</code> before running command
+sequences</strong>, and <code>CMD_PICO_BEACON ON</code> afterward if continuous beaconing
+is desired.</p>
+</blockquote>
+<p>Every beacon packet is also written to the SD flight log — see 3.7.</p>
+<hr />
+<h3 id="37-sd-card-flight-log-format">3.7 SD Card Flight Log Format [SCK-DEV: SD_FLIGHT_LOG]</h3>
+<p>Unchanged from SCK-915. One <code>.sckflight</code> JSON file per power cycle,
+<code>FLT-001.sckflight</code>, <code>FLT-002.sckflight</code>, etc. See the
+<a href="https://spacecommskit.com/docs">SCK-915 Developer Guide Section 3.7</a>
+for the full format and field-addition instructions — <code>write_flight_packet()</code>
+in <code>main.py</code> is identical.</p>
+<hr />
+<h3 id="38-watchdog-timer-leo-fault-recovery">3.8 Watchdog Timer — LEO Fault Recovery [SCK-DEV: WATCHDOG]</h3>
+<p>The CC1352P hardware watchdog resets the board if any task deadlocks or
+spins without yielding. This is the primary fault recovery mechanism for
+LEO missions where hands-on recovery is impossible.</p>
+<p><strong>Architecture:</strong></p>
+<pre><code>rfTask       (priority 2) ─┐
+uartTask     (priority 2) ─┤── if any spin → watchdogTask starved
+watchdogTask (priority 1) ─┘   → WDT expires → CC1352P reset (~65s)
+</code></pre>
+<p><code>watchdogTask</code> runs at the lowest RTOS priority (1). Starvation IS the
+detection mechanism — no explicit hang detection is required.</p>
+<p><strong>SysConfig (<code>sck2400.syscfg</code>):</strong> Add <code>CONFIG_WATCHDOG_0</code> under
+TI Drivers → Watchdog. Period: <code>30000</code> ms. Peripheral: <code>Any(WDT0)</code>.</p>
+<p><strong>Implementation (<code>main.c</code>):</strong></p>
+<pre><code class="language-c">// In mainThread() after SPI_init():
+Watchdog_init();
+
+void watchdogTask(UArg a0, UArg a1)
+{
+    Watchdog_Params p;
+    Watchdog_Params_init(&amp;p);
+    p.resetMode     = Watchdog_RESET_ON;
+    p.debugStallMode = Watchdog_DEBUG_STALL_ON;
+    Watchdog_Handle h = Watchdog_open(CONFIG_WATCHDOG_0, &amp;p);
+
+    // CRITICAL: CC1352P watchdog stops in standby without this.
+    Power_setConstraint(PowerCC26XX_DISALLOW_STANDBY);
+
+    while (1)
+    {
+        Watchdog_clear(h);   // kick every 10s within 30s window
+        Task_sleep(10000);    // yields — starvation is the detection
+    }
+}
+</code></pre>
+<p><strong>CC1352P two-timeout reset:</strong> The CC1352P fires an NMI on the first
+timeout and only resets on the second timeout with the flag still
+pending. Total time from hang to reset is <strong>~65 seconds</strong> at a 30-second
+period — factor this into test timing.</p>
+<p><strong>Debug stall:</strong> With <code>Watchdog_DEBUG_STALL_ON</code>, any JTAG connection
+(including a background CCS connection) pauses the watchdog hardware.
+Disconnect JTAG after flashing for watchdog testing.</p>
+<p><strong>Verified:</strong> uart_task deliberate spin → LED went dark (watchdogTask
+starved) → board reset at ~65s → post-reset <code>get_telem</code> nominal. ✓</p>
+<p><strong>Configuration summary:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Timeout</td>
+<td>30,000 ms (30 seconds)</td>
+</tr>
+<tr>
+<td>Kick interval</td>
+<td>10,000 ms via <code>Task_sleep(10000)</code></td>
+</tr>
+<tr>
+<td>Reset mode</td>
+<td><code>Watchdog_RESET_ON</code></td>
+</tr>
+<tr>
+<td>Debug stall</td>
+<td><code>Watchdog_DEBUG_STALL_ON</code></td>
+</tr>
+<tr>
+<td>Power constraint</td>
+<td><code>PowerCC26XX_DISALLOW_STANDBY</code></td>
+</tr>
+<tr>
+<td>Task priority</td>
+<td>1 (lowest)</td>
+</tr>
+<tr>
+<td>Task stack</td>
+<td>512 bytes</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="39-rf-encryption-aes-128-ccm">3.9 RF Encryption (AES-128-CCM) [SCK-DEV: CRYPTO]</h3>
+<p>All RF communication uses AES-128-CCM per-packet encryption and
+authentication. Implementation is in <code>crypto.c</code> — pure C, RFC 3610,
+no TI hardware accelerator.</p>
+<p><strong>Why software AES:</strong> The TI AESCCM hardware driver cannot be safely
+called from rfTask context (semaphore poisoning) and produces different
+keystream than .NET <code>AesCcm</code>. Software AES is task-context safe and
+matches .NET exactly.</p>
+<p><strong>Wire format:</strong></p>
+<pre><code>[CCSDS Header 6B][Nonce 13B][Encrypted Payload N bytes][MAC 8B]
+</code></pre>
+<p><strong>CCM parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Algorithm</td>
+<td>AES-128-CCM (RFC 3610)</td>
+</tr>
+<tr>
+<td>Key length</td>
+<td>16 bytes</td>
+</tr>
+<tr>
+<td>Nonce length</td>
+<td>13 bytes (from CCSDS seq counter, zero-padded)</td>
+</tr>
+<tr>
+<td>MAC length</td>
+<td>8 bytes</td>
+</tr>
+<tr>
+<td>Keys per pair</td>
+<td>3 (Option A fallback)</td>
+</tr>
+<tr>
+<td>Overhead</td>
+<td>21 bytes per packet</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key provisioning:</strong> Three keys per board pair. Generated in the Ground
+Station Provision tab (🎲 Roll). Automatically patched into <code>security.h</code>
+before each build. <code>security.h</code> is gitignored — never committed.</p>
+<p><strong>Self-test on every boot:</strong> <code>crypto_init()</code> verifies a known test vector.
+6 fast LED blinks if it fails. The board continues but crypto is broken.</p>
+<p><strong>Known test vector:</strong></p>
+<pre><code>Key: 0xFF×16  Nonce: 0x00×11+0xC0+0x07  AAD: 18 11 C0 07 00 15
+Plaintext: 0x01  →  Ciphertext: 0x83  MAC: 85 84 6C 8D 8C 2A 0B 19
+</code></pre>
+<p><strong>Task context:</strong> <code>crypto_decrypt()</code> and <code>crypto_encrypt()</code> are safe to
+call from rfTask — pure C, no hardware dependencies. All decrypt →
+dispatch → encrypt happens inline in rfTask with no cross-task handoff.</p>
+<hr />
+<h3 id="310-non-volatile-storage-reset-counter-and-safe-mode">3.10 Non-Volatile Storage — Reset Counter and Safe Mode [SCK-DEV: NV_STORAGE]</h3>
+<p>Non-volatile reset counter in internal flash at <code>0x52000</code> (8KB, pages
+82-83). Five consecutive non-power-on resets without a 5-minute clean
+run triggers safe mode (beacon only).</p>
+<p><strong>Flash layout:</strong></p>
+<pre><code>0x00000–0x03FFF  BIM (pages 0-3)
+0x04000–0x51FFF  Application (0x4E000 bytes)
+0x52000–0x53FFF  NVS region (pages 82-83, 8KB)  ← reset counter lives here
+0x54000–0x55FFF  Reserved
+0x56000–0x57FFF  CCFG
+</code></pre>
+<p><strong>Why direct flash (not TI NVS driver):</strong> <code>NVS_write()</code> returns success
+and <code>NVS_WRITE_POST_VERIFY</code> passes (reading from write buffer), but data
+does not survive reset. Fix: <code>FlashSectorErase()</code> + <code>FlashProgram()</code> +
+<code>FlashCheckFsmForReady()</code> polling + <code>Power_setConstraint(PowerCC26XX_DISALLOW_STANDBY)</code></p>
+<ul>
+<li>VIMS cache disable around all flash operations.</li>
+</ul>
+<p><strong>Deferred write:</strong> <code>nv_storage_on_boot()</code> is called from <code>watchdogTask</code>
+after a 10-second <code>Task_sleep()</code>. Use <code>Task_sleep()</code> not <code>usleep()</code> —
+<code>usleep()</code> busy-spins on TI-RTOS7 and causes the clean-run timer to fire
+immediately, resetting the counter to 0.</p>
+<p><strong>Reset cause gating:</strong> NVS operations run on <code>SYSRESET</code>, <code>WARMRESET</code>,
+and <code>PIN</code>. Power-on is excluded to avoid NVS hangs on cold start. On the
+LaunchPad, <code>CMD_REBOOT</code> asserts <code>RSTSRC_PIN_RESET</code> (not SYSRESET).</p>
+<p><strong>Bench caveat:</strong> XDS110 debugger erases NVS on every software reset.
+Test NVS persistence with real power cycles (unplug/replug) on the bench.</p>
+<hr />
+<h2 id="40-payload-board-hardware-reference">4.0 Payload Board Hardware Reference</h2>
+<p>The SCK-PBL-1 payload board (Pico + camera + GPS + altimeter + SD) is
+shared between SCK-915 and SCK-2400 without modification. See the
+SCK-915 Developer Guide Section 4 for the full GPIO assignment table and
+expansion header reference.</p>
+<p><strong>SCK-2400-specific addition:</strong> the Pico's UART0 (GPIO0/GPIO1), previously
+wired to the SCK-915 CC1110, connects identically to the SCK-2400
+CC1352P's <code>DEBUG_UART</code> (DIO5/DIO16) — same baud rate (115200), same ESP
+framing, same physical pins on the Pico side.</p>
+<hr />
+<h2 id="50-c-ground-station-extension-reference">5.0 C# Ground Station Extension Reference</h2>
+<h3 id="51-key-methods">5.1 Key Methods</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ActiveHwid</code></td>
+<td>Property: current APID from header bar</td>
+</tr>
+<tr>
+<td><code>IncCcsdsSeqCount()</code></td>
+<td>Increment and return next CCSDS sequence number</td>
+</tr>
+<tr>
+<td><code>FlushRxQueue()</code></td>
+<td>Discard queued received packets before sending</td>
+</tr>
+<tr>
+<td><code>WritePacket(byte[])</code></td>
+<td>Send raw bytes to serial port</td>
+</tr>
+<tr>
+<td><code>WaitForReply(apid, seq, ms)</code></td>
+<td>Async: wait for matching CCSDS ACK</td>
+</tr>
+<tr>
+<td><code>CcsdsProtocol.BuildCommand(seq, opcode, args, destApid)</code></td>
+<td>Build a CCSDS command packet</td>
+</tr>
+<tr>
+<td><code>CcsdsProtocol.BuildSimpleCommand(seq, opcode, destApid)</code></td>
+<td>Build a CCSDS command with no payload</td>
+</tr>
+<tr>
+<td><code>Log(message, color)</code></td>
+<td>Append line to main log panel</td>
+</tr>
+<tr>
+<td><code>LogTx(message, hwid)</code></td>
+<td>Log transmitted packet in yellow TX format</td>
+</tr>
+</tbody>
+</table>
+<h3 id="52-adding-a-custom-command-c-template">5.2 Adding a Custom Command (C# Template)</h3>
+<pre><code class="language-csharp">// In SendCustomCommandAsync(), SCK-2400 branch already handles this —
+// just add the opcode to CcsdsProtocol.cs and CustomCommand.cs Defaults().
+
+// CcsdsProtocol.cs
+public const byte CMD_MY_COMMAND = 0x2A;
+
+// CustomCommand.cs
+new CustomCommand {
+    Name = &quot;My Command&quot;, Opcode = 0x2A, Payload = &quot;&quot;,
+    Notes = &quot;Description — expects MYRESP:...&quot;
+},
+</code></pre>
+<p>For commands requiring custom response handling (e.g. routing to the map
+or files UI), add a branch in the response-handling section of
+<code>SendCustomCommandAsync()</code> similar to the existing <code>GPS:</code> prefix check:</p>
+<pre><code class="language-csharp">if (pkt.PicoPayload.StartsWith(&quot;GPS:&quot;))
+    HandleGpsPacket(pkt.PicoPayload);
+</code></pre>
+<h3 id="53-opcode-reference">5.3 Opcode Reference</h3>
+<table>
+<thead>
+<tr>
+<th>Opcode</th>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0x01</td>
+<td><code>CMD_GET_TELEM</code></td>
+<td>Request telemetry — response via <code>tlm_beacon</code> (APID 0x001)</td>
+</tr>
+<tr>
+<td>0x02</td>
+<td><code>CMD_REBOOT</code></td>
+<td>Reboot the addressed board</td>
+</tr>
+<tr>
+<td>0x03</td>
+<td><code>CMD_GET_CALLSIGN</code></td>
+<td>Request callsign string</td>
+</tr>
+<tr>
+<td>0x04</td>
+<td><code>CMD_BEACON_CTRL</code></td>
+<td>Enable/disable the board's own RF beacon</td>
+</tr>
+<tr>
+<td>0x05</td>
+<td><code>CMD_CLEAR_SAFE_MODE</code></td>
+<td>Reset NVS reset counter and exit safe mode</td>
+</tr>
+<tr>
+<td>0x06</td>
+<td><code>CMD_GET_TIME</code></td>
+<td>Request board time</td>
+</tr>
+<tr>
+<td>0x10</td>
+<td><code>CMD_OAD_START</code></td>
+<td>Begin OAD session</td>
+</tr>
+<tr>
+<td>0x11</td>
+<td><code>CMD_OAD_CHUNK</code></td>
+<td>Stream one firmware chunk</td>
+</tr>
+<tr>
+<td>0x12</td>
+<td><code>CMD_OAD_END</code></td>
+<td>Finalize, verify CRC, reboot</td>
+</tr>
+<tr>
+<td>0x13</td>
+<td><code>CMD_OAD_ABORT</code></td>
+<td>Cancel OAD session</td>
+</tr>
+<tr>
+<td>0x14</td>
+<td><code>CMD_OAD_STATUS</code></td>
+<td>Query OAD progress</td>
+</tr>
+<tr>
+<td>0x20</td>
+<td><code>CMD_PICO_PING</code></td>
+<td>Payload bridge — Pico ping</td>
+</tr>
+<tr>
+<td>0x21</td>
+<td><code>CMD_PICO_TEMP</code></td>
+<td>Payload bridge — temperature</td>
+</tr>
+<tr>
+<td>0x22</td>
+<td><code>CMD_PICO_SNAP</code></td>
+<td>Payload bridge — camera snapshot</td>
+</tr>
+<tr>
+<td>0x23</td>
+<td><code>CMD_PICO_LIST</code></td>
+<td>Payload bridge — list SD files</td>
+</tr>
+<tr>
+<td>0x27</td>
+<td><code>CMD_GET_GPS</code></td>
+<td>GPS+baro fused — response in <code>cmd_ack</code> payload as <code>GPS:lat,lon,alt,sats,fix,hpa,baro_alt,temp_c</code></td>
+</tr>
+<tr>
+<td>0x28</td>
+<td><code>CMD_GET_BARO</code></td>
+<td>Barometric only — response as <code>BARO:hpa,baro_alt,temp_c</code></td>
+</tr>
+<tr>
+<td>0x29</td>
+<td><code>CMD_PICO_BEACON</code></td>
+<td>Payload beacon on/off</td>
+</tr>
+<tr>
+<td><code>CCSDS_APID_TLM_BEACON</code> (0x001)</td>
+<td>—</td>
+<td>Telemetry beacon responses</td>
+</tr>
+<tr>
+<td><code>CCSDS_APID_CMD_ACK</code> (0x003)</td>
+<td>—</td>
+<td>All command acknowledgements (including GPS/baro strings)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="60-build-and-flash-reference">6.0 Build and Flash Reference</h2>
+<h3 id="61-building-firmware-ccs-theia">6.1 Building Firmware (CCS Theia)</h3>
+<p>The Ground Station's Firmware tab drives a headless CCS build:</p>
+<ol>
+<li>Set <strong>Project Dir</strong> to the <code>sck2400_firmware</code> folder</li>
+<li>Set <strong>Board Role</strong> — patches <code>SCK_APID_THIS_BOARD</code> in <code>ccsds.h</code></li>
+<li>Set <strong>RF Power Mode</strong> — patches <code>TX_POWER</code> in <code>radio.h</code></li>
+<li>Click <strong>Clean + Build</strong></li>
+</ol>
+<p>This runs <code>gmake clean</code> then <code>gmake all</code>, generating SysConfig output,
+compiling all sources, and linking <code>sck2400_firmware.out</code> /
+<code>.hex</code> / <code>.map</code>.</p>
+<blockquote>
+<p><strong>Always Clean + Build</strong> after modifying <code>ccsds.h</code>, <code>uart.h</code>, or
+<code>sck2400.syscfg</code>. Incremental builds can link against stale generated
+headers.</p>
+</blockquote>
+<h3 id="62-oad-image-header-patching">6.2 OAD Image Header Patching</h3>
+<p>After a successful build, the Ground Station automatically:</p>
+<ol>
+<li>Reads <code>oad_entry_vec</code> address from the <code>.map</code> file</li>
+<li>Computes <code>imgLen = end - start</code> from the linked sections</li>
+<li>Patches <code>.prgEntry</code> and <code>.len</code> in <code>oad_image_header_app.c</code></li>
+<li>Triggers an incremental rebuild to bake the patched values into
+   <code>.out</code> / <code>.hex</code></li>
+</ol>
+<pre><code>OAD patch: oad_entry_vec at 0x0000D438 (summary table)
+OAD patch: computed image len = 0x000096D4 (end=0x0000D6D4)
+OAD patch: .prgEntry updated to 0x0000D438
+OAD patch: .len updated to 0x000096D4
+</code></pre>
+<p>If the patch step reports <strong>"already X or pattern not found"</strong> for both
+fields, the existing values already happen to match — this is benign. If
+only one field reports this, investigate — it usually indicates a stale
+<code>oad_image_header_app.c</code> from a different build.</p>
+<h3 id="63-flashing">6.3 Flashing</h3>
+<p>The <strong>Flash</strong> button merges the application hex with BIM
+(<code>sck2400_merged.hex</code>) and programs the board via <code>srfprog</code> over the
+XDS110 2-pin cJTAG interface:</p>
+<pre><code>srfprog -t soc(XDS-&lt;serial&gt;, CC1352P) -e all -p all -v rb -f sck2400_merged.hex
+</code></pre>
+<blockquote>
+<p><strong>Verify the HEX File path matches your Project Dir.</strong> If you change
+the Project Dir to a non-default location, confirm the HEX File field
+updates to match — it does not always update automatically (known GS
+issue, see Section 7).</p>
+</blockquote>
+<h3 id="64-flashing-pico-firmware">6.4 Flashing Pico Firmware</h3>
+<pre><code class="language-bash">mpremote cp main.py :main.py
+mpremote cp sdcard.py :sdcard.py
+</code></pre>
+<p>Or hold BOOTSEL on power-up and drag-and-drop to the USB mass storage
+drive.</p>
+<hr />
+<h2 id="70-hard-won-lessons">7.0 Hard-Won Lessons</h2>
+<p>These lessons were accumulated during SCK-2400 bringup, building on the
+SCK-915 lessons (which still apply where the payload board code is
+shared). Each one cost real debugging time.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Lesson</th>
+<th>Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L1</td>
+<td><code>OAD_CHUNK_SIZE</code> in firmware must exactly match the Ground Station's chunk size — a mismatch causes every chunk to fail silently with no useful diagnostic</td>
+<td>Critical</td>
+</tr>
+<tr>
+<td>L2</td>
+<td>During OAD, <code>rfTask</code> must sleep only 1ms (not 950ms) to drain the RX queue fast enough for streaming chunks — gated by <code>gOadActive</code></td>
+<td>Critical</td>
+</tr>
+<tr>
+<td>L3</td>
+<td>Closing/reopening ext flash per chunk triggers Deep Power-Down cycling at streaming rates — hold flash open for the whole OAD session</td>
+<td>High</td>
+</tr>
+<tr>
+<td>L4</td>
+<td>Each payload command needs its own CCSDS opcode (0x20-0x29) — reusing one opcode with different payload bytes (the SCK-915 <code>PICO_MSG</code> pattern) does not work over CCSDS; the C# <code>SendCustomCommandAsync</code> dispatches on opcode alone</td>
+<td>Critical</td>
+</tr>
+<tr>
+<td>L5</td>
+<td><code>ccsds.h</code> opcode <code>#define</code>s must be identical and present in BOTH the firmware project and the values the C# <code>CcsdsProtocol.cs</code> expects — an undefined opcode compiles silently as an unexpected value, causing dispatch to the wrong handler</td>
+<td>Critical</td>
+</tr>
+<tr>
+<td>L6</td>
+<td><code>uart_task</code> stack must be ≥2048 bytes once payload handlers are added — <code>handle_pico_cmd</code>'s static buffers plus the dispatch call chain overflow the original 512-byte stack, causing a silent crash with no error output</td>
+<td>Critical</td>
+</tr>
+<tr>
+<td>L7</td>
+<td>Any large (<code>&gt;~100 byte</code>) buffer in <code>uart_task</code> or its call chain must be <code>static</code>, not stack-local — stack overflows in TI-RTOS fail silently</td>
+<td>Critical</td>
+</tr>
+<tr>
+<td>L8</td>
+<td>Never call <code>UART2_open()</code> for the payload UART at boot — a floating RX line (Pico not connected) can block indefinitely. Open lazily on first command</td>
+<td>High</td>
+</tr>
+<tr>
+<td>L9</td>
+<td><code>UART2_Mode_NONBLOCKING</code> requires "Enable Nonblocking Mode" checked in SysConfig for that UART instance — otherwise non-blocking reads behave as blocking</td>
+<td>High</td>
+</tr>
+<tr>
+<td>L10</td>
+<td>SysConfig UART2 <strong>list order determines index number</strong> — the first-listed instance is index 0. Reordering instances (even without changing pins) silently swaps which UART your <code>SCK_UART_IDX</code> points to</td>
+<td>Critical</td>
+</tr>
+<tr>
+<td>L11</td>
+<td>On this hardware, <code>PAYLOAD_UART</code> (despite its name) is the Ground Station link on DIO12/13 — <code>DEBUG_UART</code> on DIO5/16 is the one available for the Pico bridge. Do not "fix" this naming by changing pins — it breaks the GS link</td>
+<td>Critical</td>
+</tr>
+<tr>
+<td>L12</td>
+<td>The Pico's autonomous 10-second beacon races with payload command responses on the bridge UART — send <code>CMD_PICO_BEACON OFF</code> before command sequences</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>L13</td>
+<td><code>oad_end</code> reboot needs a short delay (200ms) before <code>SysCtrlSystemReset()</code> so the ACK transmits — without it, the GS sees a clean timeout and must rely on beacon resumption to detect success</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>L14</td>
+<td>The Ground Station's HEX File path does not always follow Project Dir changes — verify before flashing to a custom build location</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>L15</td>
+<td>BIM is permanent and never updated by application builds or OAD — a corrupted OAD image is simply never copied, and the board boots the last good internal-flash image</td>
+<td>High (safety property)</td>
+</tr>
+<tr>
+<td>L16</td>
+<td>Always Clean + Build after modifying <code>ccsds.h</code>, <code>uart.h</code>, or <code>.syscfg</code> — incremental builds can silently link stale generated headers</td>
+<td>High</td>
+</tr>
+<tr>
+<td>L17</td>
+<td>CC1352P watchdog clock stops when the device enters standby — <code>Power_setConstraint(PowerCC26XX_DISALLOW_STANDBY)</code> is mandatory or the timer never fires on a real hang</td>
+<td>Critical</td>
+</tr>
+<tr>
+<td>L18</td>
+<td>CC1352P watchdog does not reset on the first timeout — it fires an NMI first; reset only occurs if the flag is still pending at the second timeout. Total time from hang to reset is ~65s at a 30s period</td>
+<td>High</td>
+</tr>
+<tr>
+<td>L19</td>
+<td><code>Watchdog_open()</code> returns NULL if <code>Watchdog_init()</code> was not called first in <code>mainThread()</code> — same init pattern required as <code>SPI_init()</code></td>
+<td>High</td>
+</tr>
+<tr>
+<td>L20</td>
+<td>With CCS JTAG connected (even background connection without active debug session), <code>Watchdog_DEBUG_STALL_ON</code> pauses the watchdog hardware — the timer never fires. Disconnect JTAG after flash for watchdog testing</td>
+<td>High</td>
+</tr>
+<tr>
+<td>L21</td>
+<td><code>reloadValue</code> passed to the TI Watchdog driver is in milliseconds — the driver calls <code>convertMsToTicks()</code> internally. 30000 = 30 seconds</td>
+<td>High</td>
+</tr>
+<tr>
+<td>L22</td>
+<td>TI AESCCM hardware driver produces different keystream than .NET <code>AesCcm</code> for identical inputs — use software AES (RFC 3610 pure C). The hardware driver also causes semaphore poisoning from rfTask context</td>
+<td>Critical</td>
+</tr>
+<tr>
+<td>L23</td>
+<td>AES ShiftRows operates on rows of the column-major state: row 3 indices [3,7,11,15] shift left 3 → <code>b[3],b[7],b[11],b[15] = b[15],b[3],b[7],b[11]</code>. Wrong ShiftRows produces incorrect keystream that passes basic tests but mismatches .NET</td>
+<td>Critical</td>
+</tr>
+<tr>
+<td>L24</td>
+<td>Moving crypto to uart_task required <code>UART2_Mode_NONBLOCKING</code>, which allocates a ring buffer from the BIOS heap at <code>UART2_open()</code> time, exhausting the heap and causing <code>RF_open()</code> to return NULL (solid LED at boot). Software AES in rfTask eliminates all cross-task crypto issues</td>
+<td>Critical</td>
+</tr>
+<tr>
+<td>L25</td>
+<td><code>SysCtrlSystemReset()</code> (CMD_REBOOT) asserts <code>RSTSRC_PIN_RESET</code> on the LaunchPad XDS110 — not <code>RSTSRC_SYSRESET</code>. The NVS gate must include <code>SCK_RESET_CAUSE_PIN</code> or CMD_REBOOT never increments the reset counter</td>
+<td>High</td>
+</tr>
+<tr>
+<td>L26</td>
+<td><code>usleep()</code> busy-spins on TI-RTOS7 — in watchdogTask, <code>usleep(10000000)</code> completes in microseconds, causing <code>cleanRunAccumMs</code> to hit 300000ms almost instantly and fire <code>nv_storage_on_clean_run()</code> right after <code>nv_storage_on_boot()</code>. Use <code>Task_sleep(10000)</code></td>
+<td>Critical</td>
+</tr>
+<tr>
+<td>L27</td>
+<td>TI <code>NVS_write()</code> returns success and <code>NVS_WRITE_POST_VERIFY</code> passes (reading from write buffer), but data does not survive reset. Use direct <code>FlashSectorErase()</code> + <code>FlashProgram()</code> + <code>FlashCheckFsmForReady()</code> + <code>Power_setConstraint</code> + VIMS cache disable</td>
+<td>Critical</td>
+</tr>
+<tr>
+<td>L28</td>
+<td>NVS <code>regionSize</code> must be a multiple of 8192 bytes — any other size causes the linker to place <code>flashBuf0</code> at 0x0000 (BIM flash) via a synthetic <code>$BOUND$0x0</code> region. Every write then corrupts BIM</td>
+<td>Critical</td>
+</tr>
+<tr>
+<td>L29</td>
+<td>NVS <code>regionBase</code> in SysConfig must match <code>NVS_BASE</code> in the linker command file. The OAD image length filter in the GS app must exclude the NVS section (<code>origin &lt; 0x52000</code>) — otherwise BIM erases NVS on every OAD boot</td>
+<td>Critical</td>
+</tr>
+<tr>
+<td>L30</td>
+<td>XDS110 debugger erases NVS flash on every software reset (CMD_REBOOT) on the bench. Test NVS persistence with real power cycles — unplug/replug USB</td>
+<td>High</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="80-ground-station-sck-2400-integration-notes">8.0 Ground Station — SCK-2400 Integration Notes</h2>
+<h3 id="81-build-time-patching">8.1 Build-Time Patching</h3>
+<p>Every SCK-2400 build automatically patches four files before compiling:</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>What's patched</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ccsds.h</code></td>
+<td><code>SCK_APID_THIS_BOARD</code> — board APID</td>
+</tr>
+<tr>
+<td><code>radio.h</code></td>
+<td><code>TX_POWER</code> — bench (0 dBm) or max (+20 dBm)</td>
+</tr>
+<tr>
+<td><code>security.h</code></td>
+<td><code>SCK_AES_KEY_0/1/2</code> — 3 × 16-byte AES keys from Provision tab</td>
+</tr>
+<tr>
+<td><code>oad_image_header_app.c</code></td>
+<td><code>.prgEntry</code> and <code>.len</code> — OAD image length, capped at <code>origin &lt; 0x52000</code> to exclude NVS</td>
+</tr>
+</tbody>
+</table>
+<h3 id="82-encryption-in-c">8.2 Encryption in C</h3>
+<p>C# sends and receives plaintext CCSDS over USB. All encryption lives in
+firmware. <code>CcsdsProtocol.cs</code> has no AES dependency. Keys never exist in
+the C# process — they are patched into <code>security.h</code> at build time only.</p>
+<h3 id="83-gps-response-routing">8.3 GPS Response Routing</h3>
+<p><code>CMD_GET_GPS</code> (0x27) returns its GPS string in a <code>cmd_ack</code> (APID 0x003)
+payload. The payload begins with the opcode byte (<code>0x27</code> = ASCII <code>'</code>)
+followed by <code>GPS:lat,lon,...</code>. Use <code>IndexOf("GPS:")</code> not <code>StartsWith</code> to
+locate the string. The GPS/Map tab polls automatically every 10 seconds.</p>
+<h3 id="84-board-aware-ui">8.4 Board-Aware UI</h3>
+<p>Register board-specific controls in <code>_sck2400OnlyControls</code> or
+<code>_sck915OnlyControls</code> during <code>Build*()</code> methods. <code>ApplyBoardUi()</code> greys
+them out and sets tooltips ("SCK-2400 only" / "SCK-915 only").
+Called on startup and on board dropdown change.</p>
+<h3 id="85-rf-crypto-status-indicator">8.5 RF Crypto Status Indicator</h3>
+<p><code>lblRfStatus</code> on the Home tab shows:</p>
+<pre><code>GS: 0x010  RF → 0x011 encrypted
+</code></pre>
+<p>Updated by <code>UpdateRfStatusLabel()</code> on connect, disconnect, and board
+dropdown change. Primary indicator for diagnosing the most common setup
+mistake — having the wrong board physically connected.</p>
+<hr />
+<p><em>SpaceCommsKit SCK-2400 Developer Guide v1.10</em>
+<em>For updates and latest version see https://spacecommskit.com/docs</em></p>
+</div>
+</div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="nav-logo" style="color:#fff;">SpaceComms<span style="color:var(--cyan);">Kit</span></div>
+      <p>OpenLST inspired. SCK-915 evolved. Open-source software, hand-assembled hardware. Tennessee, USA.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Products</h4>
+      <a href="../kit.html">SCK-915</a>
+      <a href="../sck2400.html">SCK-2400</a>
+      <a href="../pico.html">SCK-PBL-1</a>
+    </div>
+    <div class="footer-col">
+      <h4>Resources</h4>
+      <a href="../documentation.html">Documentation</a>
+      <a href="../software.html">Software</a>
+      <a href="https://github.com/eor123/spacecommskit" target="_blank">GitHub</a>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <a href="mailto:info@spacecommskit.com">info@spacecommskit.com</a>
+      <a href="mailto:support@spacecommskit.com">support@spacecommskit.com</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2026 SpaceCommsKit &middot; Tennessee, USA &middot; Ships to United States only</p>
+    <p>Based on OpenLST by Planet Labs Inc. (GPLv3)</p>
+  </div>
+</footer>
+
+</body>
+</html>

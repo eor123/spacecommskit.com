@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCK-915 User Guide — SpaceCommsKit</title>
+<meta name="description" content="SpaceCommsKit SCK-915 Ground Station User Guide — installation, hardware wiring, ground station tabs, troubleshooting, and specifications.">
+<link rel="canonical" href="https://www.spacecommskit.com/docs/SCK-915_User_Guide.html">
+<link rel="stylesheet" href="../style.css">
+<style>
+.doc-content { max-width: 900px; margin: 0 auto; }
+.doc-content h1 { display:none; }
+.doc-content h2 {
+  font-size: 28px; font-weight: 700; color: var(--text-hero);
+  letter-spacing: -0.5px; margin: 56px 0 18px; padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+.doc-content > h2:first-of-type { border-top: none; margin-top: 0; }
+.doc-content h3 {
+  font-size: 20px; font-weight: 600; color: var(--cyan);
+  margin: 36px 0 12px;
+}
+.doc-content h4 {
+  font-size: 15px; font-weight: 600; color: var(--text-hero);
+  margin: 24px 0 10px; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.doc-content p { color: var(--text-inv); font-size: 15px; line-height: 1.75; margin-bottom: 16px; }
+.doc-content ul, .doc-content ol { color: var(--text-inv); font-size: 15px; line-height: 1.8; margin: 0 0 16px 22px; }
+.doc-content li { margin-bottom: 4px; }
+.doc-content li > p { margin-bottom: 4px; }
+.doc-content a { color: var(--cyan); }
+.doc-content strong { color: #fff; }
+.doc-content hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+.doc-content code {
+  font-family: var(--font-mono); font-size: 13px;
+  background: rgba(0,200,224,0.1); color: var(--cyan);
+  padding: 2px 6px; border-radius: 4px;
+}
+.doc-content pre {
+  background: var(--void); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 20px 24px;
+  overflow-x: auto; margin: 0 0 20px;
+}
+.doc-content pre code {
+  background: none; color: #cbd5e1; padding: 0;
+  font-size: 13px; line-height: 1.7;
+}
+.doc-content table {
+  width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 0 0 24px;
+}
+.doc-content th {
+  background: var(--blue); color: #fff; padding: 10px 14px; text-align: left;
+  font-size: 11.5px; font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase;
+  font-family: var(--font-mono);
+}
+.doc-content td {
+  padding: 9px 14px; border-bottom: 1px solid var(--border);
+  color: var(--text-inv); vertical-align: top;
+}
+.doc-content tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+.doc-content td:first-child { font-weight: 500; color: #fff; }
+.doc-content blockquote {
+  border-left: 4px solid var(--blue); background: rgba(26,111,212,0.08);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 20px; margin: 0 0 20px; color: var(--text-inv); font-size: 14px;
+}
+.doc-content blockquote.warn { border-left-color: var(--gold); background: rgba(240,165,0,0.08); }
+.doc-content blockquote.crit { border-left-color: var(--red); background: rgba(224,60,46,0.08); }
+.doc-content blockquote p:last-child { margin-bottom: 0; }
+.doc-meta {
+  font-family: var(--font-mono); font-size: 12px; color: var(--text-inv);
+  letter-spacing: 0.5px; margin-bottom: 8px;
+}
+.doc-toc {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 24px 28px; margin: 40px 0 56px;
+}
+.doc-toc-title {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--cyan); margin-bottom: 14px;
+}
+.doc-toc ul { list-style: none; margin: 0; columns: 2; column-gap: 32px; }
+.doc-toc li { margin-bottom: 6px; break-inside: avoid; }
+.doc-toc a { color: var(--text-inv); font-size: 13.5px; text-decoration: none; }
+.doc-toc a:hover { color: var(--cyan); text-decoration: underline; }
+@media (max-width: 700px) { .doc-toc ul { columns: 1; } }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="../index.html" class="nav-logo">SpaceComms<span>Kit</span><span class="logo-tag">Docs</span></a>
+  <ul class="nav-links">
+    <li><a href="../index.html">Home</a></li>
+    <li><a href="../kit.html">SCK-915</a></li>
+    <li><a href="../sck2400.html">SCK-2400</a></li>
+    <li><a href="../pico.html">SCK-PBL-1</a></li>
+    <li><a href="../documentation.html" class="active">Documentation</a></li>
+    <li><a href="../quickstart.html">Quick Start</a></li>
+    <li><a href="../software.html">Software</a></li>
+    <li><a href="../groundstation.html">Ground Station</a></li>
+    <li><a href="../about.html">About</a></li>
+    <li><a href="https://spacecommskit.myshopify.com" target="_blank" class="nav-cta">Buy a Kit</a></li>
+  </ul>
+</nav>
+
+<section class="hero" style="padding-bottom:40px;">
+  <div class="hero-inner" style="padding-bottom:40px;">
+    <span class="eyebrow">SCK-915 &amp;middot; Documentation &amp;middot; User Guide</span>
+    <h1 class="hero-title" style="font-size:clamp(28px,4vw,44px);">SCK-915 User Guide</h1>
+  </div>
+</section>
+
+<div class="section-dark">
+<div class="section">
+<div class="doc-content">
+<div class="doc-toc"><div class="doc-toc-title">On This Page</div><ul><li><a href="#overview">Overview</a></li>
+<li><a href="#whats-in-the-box">What&#x27;s in the Box</a></li>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#quick-start">Quick Start</a></li>
+<li><a href="#hardware-connections">Hardware Connections</a></li>
+<li><a href="#raspberry-pi-pico-wiring">Raspberry Pi Pico Wiring</a></li>
+<li><a href="#home-tab">Home Tab</a></li>
+<li><a href="#commands-tab">Commands Tab</a></li>
+<li><a href="#custom-commands-tab">Custom Commands Tab</a></li>
+<li><a href="#files-tab">Files Tab</a></li>
+<li><a href="#firmware-tab">Firmware Tab</a></li>
+<li><a href="#provision-tab">Provision Tab</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#specifications">Specifications</a></li></ul></div>
+<h1 id="spacecommskit-sck-915-ground-station-user-guide">SpaceCommsKit SCK-915 — Ground Station User Guide</h1>
+<p><strong>Version 1.00 — June 2026</strong>
+<strong>SpaceCommsKit — https://spacecommskit.com</strong></p>
+<hr />
+<h2 id="overview">Overview</h2>
+<p>The SCK-915 is a complete RF communications development kit based on the
+open-source OpenLST radio platform originally developed by Planet Labs.
+The kit includes two CC1110-based radio boards operating at 915MHz and a
+Windows ground station application for commanding, monitoring, and
+imaging.</p>
+<p>With the SCK-915 Ground Station you can:</p>
+<ul>
+<li>
+<p>Send and receive commands between a ground station and a remote radio
+  board over RF</p>
+</li>
+<li>
+<p>View real-time telemetry including uptime, signal strength, and ADC
+  readings</p>
+</li>
+<li>
+<p>Trigger a remote Raspberry Pi Pico to capture images with an Arducam
+  OV2640 camera</p>
+</li>
+<li>
+<p>Transfer JPEG images from the remote SD card back to your Windows PC
+  over RF</p>
+</li>
+<li>
+<p>Build and flash custom firmware to the remote board</p>
+</li>
+<li>Provision new boards with the bootloader and hardware IDs</li>
+</ul>
+<blockquote>
+<p><strong>Note:</strong> The SCK-915 operates at 915MHz in the ISM band. Check local
+regulations for power limits in your jurisdiction before field or
+high-power operation.</p>
+</blockquote>
+<hr />
+<h2 id="whats-in-the-box">What's in the Box</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Qty</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SCK-915 Radio Board</td>
+<td>2</td>
+<td>CC1110-based 915MHz transceiver (HWID 0001 and 0004 pre-provisioned)</td>
+</tr>
+<tr>
+<td>USB-Serial Adapter</td>
+<td>1</td>
+<td>3.3V TTL FTDI adapter for connecting board 0001 to your PC</td>
+</tr>
+<tr>
+<td>Antennas</td>
+<td>2</td>
+<td>SMA 915MHz antennas</td>
+</tr>
+<tr>
+<td>Power Supply</td>
+<td>1</td>
+<td>5V DC power supply for board 0001</td>
+</tr>
+<tr>
+<td>Ground Station Software</td>
+<td>1</td>
+<td>SCK Ground Station Windows application</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Note:</strong> Sold separately for full imaging: Raspberry Pi Pico, Arducam
+OV2640, SPI SD card adapter, microSD card (FAT32 formatted).</p>
+</blockquote>
+<hr />
+<h2 id="installation">Installation</h2>
+<ol>
+<li>
+<p><strong>Run the installer.</strong> Double-click <code>SCK_GroundStation_Setup.exe</code> and
+   follow the prompts.</p>
+</li>
+<li>
+<p><strong>Install USB-Serial driver.</strong> Connect the USB-serial adapter. Windows
+   installs the driver automatically. If not, download from
+   ftdichip.com.</p>
+</li>
+<li>
+<p><strong>Note your COM port.</strong> Open Device Manager → Ports and note the COM
+   port for your adapter (e.g. COM5).</p>
+</li>
+<li>
+<p><strong>Launch the application.</strong> Find SCK Ground Station in the Start menu.</p>
+</li>
+</ol>
+<hr />
+<h2 id="quick-start">Quick Start</h2>
+<p><strong>Quick Start Checklist:</strong></p>
+<ol>
+<li>Connect the USB-serial adapter to board 0001's UART1 header</li>
+<li>Power board 0001 from the external 5V supply</li>
+<li>Power board 0004 at least 2 feet away</li>
+<li>Select the COM port, set HWID to <code>0001</code>, click <strong>Connect</strong></li>
+<li>Go to the <strong>Commands</strong> tab and click <strong>Get Telem</strong> — you should see a
+   green checkmark response</li>
+</ol>
+<hr />
+<h2 id="hardware-connections">Hardware Connections</h2>
+<h3 id="board-0001-ground-station-radio">Board 0001 — Ground Station Radio</h3>
+<p>Board 0001 connects to your Windows PC via the USB-serial adapter.</p>
+<table>
+<thead>
+<tr>
+<th>USB-Serial Pin</th>
+<th>Board 0001 Pin</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TX</td>
+<td>P0_5 (UART1 RX)</td>
+</tr>
+<tr>
+<td>RX</td>
+<td>P0_4 (UART1 TX)</td>
+</tr>
+<tr>
+<td>GND</td>
+<td>GND</td>
+</tr>
+</tbody>
+</table>
+<h3 id="board-0004-remote-radio">Board 0004 — Remote Radio</h3>
+<p>Board 0004 is the remote unit. It communicates via RF and connects to the
+Pico for imaging.</p>
+<table>
+<thead>
+<tr>
+<th>Board 0004 Pin</th>
+<th>Connection</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P1_5 (UART0 TX)</td>
+<td>Pico GP1 (UART0 RX)</td>
+</tr>
+<tr>
+<td>P1_4 (UART0 RX)</td>
+<td>Pico GP0 (UART0 TX)</td>
+</tr>
+<tr>
+<td>GND</td>
+<td>Pico GND</td>
+</tr>
+</tbody>
+</table>
+<h3 id="power-requirements">Power Requirements</h3>
+<blockquote class="warn">
+<p><strong>Warning:</strong> Board 0001 must be powered from the included external 5V
+supply during RF operation. The RF PA draws a current spike during TX
+that will cause a brownout if powered only from USB.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Supply</th>
+<th>Current</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Board 0001 / 0004</td>
+<td>5V DC</td>
+<td>~120mA idle, ~1.6A during RF TX</td>
+</tr>
+<tr>
+<td>Raspberry Pi Pico</td>
+<td>5V (USB) or 3.3V</td>
+<td>~25mA typical</td>
+</tr>
+<tr>
+<td>Arducam OV2640</td>
+<td>3.3V</td>
+<td>~50mA active</td>
+</tr>
+<tr>
+<td>SD Card Adapter</td>
+<td>5V (VBUS)</td>
+<td>~100mA active</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="raspberry-pi-pico-wiring">Raspberry Pi Pico Wiring</h2>
+<p>Full imaging requires a Pico with Arducam OV2640 and SPI SD card adapter.
+All three share SPI0 with separate CS pins.</p>
+<table>
+<thead>
+<tr>
+<th>Device</th>
+<th>Signal</th>
+<th>Pico Pin</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Arducam OV2640</td>
+<td>VCC</td>
+<td>3.3V</td>
+</tr>
+<tr>
+<td>Arducam OV2640</td>
+<td>GND</td>
+<td>GND</td>
+</tr>
+<tr>
+<td>Arducam OV2640</td>
+<td>MISO</td>
+<td>GP16</td>
+</tr>
+<tr>
+<td>Arducam OV2640</td>
+<td>MOSI</td>
+<td>GP19</td>
+</tr>
+<tr>
+<td>Arducam OV2640</td>
+<td>SCK</td>
+<td>GP18</td>
+</tr>
+<tr>
+<td>Arducam OV2640</td>
+<td>CS</td>
+<td>GP15</td>
+</tr>
+<tr>
+<td>Arducam OV2640</td>
+<td>SDA</td>
+<td>GP4</td>
+</tr>
+<tr>
+<td>Arducam OV2640</td>
+<td>SCL</td>
+<td>GP5</td>
+</tr>
+<tr>
+<td>SD Card Adapter</td>
+<td>VCC</td>
+<td>VBUS (5V)</td>
+</tr>
+<tr>
+<td>SD Card Adapter</td>
+<td>GND</td>
+<td>GND</td>
+</tr>
+<tr>
+<td>SD Card Adapter</td>
+<td>MISO</td>
+<td>GP16 (shared)</td>
+</tr>
+<tr>
+<td>SD Card Adapter</td>
+<td>MOSI</td>
+<td>GP19 (shared)</td>
+</tr>
+<tr>
+<td>SD Card Adapter</td>
+<td>SCK</td>
+<td>GP18 (shared)</td>
+</tr>
+<tr>
+<td>SD Card Adapter</td>
+<td>CS</td>
+<td>GP17</td>
+</tr>
+</tbody>
+</table>
+<blockquote class="warn">
+<p><strong>Warning:</strong> The Arducam OV2640 must be connected with direct jumper
+wires — not through a breadboard. Breadboard connections are unreliable
+for SPI at the required speed.</p>
+</blockquote>
+<hr />
+<h2 id="home-tab">Home Tab</h2>
+<p>The Home tab shows live telemetry updated every 5 seconds when connected.</p>
+<table>
+<thead>
+<tr>
+<th>Panel</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Uptime</td>
+<td>Seconds since last boot</td>
+</tr>
+<tr>
+<td>Last RSSI</td>
+<td>Received signal strength (dBm)</td>
+</tr>
+<tr>
+<td>Last LQI</td>
+<td>Link quality indicator (0–255)</td>
+</tr>
+<tr>
+<td>Packets Sent/Good</td>
+<td>RF packet counters since boot</td>
+</tr>
+<tr>
+<td>UART0/1 RX Count</td>
+<td>Packets received on each serial port</td>
+</tr>
+<tr>
+<td>ADC 0–9</td>
+<td>Raw ADC readings from CC1110 analog inputs</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="commands-tab">Commands Tab</h2>
+<p>Provides quick access to all standard OpenLST commands.</p>
+<table>
+<thead>
+<tr>
+<th>Button</th>
+<th>Opcode</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Get Telem</td>
+<td>0x17</td>
+<td>Request telemetry from the addressed board</td>
+</tr>
+<tr>
+<td>Reboot</td>
+<td>0x12</td>
+<td>Immediately reboot the addressed board</td>
+</tr>
+<tr>
+<td>Get Time</td>
+<td>0x13</td>
+<td>Request current RTC time</td>
+</tr>
+<tr>
+<td>Set Time</td>
+<td>0x14</td>
+<td>Set the RTC time</td>
+</tr>
+<tr>
+<td>Get Callsign</td>
+<td>0x19</td>
+<td>Read stored callsign</td>
+</tr>
+<tr>
+<td>Set Callsign</td>
+<td>0x1A</td>
+<td>Store callsign (up to 8 characters)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="custom-commands-tab">Custom Commands Tab</h2>
+<p>Lets you send any opcode with any payload. Commands persist between
+sessions. Pre-loaded Pico commands:</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Opcode</th>
+<th>Payload</th>
+<th>Response</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PICO Ping</td>
+<td>0x20</td>
+<td><code>00</code></td>
+<td><code>PICO:ACK</code></td>
+</tr>
+<tr>
+<td>PICO Read Temp</td>
+<td>0x20</td>
+<td><code>01</code></td>
+<td><code>TEMP:13.47C</code></td>
+</tr>
+<tr>
+<td>PICO Snap</td>
+<td>0x20</td>
+<td><code>02</code></td>
+<td><code>SNAP:OK:snap_001.jpg:4617</code></td>
+</tr>
+<tr>
+<td>PICO List Files</td>
+<td>0x20</td>
+<td><code>03</code></td>
+<td><code>LIST:snap_001.jpg,...</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="files-tab">Files Tab</h2>
+<p>A complete SD card file manager for the remote Pico. List, download, and
+delete files over RF.</p>
+<blockquote class="warn">
+<p><strong>Warning:</strong> Set HWID to <code>0004</code> before using the Files tab. The Pico
+must be running <code>main.py</code> with an SD card inserted.</p>
+</blockquote>
+<h3 id="downloading-a-file">Downloading a File</h3>
+<ol>
+<li>Click <strong>Refresh List</strong> to get the current SD card file list</li>
+<li>Click a filename to select it</li>
+<li>Click <strong>Get File</strong> — the file transfers in 200-byte chunks over RF</li>
+<li>When complete the file is saved to the <code>Images\</code> folder and Explorer
+   opens automatically</li>
+</ol>
+<blockquote>
+<p>A typical 320×240 JPEG (4–8 KB) transfers in approximately 2–5 seconds
+depending on RF conditions.</p>
+</blockquote>
+<hr />
+<h2 id="firmware-tab">Firmware Tab</h2>
+<p>Used to build, sign, and flash custom firmware. Set Project Dir to your
+OpenLST source folder.</p>
+<blockquote class="warn">
+<p><strong>Warning:</strong> Always use Clean + Build after making source code changes
+to avoid stale object files being linked.</p>
+</blockquote>
+<h3 id="flash-ota-steps">Flash OTA Steps</h3>
+<ol>
+<li>Set HWID to the target board</li>
+<li>Verify the HEX file path and AES key</li>
+<li>Click <strong>Flash OTA</strong></li>
+</ol>
+<blockquote>
+<p>After flashing via serial, send 2–3 <strong>Get Telem</strong> commands before
+moving the board to remote RF operation.</p>
+</blockquote>
+<hr />
+<h2 id="provision-tab">Provision Tab</h2>
+<p>Programs the bootloader onto a fresh CC1110 board using the TI CC
+Debugger. One-time operation for new boards.</p>
+<ol>
+<li>Connect CC Debugger to the board programming header</li>
+<li>Enter HWID (e.g. <code>0001</code>) and AES key</li>
+<li>Browse to the bootloader HEX file</li>
+<li>Click <strong>Flash Bootloader</strong></li>
+</ol>
+<hr />
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="no-reply-to-get-telem-on-board-0001">No reply to Get Telem on board 0001</h3>
+<ul>
+<li>Check the USB-serial adapter COM port selection</li>
+<li>Verify TX→P0_5 and RX→P0_4 (not swapped)</li>
+<li>Confirm external 5V power supply is connected</li>
+<li>Rapid LED flash = bootloader mode; flash the radio app</li>
+</ul>
+<h3 id="no-reply-to-get-telem-on-board-0004">No reply to Get Telem on board 0004</h3>
+<ul>
+<li>Confirm board 0001 responds first — it relays RF commands</li>
+<li>Boards must be at least 2 feet apart</li>
+<li>Try Get Telem 2–3 times — first packet after boot sometimes missed</li>
+</ul>
+<h3 id="pico-commands-return-no-reply">PICO commands return no reply</h3>
+<ul>
+<li>Wait 5–10 seconds after Pico boot for camera initialization</li>
+<li>Verify UART wires: board 0004 P1_5→Pico GP1, P1_4→Pico GP0</li>
+<li>Confirm Pico is running <code>main.py</code></li>
+</ul>
+<h3 id="snap-returns-error">SNAP returns error</h3>
+<ul>
+<li>Camera must be direct wired, not on breadboard</li>
+<li>SD card must be inserted and formatted as FAT32</li>
+<li>SD card adapter VCC must connect to VBUS (5V), not 3.3V</li>
+</ul>
+<h3 id="board-resets-during-rf-transmission">Board resets during RF transmission</h3>
+<ul>
+<li>External 5V supply must be connected</li>
+<li>Add 100µF capacitor across board power pins</li>
+</ul>
+<hr />
+<h2 id="specifications">Specifications</h2>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RF Frequency</td>
+<td>915MHz (ISM band)</td>
+</tr>
+<tr>
+<td>Modulation</td>
+<td>2-FSK with Forward Error Correction (FEC)</td>
+</tr>
+<tr>
+<td>Data Rate</td>
+<td>7.4 kbaud</td>
+</tr>
+<tr>
+<td>TX Power</td>
+<td>+30 dBm (1W) via on-board power amplifier</td>
+</tr>
+<tr>
+<td>Receiver Sensitivity</td>
+<td>−112 dBm</td>
+</tr>
+<tr>
+<td>Microcontroller</td>
+<td>Texas Instruments CC1110</td>
+</tr>
+<tr>
+<td>Flash Memory</td>
+<td>32 KB</td>
+</tr>
+<tr>
+<td>Interface</td>
+<td>3.3V TTL UART ×2, 115200 baud</td>
+</tr>
+<tr>
+<td>Supply Voltage</td>
+<td>5V DC</td>
+</tr>
+<tr>
+<td>Board Size</td>
+<td>50 × 60 × 5 mm</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>SpaceCommsKit SCK-915 User Guide v1.00</em>
+<em>For updates and source code see https://spacecommskit.com</em></p>
+</div>
+</div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="nav-logo" style="color:#fff;">SpaceComms<span style="color:var(--cyan);">Kit</span></div>
+      <p>OpenLST inspired. SCK-915 evolved. Open-source software, hand-assembled hardware. Tennessee, USA.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Products</h4>
+      <a href="../kit.html">SCK-915</a>
+      <a href="../sck2400.html">SCK-2400</a>
+      <a href="../pico.html">SCK-PBL-1</a>
+    </div>
+    <div class="footer-col">
+      <h4>Resources</h4>
+      <a href="../documentation.html">Documentation</a>
+      <a href="../software.html">Software</a>
+      <a href="https://github.com/eor123/spacecommskit" target="_blank">GitHub</a>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <a href="mailto:info@spacecommskit.com">info@spacecommskit.com</a>
+      <a href="mailto:support@spacecommskit.com">support@spacecommskit.com</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2026 SpaceCommsKit &middot; Tennessee, USA &middot; Ships to United States only</p>
+    <p>Based on OpenLST by Planet Labs Inc. (GPLv3)</p>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -3,49 +3,112 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pico Payload Project — SpaceCommsKit Explorer SCK-915</title>
-<meta name="description" content="Complete guide to building the SCK-PBL-1 payload pipeline. GPS, MS5611 altimeter, OV2640 camera, SD card — fused telemetry beacon every 10 seconds over RF. HAB mission ready.">
+<title>SCK-PBL-1 — SpaceCommsKit Payload Board · Pico, GPS, Camera, Baro, SD</title>
+<meta name="description" content="SCK-PBL-1 — SpaceCommsKit's Raspberry Pi Pico payload board. Bolts onto SCK-915 or SCK-2400 for HAB and CubeSat missions, or runs standalone with every pin broken out. GPS, MS5611 altimeter, camera, SD storage, open-source firmware.">
+<meta name="keywords" content="SCK-PBL-1, payload board, Raspberry Pi Pico, HAB payload, GPS6MV2, MS5611, ArduCAM, SD card logger, standalone dev board, open source firmware, SpaceCommsKit">
 <link rel="canonical" href="https://www.spacecommskit.com/pico.html">
 <link rel="stylesheet" href="style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "SpaceCommsKit SCK-PBL-1",
+  "description": "Raspberry Pi Pico-based payload board with GPS, barometric altimeter, camera, and SD storage. Bolts onto SCK-915 or SCK-2400, or runs standalone as an open-source dev board with every pin broken out.",
+  "brand": { "@type": "Brand", "name": "SpaceCommsKit" },
+  "offers": { "@type": "Offer", "name": "SCK-PBL-1 Payload Board", "price": "TBD", "priceCurrency": "USD", "eligibleRegion": "US" }
+}
+</script>
 </head>
 <body>
 
 <nav class="nav">
-  <a href="index.html" class="nav-logo">SpaceComms<span>Kit</span><span class="logo-tag">SCK-915</span></a>
+  <a href="index.html" class="nav-logo">SpaceComms<span>Kit</span><span class="logo-tag">SCK-PBL-1</span></a>
   <ul class="nav-links">
     <li><a href="index.html">Home</a></li>
-    <li><a href="kit.html">The Kit</a></li>
+    <li><a href="kit.html">SCK-915</a></li>
+    <li><a href="sck2400.html">SCK-2400</a></li>
+    <li><a href="pico.html" class="active">SCK-PBL-1</a></li>
     <li><a href="documentation.html">Documentation</a></li>
     <li><a href="quickstart.html">Quick Start</a></li>
     <li><a href="software.html">Software</a></li>
-    <li><a href="pico.html" class="active">Pico Project</a></li>
     <li><a href="groundstation.html">Ground Station</a></li>
     <li><a href="hab-mission.html">HAB Mission</a></li>
     <li><a href="about.html">About</a></li>
-    <li><a href="classified.html">⬛ Section 7</a></li>
-    <li><a href="https://spacecommskit.myshopify.com" target="_blank" class="nav-cta">Buy a Kit</a></li>
+    <li><a href="#buy" class="nav-cta">Get Notified</a></li>
   </ul>
 </nav>
 
 <section class="hero">
   <div class="hero-inner">
-    <span class="eyebrow">SCK-PBL-1 Payload Platform · Full Build Guide</span>
-    <h1 class="hero-title">Complete Payload Pipeline<br><span>GPS · Baro · Camera · Over RF</span></h1>
+    <span class="eyebrow">SpaceCommsKit · SCK-PBL-1 · Payload Board</span>
+    <h1 class="hero-title">SCK-PBL-1<br><span>Standalone Dev Board. Bolt-On Payload.</span></h1>
     <p class="hero-sub">
-      A proven end-to-end pipeline: fused GPS + barometric telemetry beacon every 10 seconds,
-      remote image capture over RF, SD card file management, and a complete HAB mission stack.
-      No radio license required.
+      A Raspberry Pi Pico payload board with GPS, a barometric altimeter, a camera, and SD storage —
+      built to bolt directly onto an SCK-915 or SCK-2400 for HAB and CubeSat missions.
+      Every Pico pin is broken out and the firmware is open source, so it works just as well
+      as a standalone board for any project that needs this sensor stack, radio or no radio.
     </p>
-    <a href="#wiring" class="btn btn-primary">Start Building →</a>
+    <div class="flex gap-16" style="flex-wrap:wrap;">
+      <a href="#buy" class="btn btn-primary">Get Notified →</a>
+      <a href="#wiring" class="btn btn-outline" style="border-color:var(--cyan);color:var(--cyan);">Build Guide</a>
+      <a href="documentation.html" class="btn btn-outline">Read the Docs</a>
+    </div>
   </div>
 </section>
+
+<!-- What It Is -->
+<div class="section-panel">
+<div class="section">
+  <span class="eyebrow eyebrow-dark">The Board</span>
+  <h2 class="section-title">Bolt-On or Standalone — Same Board</h2>
+  <p class="section-lead">SCK-PBL-1 was designed to sit on top of an SCK-915 or SCK-2400 radio board, but nothing about it requires a radio at all. Every subsystem inits and fault-flags independently, and every GPIO — used or not — is on a header.</p>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;margin-top:40px;">
+
+    <div class="card">
+      <div style="background:var(--panel);border-radius:var(--radius);aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
+        <span style="color:var(--text-muted);font-size:13px;font-family:var(--font-mono);">[ SCK-PBL-1 board photo ]</span>
+      </div>
+      <h3 style="margin-bottom:8px;">Bolt-On Mode</h3>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px;">
+        Mounts to an SCK-915 or SCK-2400 Mini over a 4-pin UART header (GND/RX/TX/+3V3). Same ESP-framed command protocol on both, so the same firmware runs unmodified against either radio.
+      </p>
+      <table class="spec-table">
+        <tr><th>Parameter</th><th>Value</th></tr>
+        <tr><td>Radio interface</td><td>UART0, ESP framing, 115200 baud</td></tr>
+        <tr><td>Compatible radios</td><td>SCK-915 (CC1110) &amp; SCK-2400 Mini (CC2652P)</td></tr>
+        <tr><td>Command set</td><td>10 opcodes — PING through BEACON_CTRL</td></tr>
+        <tr><td>Autonomous beacon</td><td>Fused GPS+baro every 10s</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <div style="background:var(--panel);border-radius:var(--radius);aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
+        <span style="color:var(--text-muted);font-size:13px;font-family:var(--font-mono);">[ Standalone breakout headers photo ]</span>
+      </div>
+      <h3 style="margin-bottom:8px;">Standalone Mode</h3>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px;">
+        Power it from LiPo, wall adapter, or raw wire and drive it from USB REPL or your own UART host — no SpaceCommsKit radio board required. `main.py` is open source and built to be extended.
+      </p>
+      <table class="spec-table">
+        <tr><th>Parameter</th><th>Value</th></tr>
+        <tr><td>Power input</td><td>LiPo (JST-PH), 5.5×2.5mm barrel jack, raw wire</td></tr>
+        <tr><td>Onboard regulation</td><td>5V (LM2576-5.0) + 3.3V (MC33269) rails</td></tr>
+        <tr><td>Breakout headers</td><td>Full 40-pin Pico breakout (J1/J2) + 3-pin SWD debug (J3)</td></tr>
+        <tr><td>Firmware</td><td>MicroPython, open source, documented extension pattern</td></tr>
+      </table>
+    </div>
+
+  </div>
+</div>
+</div>
 
 <!-- Overview -->
 <div class="section-panel">
 <div class="section">
-  <span class="eyebrow eyebrow-dark">System Overview</span>
-  <h2 class="section-title">How It Works</h2>
-  <p class="section-lead">The Pico acts as a remote payload processor. Board 0004 receives RF commands and forwards them to the Pico over UART. The Pico handles GPS, altimeter, camera, storage, and telemetry.</p>
+  <span class="eyebrow eyebrow-dark">Bolt-On System Overview</span>
+  <h2 class="section-title">How It Works — Bolt-On to a Radio</h2>
+  <p class="section-lead">In bolt-on mode, the Pico acts as a remote payload processor. The radio board (SCK-915 or SCK-2400 Mini) receives RF commands and forwards them to the Pico over UART. The Pico handles GPS, altimeter, camera, storage, and telemetry.</p>
 
   <div style="background:var(--void);border-radius:var(--radius-lg);padding:32px;margin-top:40px;font-family:var(--font-mono);font-size:13px;line-height:2.2;color:var(--text-inv);">
     <div style="color:var(--cyan);">// Complete RF payload pipeline — fused telemetry + imaging</div>
@@ -62,9 +125,17 @@
     <span style="color:#666;padding-left:420px;">I2C1 · addr 0x76 ────► </span>
     <span style="color:var(--gold);">MS5611 Altimeter</span><br>
     <span style="color:#666;padding-left:420px;">SPI0 · 400kHz ────► </span>
-    <span style="color:var(--gold);">Arducam OV2640</span><br>
+    <span style="color:var(--gold);">ArduCAM Mini-Cam-Plus</span><br>
     <span style="color:#666;padding-left:420px;">SPI0 · CS GP17 ────► </span>
     <span style="color:var(--gold);">MicroSD Card</span>
+  </div>
+
+  <div class="notice notice-info" style="margin-top:20px;">
+    <div class="notice-icon">🔌</div>
+    <div>
+      <strong>Running Standalone Instead?</strong>
+      <p>Skip the radio board entirely — power SCK-PBL-1 from LiPo/wall/raw wire and talk to it over USB REPL, or wire UART0 to any host of your own. Every subsystem below still works the same way; you're just choosing what sits upstream of it. See §Standalone Use below.</p>
+    </div>
   </div>
 
   <div class="feature-grid" style="background:transparent;margin-top:32px;">
@@ -110,6 +181,7 @@
     <tr><td style="color:var(--cyan);">0x06</td><td style="color:var(--text-inv);">DELETE</td><td style="color:var(--text-inv);">DEL:OK:&lt;filename&gt;</td></tr>
     <tr><td style="color:var(--cyan);">0x07</td><td style="color:var(--text-inv);">GET_GPS</td><td style="color:var(--text-inv);">GPS:lat,lon,gps_alt,sats,fix,hpa,baro_alt,temp_c</td></tr>
     <tr><td style="color:var(--cyan);">0x08</td><td style="color:var(--text-inv);">GET_BARO</td><td style="color:var(--text-inv);">BARO:hpa,alt_m,temp_c</td></tr>
+    <tr><td style="color:var(--cyan);">0x09</td><td style="color:var(--text-inv);">BEACON_CTRL</td><td style="color:var(--text-inv);">BEACON:ON / BEACON:OFF</td></tr>
   </table>
 
   <div style="margin-top:32px;background:var(--void);border-radius:var(--radius-lg);padding:24px;font-family:var(--font-mono);font-size:13px;">
@@ -130,12 +202,75 @@
 </div>
 </div>
 
+<!-- Standalone Use -->
+<div class="section-panel">
+<div class="section">
+  <span class="eyebrow eyebrow-dark">No Radio Required</span>
+  <h2 class="section-title">Using SCK-PBL-1 Standalone</h2>
+  <p class="section-lead">Because the firmware runs on stock MicroPython with no dependency on a specific radio board, you can build with SCK-PBL-1 the same way you'd build with any Pico dev board — just with GPS, altimeter, camera, and SD already sorted out.</p>
+
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🔌</div>
+      <h3>Power It Your Way</h3>
+      <p>LiPo battery over the onboard JST-PH connector, a 5.5×2.5mm barrel jack for wall power, or raw wire straight to the regulators. Onboard LM2576-5.0 and MC33269-3.3 regulation gives you clean 5V and 3.3V rails either way.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🧩</div>
+      <h3>Every Pin, On a Header</h3>
+      <p>The Pico sits centered with a full breakout header down each side — every GPIO, power pin, and the SWD debug interface (SWDIO/GND/SWCLK) broken out separately, whether or not the stock firmware uses it.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🛠️</div>
+      <h3>Strip It Down or Extend It</h3>
+      <p>Camera, SD, GPS, and altimeter each have independent init and fault flags — pull out what you don't need. Add new commands to `main.py` following the documented opcode pattern, or bypass the command protocol entirely and drive the board from USB REPL.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📖</div>
+      <h3>Open Source, Start to Finish</h3>
+      <p>`main.py` is the same firmware whether you're bolted to an SCK-915, an SCK-2400, or nothing at all. Read it, fork it, ship your own payload on top of it — we'd like to hear what you build.</p>
+    </div>
+  </div>
+</div>
+</div>
+
 <!-- Parts List -->
 <div class="section">
 <div style="max-width:1100px;margin:0 auto;">
-  <span class="eyebrow eyebrow-dark">Parts List</span>
-  <h2 class="section-title">What You'll Need</h2>
-  <p class="section-lead">In addition to the OpenLST Explorer Dev Kit (which provides board 0004), you need these components for the full payload pipeline.</p>
+  <span class="eyebrow eyebrow-dark">Bill of Materials</span>
+  <h2 class="section-title">What's On the Board</h2>
+  <p class="section-lead">A stock SCK-PBL-1 ships with all of this already populated and wired — you don't need to source or wire anything below to use one. This is here as a reference for replacement parts, or if you're replicating the design with discrete modules instead of buying a board.</p>
+
+  <table class="spec-table" style="margin-top:40px;">
+    <tr><th>Ref</th><th>Part</th><th>Description</th><th>Source / Part #</th></tr>
+    <tr><td>U1</td><td>Raspberry Pi Pico</td><td>RP2040, MicroPython firmware</td><td>—</td></tr>
+    <tr><td>U3</td><td>LM2576-5.0WU-TR (TO-263-5)</td><td>5V rail regulator, fixed output</td><td>—</td></tr>
+    <tr><td>U4</td><td>MC33269DR2-3.3G</td><td>3.3V LDO regulator</td><td>Digi-Key MC33269DR2-3.3GOSCT-ND</td></tr>
+    <tr><td>—</td><td>Inductor</td><td>Buck regulator inductor (LM2576 stage)</td><td>Digi-Key 495-4547-1-ND</td></tr>
+    <tr><td>J10</td><td>S2B-PH-K-S</td><td>Battery power connector, JST-PH 2-pin</td><td>Digi-Key 455-1719-ND</td></tr>
+    <tr><td>J9</td><td>54-00134</td><td>Power adapter jack, R/A PCB, 5.5×2.5mm barrel</td><td>Digi-Key 839-54-00134-ND</td></tr>
+    <tr><td>U9</td><td>MEM2080-00-128-00-A</td><td>microSD card slot</td><td>Digi-Key 2073-MEM2080-00-128-00-ACT-ND</td></tr>
+    <tr><td>U5</td><td>MS561101BA03-50</td><td>MS5611 barometric pressure/altitude sensor</td><td>Digi-Key 223-1622-1-ND</td></tr>
+    <tr><td>—</td><td>ArduCAM Mini-Cam-Plus (OV2640)</td><td>SPI/I2C camera module</td><td>—</td></tr>
+    <tr><td>—</td><td>GPS6MV2</td><td>u-blox NEO-6M GPS module</td><td>—</td></tr>
+  </table>
+
+  <div class="notice notice-info" style="margin-top:20px;">
+    <div class="notice-icon">📡</div>
+    <div>
+      <strong>MS5611 Sourcing Alternative</strong>
+      <p>If replicating the design on a breadboard, the MS5611 can also be sourced pre-mounted on an SPI/I2C breakout board rather than the bare SMD chip — see <a href="https://www.smart-prototyping.com/MS5611-Air-Pressure-Sensor-Breakout-Board-SPI-or-I2C" target="_blank" style="color:var(--blue);">smart-prototyping.com</a>.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- DIY Reference -->
+<div class="section">
+<div style="max-width:1100px;margin:0 auto;">
+  <span class="eyebrow eyebrow-dark">DIY / Replacement Reference</span>
+  <h2 class="section-title">Sourcing These Individually</h2>
+  <p class="section-lead">If you're building an equivalent from a bare Pico plus discrete modules — or replacing a damaged part — these are the module-level parts and general sourcing notes that match the onboard design.</p>
 
   <table class="spec-table" style="margin-top:40px;">
     <tr><th>Component</th><th>Notes</th><th>Link</th></tr>
@@ -150,12 +285,12 @@
       <td><a href="https://www.amazon.com" target="_blank" style="color:var(--cyan);">Amazon ~$8</a></td>
     </tr>
     <tr>
-      <td>MS5611 Altimeter</td>
+      <td>MS561101BA03-50</td>
       <td style="color:var(--text-muted);">Aviation-grade barometric altimeter. I2C1 address 0x76. PS pin must tie to 3.3V for I2C mode. 10–1200 hPa — rated above 45km altitude.</td>
-      <td><a href="https://www.digikey.com" target="_blank" style="color:var(--cyan);">Digi-Key ~$10</a></td>
+      <td><a href="https://www.digikey.com" target="_blank" style="color:var(--cyan);">Digi-Key 223-1622-1-ND</a></td>
     </tr>
     <tr>
-      <td>Arducam OV2640 Mini 2MP</td>
+      <td>ArduCAM Mini-Cam-Plus (OV2640)</td>
       <td style="color:var(--text-muted);">SPI camera module. Must be direct-wired to Pico — not through a breadboard. Breadboard connections are unreliable at SPI speeds.</td>
       <td><a href="https://www.amazon.com/dp/B012UXNDOY" target="_blank" style="color:var(--cyan);">Amazon →</a></td>
     </tr>
@@ -184,6 +319,14 @@
   <span class="eyebrow eyebrow-dark">Wiring Guide</span>
   <h2 class="section-title">Complete Wiring — All Devices</h2>
   <p class="section-lead">All SPI devices share the Pico's SPI0 bus with separate chip select pins. GPS and altimeter use separate I2C and UART buses. Follow this exactly — pin assignment matters.</p>
+
+  <div class="notice notice-info">
+    <div class="notice-icon">✓</div>
+    <div>
+      <strong>Already Wired on a Stock Board</strong>
+      <p>On a production SCK-PBL-1 this pinout is fixed in the PCB — nothing to wire by hand. It's documented here because it's exactly what the firmware expects, so it's the reference if you're extending firmware, adding your own sensor to a free GPIO, or replicating the design on discrete modules.</p>
+    </div>
+  </div>
 
   <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;margin-top:40px;">
 
@@ -223,7 +366,7 @@
     </div>
 
     <div style="margin-top:24px;">
-      <h3 style="margin-bottom:12px;color:var(--gold);">Arducam OV2640 → Pico</h3>
+      <h3 style="margin-bottom:12px;color:var(--gold);">ArduCAM Mini-Cam-Plus (OV2640) → Pico</h3>
       <table class="spec-table">
         <tr><th>Camera Pin</th><th>Pico Pin</th></tr>
         <tr><td>VCC</td><td>3.3V</td></tr>
@@ -262,13 +405,35 @@
       </table>
     </div>
 
+    <div style="margin-top:24px;">
+      <h3 style="margin-bottom:12px;color:var(--blue);">SCK-2400 Mini High-Speed Interface (SPI1)</h3>
+      <table class="spec-table">
+        <tr><th>SCK-2400 Signal</th><th>Pico Pin</th></tr>
+        <tr><td>DIO23 (SSI1 SCLK)</td><td>GP26</td></tr>
+        <tr><td>DIO24 (SSI1 MOSI)</td><td>GP27</td></tr>
+        <tr><td>DIO25 (SSI1 MISO)</td><td>GP28</td></tr>
+        <tr><td>DIO26 (SSI1 CS)</td><td>GP22</td></tr>
+      </table>
+      <p style="font-size:12px;color:var(--text-muted);margin-top:8px;">Wired but reserved — no command handler implemented yet. Not used with the SCK-915 bolt-on path.</p>
+    </div>
+
+    <div style="margin-top:24px;">
+      <h3 style="margin-bottom:12px;">Breakout Headers (Standalone)</h3>
+      <table class="spec-table">
+        <tr><th>Header</th><th>Function</th></tr>
+        <tr><td>J1 / J2</td><td>Full 20-pin breakout each side — every Pico power, ADC, and GPIO pin</td></tr>
+        <tr><td>J3</td><td>SWD debug header — SWDIO / GND / SWCLK</td></tr>
+      </table>
+      <p style="font-size:12px;color:var(--text-muted);margin-top:8px;">Pins already used by onboard subsystems are still present on the header — driving them externally will conflict with that subsystem.</p>
+    </div>
+
   </div>
 
   <div class="notice notice-warn" style="margin-top:24px;">
     <div class="notice-icon">⚡</div>
     <div>
       <strong>SD Card Power — Critical</strong>
-      <p>The SD card adapter VCC must connect to the Pico's VBUS pin (5V from USB), NOT the 3.3V pin. Using 3.3V will cause unreliable SD card operation. The Arducam and MS5611 use 3.3V — do not connect them to VBUS.</p>
+      <p>The SD card adapter VCC must connect to the Pico's VBUS pin (5V from USB), NOT the 3.3V pin. Using 3.3V will cause unreliable SD card operation. The camera and MS5611 use 3.3V — do not connect them to VBUS.</p>
     </div>
   </div>
 
@@ -276,7 +441,7 @@
     <div class="notice-icon">🔌</div>
     <div>
       <strong>Camera — Direct Wire Required</strong>
-      <p>The Arducam OV2640 must be connected with direct jumper wires — not through a breadboard. Breadboard connections introduce enough resistance and capacitance to make SPI communication unreliable at 400kHz.</p>
+      <p>The ArduCAM Mini-Cam-Plus must be connected with direct jumper wires — not through a breadboard. Breadboard connections introduce enough resistance and capacitance to make SPI communication unreliable at 400kHz.</p>
     </div>
   </div>
 
@@ -400,6 +565,59 @@
 </div>
 </div>
 
+<!-- Buy / Notify -->
+<div class="section-panel" id="buy">
+<div class="section">
+  <span class="eyebrow eyebrow-dark">Availability</span>
+  <h2 class="section-title">SCK-PBL-1 — Coming Soon</h2>
+  <p class="section-lead">SCK-PBL-1 is in active bringup — GPS, MS5611, camera, and SD are all verified working on the production layout. Sign up to be notified when boards are available.</p>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;margin:40px 0;">
+
+    <div class="card" style="text-align:center;">
+      <div style="font-size:36px;margin-bottom:12px;">🎈</div>
+      <h3 style="margin-bottom:8px;">Bolt-On Payload</h3>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px;">Drop-in for SCK-915 or SCK-2400 Mini · GPS + baro fused beacon · camera SNAP · SD file transfer over RF</p>
+      <div style="font-size:22px;font-weight:700;color:var(--cyan);margin-bottom:4px;">Pricing TBD</div>
+      <p style="color:var(--text-muted);font-size:12px;margin-bottom:0;">Sign up below to be notified at launch</p>
+    </div>
+
+    <div class="card" style="text-align:center;">
+      <div style="font-size:36px;margin-bottom:12px;">🧩</div>
+      <h3 style="margin-bottom:8px;">Standalone Dev Board</h3>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px;">No radio required · every Pico pin broken out · open-source firmware · LiPo, wall, or raw wire power</p>
+      <div style="font-size:22px;font-weight:700;color:var(--cyan);margin-bottom:4px;">Pricing TBD</div>
+      <p style="color:var(--text-muted);font-size:12px;margin-bottom:0;">Sign up below to be notified at launch</p>
+    </div>
+
+  </div>
+
+  <form style="display:flex;gap:10px;max-width:440px;margin:0 auto 40px;"
+        action="https://formspree.io/f/xwvwzvaj" method="POST">
+    <input type="email" name="email" placeholder="your@email.com" required
+      style="flex:1;padding:12px 16px;border-radius:var(--radius);
+             border:1.5px solid var(--border);background:var(--surface);
+             color:#fff;font-size:14px;font-family:var(--font-body);">
+    <input type="hidden" name="form-type" value="sckpbl1-notify">
+    <button type="submit" class="btn" style="background:var(--cyan);color:var(--void);font-weight:700;">
+      Notify Me
+    </button>
+  </form>
+
+  <div style="max-width:700px;margin:0 auto;text-align:center;">
+    <p class="text-muted" style="margin-bottom:12px;">
+      Questions before ordering?
+      <a href="mailto:info@spacecommskit.com">info@spacecommskit.com</a>
+      &nbsp;·&nbsp;
+      Volume or university pricing available on request.
+    </p>
+    <p class="text-muted" style="font-size:12px;">
+      Ships to United States only. Boards are hand-assembled in Tennessee, USA.
+    </p>
+  </div>
+</div>
+</div>
+
 <footer>
   <div class="footer-inner">
     <div class="footer-brand">
@@ -407,15 +625,16 @@
       <p>OpenLST inspired. SCK-915 evolved. Open-source software, hand-assembled hardware. Tennessee, USA.</p>
     </div>
     <div class="footer-col">
-      <h4>Product</h4>
-      <a href="kit.html">The Kit</a>
+      <h4>Products</h4>
+      <a href="kit.html">SCK-915</a>
+      <a href="sck2400.html">SCK-2400</a>
+      <a href="pico.html">SCK-PBL-1</a>
       <a href="https://spacecommskit.myshopify.com" target="_blank">Buy Now</a>
     </div>
     <div class="footer-col">
       <h4>Resources</h4>
       <a href="documentation.html">Documentation</a>
       <a href="software.html">Software</a>
-      <a href="pico.html">Pico Project</a>
       <a href="hab-mission.html">HAB Mission</a>
       <a href="https://github.com/eor123/spacecommskit" target="_blank">GitHub</a>
     </div>

@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCK-2400 User Guide — SpaceCommsKit</title>
+<meta name="description" content="SpaceCommsKit SCK-2400 Ground Station User Guide — CCSDS commands, OAD firmware updates, payload board commands, troubleshooting, and specifications.">
+<link rel="canonical" href="https://www.spacecommskit.com/docs/SCK-2400_User_Guide.html">
+<link rel="stylesheet" href="../style.css">
+<style>
+.doc-content { max-width: 900px; margin: 0 auto; }
+.doc-content h1 { display:none; }
+.doc-content h2 {
+  font-size: 28px; font-weight: 700; color: var(--text-hero);
+  letter-spacing: -0.5px; margin: 56px 0 18px; padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+.doc-content > h2:first-of-type { border-top: none; margin-top: 0; }
+.doc-content h3 {
+  font-size: 20px; font-weight: 600; color: var(--cyan);
+  margin: 36px 0 12px;
+}
+.doc-content h4 {
+  font-size: 15px; font-weight: 600; color: var(--text-hero);
+  margin: 24px 0 10px; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.doc-content p { color: var(--text-inv); font-size: 15px; line-height: 1.75; margin-bottom: 16px; }
+.doc-content ul, .doc-content ol { color: var(--text-inv); font-size: 15px; line-height: 1.8; margin: 0 0 16px 22px; }
+.doc-content li { margin-bottom: 4px; }
+.doc-content li > p { margin-bottom: 4px; }
+.doc-content a { color: var(--cyan); }
+.doc-content strong { color: #fff; }
+.doc-content hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+.doc-content code {
+  font-family: var(--font-mono); font-size: 13px;
+  background: rgba(0,200,224,0.1); color: var(--cyan);
+  padding: 2px 6px; border-radius: 4px;
+}
+.doc-content pre {
+  background: var(--void); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 20px 24px;
+  overflow-x: auto; margin: 0 0 20px;
+}
+.doc-content pre code {
+  background: none; color: #cbd5e1; padding: 0;
+  font-size: 13px; line-height: 1.7;
+}
+.doc-content table {
+  width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 0 0 24px;
+}
+.doc-content th {
+  background: var(--blue); color: #fff; padding: 10px 14px; text-align: left;
+  font-size: 11.5px; font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase;
+  font-family: var(--font-mono);
+}
+.doc-content td {
+  padding: 9px 14px; border-bottom: 1px solid var(--border);
+  color: var(--text-inv); vertical-align: top;
+}
+.doc-content tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+.doc-content td:first-child { font-weight: 500; color: #fff; }
+.doc-content blockquote {
+  border-left: 4px solid var(--blue); background: rgba(26,111,212,0.08);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 20px; margin: 0 0 20px; color: var(--text-inv); font-size: 14px;
+}
+.doc-content blockquote.warn { border-left-color: var(--gold); background: rgba(240,165,0,0.08); }
+.doc-content blockquote.crit { border-left-color: var(--red); background: rgba(224,60,46,0.08); }
+.doc-content blockquote p:last-child { margin-bottom: 0; }
+.doc-meta {
+  font-family: var(--font-mono); font-size: 12px; color: var(--text-inv);
+  letter-spacing: 0.5px; margin-bottom: 8px;
+}
+.doc-toc {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 24px 28px; margin: 40px 0 56px;
+}
+.doc-toc-title {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--cyan); margin-bottom: 14px;
+}
+.doc-toc ul { list-style: none; margin: 0; columns: 2; column-gap: 32px; }
+.doc-toc li { margin-bottom: 6px; break-inside: avoid; }
+.doc-toc a { color: var(--text-inv); font-size: 13.5px; text-decoration: none; }
+.doc-toc a:hover { color: var(--cyan); text-decoration: underline; }
+@media (max-width: 700px) { .doc-toc ul { columns: 1; } }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="../index.html" class="nav-logo">SpaceComms<span>Kit</span><span class="logo-tag">Docs</span></a>
+  <ul class="nav-links">
+    <li><a href="../index.html">Home</a></li>
+    <li><a href="../kit.html">SCK-915</a></li>
+    <li><a href="../sck2400.html">SCK-2400</a></li>
+    <li><a href="../pico.html">SCK-PBL-1</a></li>
+    <li><a href="../documentation.html" class="active">Documentation</a></li>
+    <li><a href="../quickstart.html">Quick Start</a></li>
+    <li><a href="../software.html">Software</a></li>
+    <li><a href="../groundstation.html">Ground Station</a></li>
+    <li><a href="../about.html">About</a></li>
+    <li><a href="https://spacecommskit.myshopify.com" target="_blank" class="nav-cta">Buy a Kit</a></li>
+  </ul>
+</nav>
+
+<section class="hero" style="padding-bottom:40px;">
+  <div class="hero-inner" style="padding-bottom:40px;">
+    <span class="eyebrow">SCK-2400 &amp;middot; Documentation &amp;middot; User Guide</span>
+    <h1 class="hero-title" style="font-size:clamp(28px,4vw,44px);">SCK-2400 User Guide</h1>
+  </div>
+</section>
+
+<div class="section-dark">
+<div class="section">
+<div class="doc-content">
+<div class="doc-toc"><div class="doc-toc-title">On This Page</div><ul><li><a href="#overview">Overview</a></li>
+<li><a href="#what-you-need">What You Need</a></li>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#quick-start">Quick Start</a></li>
+<li><a href="#hardware-connections">Hardware Connections</a></li>
+<li><a href="#home-tab">Home Tab</a></li>
+<li><a href="#commands-tab">Commands Tab</a></li>
+<li><a href="#custom-commands-tab">Custom Commands Tab</a></li>
+<li><a href="#gps-map-tab">GPS / Map Tab</a></li>
+<li><a href="#files-tab">Files Tab</a></li>
+<li><a href="#firmware-tab">Firmware Tab</a></li>
+<li><a href="#provision-tab">Provision Tab</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#specifications">Specifications</a></li></ul></div>
+<h1 id="spacecommskit-sck-2400-ground-station-user-guide">SpaceCommsKit SCK-2400 — Ground Station User Guide</h1>
+<p><strong>Version 1.10 — July 2026</strong>
+<strong>SpaceCommsKit — https://spacecommskit.com</strong></p>
+<hr />
+<h2 id="overview">Overview</h2>
+<p>The SCK-2400 is a 2.4GHz RF communications board built on OpenLST roots,
+using the Texas Instruments CC1352P SimpleLink wireless microcontroller.
+It replaces the SCK-915's OpenLST packet protocol with CCSDS framing —
+the same packet standard used by real spacecraft — while keeping the
+proven payload architecture from SCK-915: a Raspberry Pi Pico payload
+board running GPS, barometric altimeter, camera, and SD card flight
+logging.</p>
+<p>With the SCK-2400 Ground Station you can:</p>
+<ul>
+<li>
+<p>Send and receive CCSDS commands between a ground station and a remote
+  board over 2.4GHz RF</p>
+</li>
+<li>
+<p>View real-time telemetry — uptime, RX/TX counters, link status</p>
+</li>
+<li>
+<p>Update remote firmware over RF using OAD (Over-Air Download) — a full
+  firmware image transfers in under 30 seconds</p>
+</li>
+<li>
+<p>Query the payload board for GPS position, barometric altitude, and
+  temperature</p>
+</li>
+<li>
+<p>Trigger camera snapshots and manage files on the payload SD card</p>
+</li>
+<li>Build and flash custom firmware to either board from the Ground
+  Station app</li>
+</ul>
+<blockquote>
+<p><strong>Note:</strong> The SCK-2400 operates in the 2.4GHz ISM band. Check local
+regulations for power limits in your jurisdiction before field or
+high-power operation.</p>
+</blockquote>
+<hr />
+<h2 id="what-you-need">What You Need</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SCK-2400 Board ×2</td>
+<td>CC1352P-based 2.4GHz transceiver (one Ground Station board, one Remote board)</td>
+</tr>
+<tr>
+<td>USB cables ×2</td>
+<td>Connect each board to your PC for programming and (GS board) operation</td>
+</tr>
+<tr>
+<td>Antennas ×2</td>
+<td>2.4GHz antennas</td>
+</tr>
+<tr>
+<td>Raspberry Pi Pico payload board</td>
+<td>Runs GPS, altimeter, camera, and SD logging (optional but recommended)</td>
+</tr>
+<tr>
+<td>SCK Ground Station software</td>
+<td>Windows application for commanding and monitoring</td>
+</tr>
+</tbody>
+</table>
+<p>The development hardware is <strong>SCK-2400 Mini</strong> boards (two units — one Ground Station, one Remote).
+Production hardware is the SCK-2400 custom PCB using the CC2652P.</p>
+<hr />
+<h2 id="installation">Installation</h2>
+<ol>
+<li>
+<p><strong>Run the installer</strong> or build from source — see the
+   <a href="./SCK-2400_Developer_Guide.md">SCK-2400 Developer Guide</a> for build
+   instructions.</p>
+</li>
+<li>
+<p><strong>Connect both boards</strong> to your PC via USB. Each LaunchPad exposes
+   two COM ports — the lower numbered port (e.g. COM8) is the XDS110
+   debug/programming interface used by the Ground Station app.</p>
+</li>
+<li>
+<p><strong>Launch SCK Ground Station.</strong></p>
+</li>
+<li><strong>Select "SCK-2400 (CCSDS)"</strong> from the Board dropdown in the top
+   right of the application.</li>
+</ol>
+<hr />
+<h2 id="quick-start">Quick Start</h2>
+<p><strong>Quick Start Checklist:</strong></p>
+<ol>
+<li>Connect the Ground Station board (APID <code>0x010</code>) to your PC via USB</li>
+<li>Select its COM port and click <strong>Connect</strong></li>
+<li>Go to the <strong>Commands</strong> tab and click <strong>Get Telem</strong></li>
+<li>You should see a <code>tlm_beacon</code> response with a green checkmark</li>
+</ol>
+<p>If you see the green checkmark, your Ground Station board is alive and
+the link is working. To talk to a Remote board over RF, set the <strong>APID</strong>
+field to the remote board's address (e.g. <code>011</code>) before sending commands
+— the Ground Station board relays the command over RF automatically.</p>
+<hr />
+<h2 id="hardware-connections">Hardware Connections</h2>
+<h3 id="ground-station-board-apid-0x010">Ground Station Board (APID 0x010)</h3>
+<p>Connect via USB directly to your PC. This board must remain connected
+for the duration of your session — it relays all RF traffic between the
+Ground Station app and the Remote board.</p>
+<h3 id="remote-board-apid-0x011">Remote Board (APID 0x011)</h3>
+<p>This is the board that flies on your mission, or sits across the room
+during bench testing. It connects via RF to the Ground Station board and,
+optionally, via UART to a Raspberry Pi Pico payload board.</p>
+<p><strong>Remote board → Pico wiring:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Remote Board Pin</th>
+<th>Pico Pin</th>
+<th>Function</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DIO5 (header pin 10)</td>
+<td>GPIO1 (pin 2)</td>
+<td>UART TX → Pico RX</td>
+</tr>
+<tr>
+<td>DIO16 (header pin 32)</td>
+<td>GPIO0 (pin 1)</td>
+<td>UART RX ← Pico TX</td>
+</tr>
+<tr>
+<td>GND</td>
+<td>GND</td>
+<td>Common ground</td>
+</tr>
+</tbody>
+</table>
+<p>Both boards run on 3.3V logic — no level shifter is required.</p>
+<h3 id="power-requirements">Power Requirements</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Supply</th>
+<th>Typical Current</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SCK-2400 / LAUNCHXL-CC1352P-2</td>
+<td>5V USB</td>
+<td>~100mA idle, higher during RF TX</td>
+</tr>
+<tr>
+<td>Raspberry Pi Pico</td>
+<td>5V USB or 3.3V</td>
+<td>~25mA typical</td>
+</tr>
+<tr>
+<td>BMP581/MS5611 altimeter</td>
+<td>3.3V</td>
+<td>&lt;1mA</td>
+</tr>
+<tr>
+<td>GPS NEO-6M</td>
+<td>3.3V/5V</td>
+<td>~50mA</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="home-tab">Home Tab</h2>
+<p>The Home tab shows live telemetry from the connected and addressed board.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Uptime</td>
+<td>Seconds since last boot</td>
+</tr>
+<tr>
+<td>RX Count</td>
+<td>Packets received over RF</td>
+</tr>
+<tr>
+<td>TX Count</td>
+<td>Packets transmitted over RF</td>
+</tr>
+<tr>
+<td>VCC</td>
+<td>Supply voltage</td>
+</tr>
+</tbody>
+</table>
+<p>Telemetry updates each time you click <strong>Get Telem</strong> on the Commands tab,
+or automatically if the board's autonomous beacon is enabled.</p>
+<hr />
+<h2 id="commands-tab">Commands Tab</h2>
+<p>Provides quick access to standard CCSDS commands.</p>
+<table>
+<thead>
+<tr>
+<th>Button</th>
+<th>Opcode</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Get Telem</td>
+<td>0x01</td>
+<td>Request telemetry from the addressed board</td>
+</tr>
+<tr>
+<td>Reboot</td>
+<td>0x02</td>
+<td>Reboot the addressed board</td>
+</tr>
+<tr>
+<td>Beacon ON / OFF</td>
+<td>0x04</td>
+<td>Enable or disable the autonomous RF beacon</td>
+</tr>
+</tbody>
+</table>
+<h3 id="oad-over-air-download-controls">OAD (Over-Air Download) Controls</h3>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Start OAD</td>
+<td>Streams the built firmware image to the addressed remote board over RF</td>
+</tr>
+<tr>
+<td>Inter-chunk delay</td>
+<td>10ms (production default) to 100ms — controls streaming speed</td>
+</tr>
+<tr>
+<td>OAD Status</td>
+<td>Query bytes received / total size during a transfer</td>
+</tr>
+<tr>
+<td>Abort OAD</td>
+<td>Cancel an in-progress transfer and clear the flash slot</td>
+</tr>
+</tbody>
+</table>
+<p><strong>OAD performance:</strong> A full 335KB firmware image transfers in approximately
+<strong>24 seconds at the 10ms setting</strong> — about 5% of a typical 8-minute LEO
+ground station pass, leaving ample time for acquisition and telemetry.</p>
+<blockquote>
+<p>The remote board automatically reboots into the new firmware once the
+transfer completes and the image CRC is verified. If the connection is
+lost before verification, the board's bootloader (BIM) keeps the
+previous working firmware — OAD never bricks the board.</p>
+</blockquote>
+<hr />
+<h2 id="custom-commands-tab">Custom Commands Tab</h2>
+<p>Lets you send any CCSDS command opcode with any payload. Commands persist
+between sessions in <code>customcommands.json</code>.</p>
+<p><strong>Pre-loaded payload board commands:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Opcode</th>
+<th>Payload</th>
+<th>Expected Response</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PICO Ping</td>
+<td>0x20</td>
+<td>—</td>
+<td><code>PICO:ACK</code></td>
+</tr>
+<tr>
+<td>PICO Read Temp</td>
+<td>0x21</td>
+<td>—</td>
+<td><code>TEMP:13.47C</code></td>
+</tr>
+<tr>
+<td>PICO Snap</td>
+<td>0x22</td>
+<td>—</td>
+<td><code>SNAP:OK:snap_001.jpg:4617</code></td>
+</tr>
+<tr>
+<td>PICO List Files</td>
+<td>0x23</td>
+<td>—</td>
+<td><code>LIST:snap_001.jpg,...</code></td>
+</tr>
+<tr>
+<td>PICO Get GPS</td>
+<td>0x27</td>
+<td>—</td>
+<td><code>GPS:lat,lon,alt,sats,fix,hpa,baro_alt,temp_c</code></td>
+</tr>
+<tr>
+<td>PICO Get Baro</td>
+<td>0x28</td>
+<td>—</td>
+<td><code>BARO:hpa,baro_alt,temp_c</code></td>
+</tr>
+<tr>
+<td>PICO Beacon ON</td>
+<td>0x29</td>
+<td><code>01</code></td>
+<td><code>BEACON:ON</code></td>
+</tr>
+<tr>
+<td>PICO Beacon OFF</td>
+<td>0x29</td>
+<td><code>00</code></td>
+<td><code>BEACON:OFF</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Tip:</strong> The Pico transmits its own GPS+baro beacon autonomously every
+10 seconds. If your responses occasionally look mixed up or garbled,
+send <strong>PICO Beacon OFF</strong> first, run your commands, then send
+<strong>PICO Beacon ON</strong> when finished.</p>
+</blockquote>
+<hr />
+<h2 id="gps-map-tab">GPS / Map Tab</h2>
+<p>Displays live position from the payload board's GPS and barometric
+altimeter on an interactive map.</p>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Get GPS</td>
+<td>Request a fresh GPS+baro fix on demand</td>
+</tr>
+<tr>
+<td>Get Baro</td>
+<td>Request barometric data only</td>
+</tr>
+<tr>
+<td>Beacon ON / OFF</td>
+<td>Toggle the payload board's autonomous 10-second beacon</td>
+</tr>
+<tr>
+<td>Clear Track</td>
+<td>Clear the plotted flight track from the map</td>
+</tr>
+<tr>
+<td>Export KML</td>
+<td>Save the current track as a KML file for Google Earth</td>
+</tr>
+<tr>
+<td>Record</td>
+<td>Begin recording a flight session to disk</td>
+</tr>
+<tr>
+<td>Replay</td>
+<td>Play back a previously recorded flight session</td>
+</tr>
+</tbody>
+</table>
+<p>The map shows current position, altitude, ascent rate, GPS/baro altitude
+delta, and satellite fix status — updated live as beacon packets or
+on-demand GPS responses arrive.</p>
+<hr />
+<h2 id="files-tab">Files Tab</h2>
+<p>A file manager for the payload board's SD card.</p>
+<blockquote>
+<p><strong>Before using the Files tab:</strong> send <strong>PICO Beacon OFF</strong> to prevent
+the autonomous beacon from interrupting file transfers.</p>
+</blockquote>
+<h3 id="downloading-a-file">Downloading a File</h3>
+<ol>
+<li>Click <strong>Refresh List</strong> to retrieve the current SD card file listing</li>
+<li>Click a filename to select it</li>
+<li>Click <strong>Get File</strong> — the file transfers in 200-byte chunks over RF</li>
+<li>When complete, the file is saved locally and opens automatically</li>
+</ol>
+<p>A typical flight log (<code>.sckflight</code>) or small JPEG transfers in a few
+seconds depending on RF conditions and file size.</p>
+<hr />
+<h2 id="firmware-tab">Firmware Tab</h2>
+<p>Used to build, sign, and flash custom firmware for either board.</p>
+<h3 id="building">Building</h3>
+<ol>
+<li>Set <strong>Project Dir</strong> to your <code>sck2400_firmware</code> CCS project folder</li>
+<li>
+<p>Set <strong>Board Role</strong> — Ground Station (APID 0x010) or Remote (APID
+   0x011, 0x012, ...)</p>
+</li>
+<li>
+<p>Choose <strong>RF Power Mode</strong> — Bench (0 dBm, indoor/safe) or Max Power
+   (field/HAB/LEO mission)</p>
+</li>
+<li>
+<p>Click <strong>Clean + Build</strong></p>
+</li>
+</ol>
+<blockquote>
+<p><strong>Always use Clean + Build</strong> after making source code changes. Stale
+object files are the most common cause of mysterious firmware behavior.</p>
+</blockquote>
+<h3 id="flashing">Flashing</h3>
+<ol>
+<li>Verify the <strong>HEX File</strong> path points to the freshly built output</li>
+<li>Click <strong>Flash</strong> (or <strong>Build + Flash</strong> to do both in one step)</li>
+<li>The Ground Station merges the application image with the bootloader
+   (BIM) automatically and programs the board over the XDS110 debug
+   interface</li>
+</ol>
+<blockquote>
+<p>After flashing, send 2–3 <strong>Get Telem</strong> commands before moving the board
+to remote RF operation to confirm the radio stack is healthy.</p>
+</blockquote>
+<hr />
+<h2 id="provision-tab">Provision Tab</h2>
+<p>One-time setup for new boards — flashes the bootloader (BIM) and sets
+the board's APID (address). BIM is permanent after initial flashing and
+is never overwritten by subsequent application or OAD updates.</p>
+<hr />
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="no-reply-to-get-telem-on-ground-station-board-0x010">No reply to Get Telem on Ground Station board (0x010)</h3>
+<ul>
+<li>Check the COM port selection matches the XDS110 interface</li>
+<li>
+<p>Confirm the board is connected via USB (RF boards need external power
+  for sustained TX in field deployments)</p>
+</li>
+<li>
+<p>Rapid LED double-blink pattern indicates the bootloader is running
+  without a valid application — reflash the application firmware</p>
+</li>
+</ul>
+<h3 id="no-reply-to-get-telem-on-remote-board-0x011">No reply to Get Telem on Remote board (0x011)</h3>
+<ul>
+<li>
+<p>Confirm the Ground Station board (0x010) responds first — it relays
+  RF commands</p>
+</li>
+<li>
+<p>Boards should be at least a few feet apart during bench testing to
+  avoid RF saturation</p>
+</li>
+<li>
+<p>Try Get Telem 2–3 times — the first packet after boot is sometimes
+  missed while the RF synthesizer stabilizes</p>
+</li>
+</ul>
+<h3 id="pico-commands-return-no-reply">PICO commands return no reply</h3>
+<ul>
+<li>
+<p>Confirm the Pico is running <code>main.py</code> and showing beacon output on its
+  serial console</p>
+</li>
+<li>
+<p>Verify UART wiring: Remote board DIO5 → Pico GPIO1, DIO16 → Pico GPIO0</p>
+</li>
+<li>Send <strong>PICO Beacon OFF</strong> before other payload commands to avoid
+  response collisions with the autonomous beacon</li>
+</ul>
+<h3 id="pico-responses-look-garbled-or-mixed-up">PICO responses look garbled or mixed up</h3>
+<ul>
+<li>This is the autonomous beacon racing with your command response.
+  Send <strong>PICO Beacon OFF</strong>, wait a moment, then retry</li>
+</ul>
+<h3 id="oad-transfer-fails-or-times-out">OAD transfer fails or times out</h3>
+<ul>
+<li>Confirm the remote board responded to <strong>OAD Status</strong> before starting</li>
+<li>
+<p>If a transfer fails partway through, the Ground Station automatically
+  retries — re-erasing the flash slot and re-streaming</p>
+</li>
+<li>
+<p>A failed or interrupted OAD never corrupts the running firmware — BIM
+  always falls back to the last known-good image</p>
+</li>
+</ul>
+<h3 id="board-unresponsive-after-a-firmware-flash">Board unresponsive after a firmware flash</h3>
+<ul>
+<li>
+<p>Confirm you flashed the <strong>merged</strong> hex (application + BIM), not the
+  application-only hex — the Ground Station does this automatically via
+  <strong>Build + Flash</strong></p>
+</li>
+<li>
+<p>A rapid 1-flash-pause-3-flash LED pattern after reset usually indicates
+  BIM is running without a valid application image</p>
+</li>
+</ul>
+<hr />
+<h2 id="specifications">Specifications</h2>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RF Frequency</td>
+<td>2.4GHz ISM band</td>
+</tr>
+<tr>
+<td>Microcontroller (dev)</td>
+<td>Texas Instruments CC1352P1F3RGZ (LAUNCHXL-CC1352P-2)</td>
+</tr>
+<tr>
+<td>Microcontroller (production)</td>
+<td>Texas Instruments CC2652P1FRGZ</td>
+</tr>
+<tr>
+<td>RTOS</td>
+<td>TI-RTOS7</td>
+</tr>
+<tr>
+<td>Protocol</td>
+<td>CCSDS Space Packet Protocol</td>
+</tr>
+<tr>
+<td>OAD transfer (335KB image)</td>
+<td>~24 seconds @ 10ms inter-chunk delay</td>
+</tr>
+<tr>
+<td>Cold boot time</td>
+<td>&lt;40ms</td>
+</tr>
+<tr>
+<td>Interface</td>
+<td>USB (XDS110), 921600 baud to Ground Station</td>
+</tr>
+<tr>
+<td>Payload UART</td>
+<td>115200 baud, ESP framing, to Raspberry Pi Pico</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>SpaceCommsKit SCK-2400 User Guide v1.10</em>
+<em>For updates and source code see https://spacecommskit.com</em></p>
+</div>
+</div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="nav-logo" style="color:#fff;">SpaceComms<span style="color:var(--cyan);">Kit</span></div>
+      <p>OpenLST inspired. SCK-915 evolved. Open-source software, hand-assembled hardware. Tennessee, USA.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Products</h4>
+      <a href="../kit.html">SCK-915</a>
+      <a href="../sck2400.html">SCK-2400</a>
+      <a href="../pico.html">SCK-PBL-1</a>
+    </div>
+    <div class="footer-col">
+      <h4>Resources</h4>
+      <a href="../documentation.html">Documentation</a>
+      <a href="../software.html">Software</a>
+      <a href="https://github.com/eor123/spacecommskit" target="_blank">GitHub</a>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <a href="mailto:info@spacecommskit.com">info@spacecommskit.com</a>
+      <a href="mailto:support@spacecommskit.com">support@spacecommskit.com</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2026 SpaceCommsKit &middot; Tennessee, USA &middot; Ships to United States only</p>
+    <p>Based on OpenLST by Planet Labs Inc. (GPLv3)</p>
+  </div>
+</footer>
+
+</body>
+</html>
