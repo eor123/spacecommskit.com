@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quick Start Guide — SpaceCommsKit Explorer SCK-915</title>
-<meta name="description" content="SCK-915 Quick Start Guide — ground station to remote radio RF link in under 30 minutes. Step by step from unboxing to first telemetry.">
+<title>Quick Start Guide — SpaceCommsKit Explorer SCK-915 &amp; SCK-2400</title>
+<meta name="description" content="SpaceCommsKit Quick Start Guides — SCK-915 and SCK-2400 ground station to remote radio RF link in under 30 minutes. Step by step from unboxing to first telemetry.">
 <link rel="canonical" href="https://www.spacecommskit.com/quickstart.html">
 <link rel="stylesheet" href="style.css">
 <style>
@@ -194,8 +194,15 @@
 
 <div class="qs-body">
 
+<!-- Jump nav between product guides -->
+<div style="display:flex;gap:12px;padding:32px 0 0;flex-wrap:wrap;">
+  <span style="font-size:13px;color:var(--text-muted);align-self:center;margin-right:4px;">This page covers:</span>
+  <a href="#sck915" style="text-decoration:none;padding:8px 16px;border-radius:20px;background:var(--blue);color:#fff;font-size:13px;font-weight:600;">SCK-915 Guide ↓</a>
+  <a href="#sck2400" style="text-decoration:none;padding:8px 16px;border-radius:20px;background:var(--panel);color:var(--text-head);font-size:13px;font-weight:600;">SCK-2400 Guide ↓</a>
+</div>
+
 <!-- Progress indicator -->
-<div style="padding:40px 0 0;">
+<div style="padding:24px 0 0;" id="sck915">
   <div class="progress-bar">
     <div class="progress-step active">1 · Unbox</div>
     <div class="progress-step active">2 · Install</div>
@@ -636,6 +643,494 @@
         <div style="font-size:28px;margin-bottom:10px;">⚙️</div>
         <h4 style="text-transform:none;font-size:15px;margin-bottom:6px;">Firmware Source</h4>
         <p style="font-size:13px;color:var(--text-muted);">Fork the firmware, add custom opcodes, build with SDCC, flash OTA. GPLv3 open source.</p>
+      </div>
+    </a>
+  </div>
+
+  <div class="qs-callout info" style="margin-top:32px;">
+    <div class="qs-callout-icon">📧</div>
+    <div>
+      <strong>Need Help?</strong>
+      Contact <a href="mailto:support@spacecommskit.com">support@spacecommskit.com</a> —
+      we respond to technical questions directly.
+      For bug reports and firmware questions, open an issue on
+      <a href="https://github.com/eor123/spacecommskit" target="_blank">GitHub</a>.
+    </div>
+  </div>
+
+</div><!-- end SCK-915 section -->
+
+<!-- ============================================================ -->
+<!-- SCK-2400 QUICK START                                          -->
+<!-- ============================================================ -->
+
+<div class="qs-section" id="sck2400" style="padding-top:24px;">
+  <div style="text-align:center;margin-bottom:8px;">
+    <span class="eyebrow">Quick Start Guide · SpaceCommsKit Explorer</span>
+    <h2 style="font-size:clamp(26px,4vw,38px);font-weight:700;color:var(--text-head);line-height:1.2;margin:16px 0 12px;">
+      SCK-2400 Ground Station to Remote Radio<br>
+      <span style="color:var(--blue);">First RF Link in Under 30 Minutes</span>
+    </h2>
+    <p style="font-size:16px;color:var(--text-muted);max-width:640px;margin:0 auto 24px;line-height:1.7;">
+      Your SCK-2400 Mini boards shipped fully commissioned — bootloader flashed, radio application
+      installed, board addressing assigned, and end-to-end RF tested at 2.4GHz. This guide
+      takes you from unboxing to a live RF link with verified telemetry.
+    </p>
+    <div class="qs-meta" style="justify-content:center;border-top:none;margin-top:0;padding-top:0;">
+      <div class="qs-meta-item" style="color:var(--text-muted);">Board: <span style="color:var(--blue);">SCK-2400 Mini</span></div>
+      <div class="qs-meta-item" style="color:var(--text-muted);">Frequency: <span style="color:var(--blue);">2.4 GHz ISM (2440 MHz)</span></div>
+      <div class="qs-meta-item" style="color:var(--text-muted);">OS: <span style="color:var(--blue);">Windows 10 / 11 x64</span></div>
+      <div class="qs-meta-item" style="color:var(--text-muted);">Time: <span style="color:var(--blue);">~25 minutes</span></div>
+      <div class="qs-meta-item" style="color:var(--text-muted);">Prerequisites: <span style="color:var(--blue);">None</span></div>
+    </div>
+  </div>
+
+  <div class="qs-callout info" style="max-width:640px;margin:0 auto 24px;">
+    <div class="qs-callout-icon">ℹ️</div>
+    <div>
+      <strong>SCK-2400 Mini — first to market</strong>
+      This guide covers the SCK-2400 Mini, which shares the SCK-915 footprint
+      and is drop-in compatible with existing SCK-915 stands and accessories.
+      It's the first SCK-2400 variant shipping. The PC-104 CubeSat form-factor
+      variant is a separate board still in hardware development — it will get
+      its own guide once ready.
+    </div>
+  </div>
+
+  <div class="progress-bar">
+    <div class="progress-step active">1 · Unbox</div>
+    <div class="progress-step active">2 · Install</div>
+    <div class="progress-step active">3 · Connect</div>
+    <div class="progress-step active">4 · Telemetry</div>
+    <div class="progress-step active">5 · RF Link</div>
+    <div class="progress-step active">6 · Verified</div>
+  </div>
+</div>
+
+<!-- SCK-2400 Step 1: Kit Contents -->
+<div class="qs-section">
+  <div class="step-header">
+    <div class="step-num">1</div>
+    <div>
+      <div class="step-title">Verify Your Kit Contents</div>
+      <div class="step-sub">Two minutes — confirm everything is present before you start</div>
+    </div>
+  </div>
+
+  <p class="qs-prose">
+    Your SCK-2400 kit contains two fully commissioned boards built around the
+    TI CC2652P SimpleLink radio. Each board left our bench after a complete
+    end-to-end test — bootloader flashed, radio application installed, RF link
+    confirmed at 2440MHz. Check the stickers on each board before proceeding.
+  </p>
+
+  <div class="qs-grid">
+    <div class="qs-card">
+      <h4>Ground Station Board</h4>
+      <span class="board-id">010</span>
+      <ul style="list-style:none;font-size:13px;color:var(--text-muted);line-height:2;">
+        <li>✓ Bootloader installed (XDS110/JTAG-flashed at production)</li>
+        <li>✓ Radio application installed</li>
+        <li>✓ AES-128-CCM encryption active — production keys provisioned</li>
+        <li>✓ Connects to your PC via USB-serial on the UART1 header</li>
+        <li>✓ 921600 baud ground-station link</li>
+      </ul>
+    </div>
+    <div class="qs-card">
+      <h4>Remote Radio Board</h4>
+      <span class="board-id">011</span>
+      <ul style="list-style:none;font-size:13px;color:var(--text-muted);line-height:2;">
+        <li>✓ Bootloader installed (XDS110/JTAG-flashed at production)</li>
+        <li>✓ Radio application installed</li>
+        <li>✓ AES-128-CCM encryption active — production keys provisioned</li>
+        <li>✓ Operates standalone — no PC connection needed</li>
+        <li>✓ Payload UART0 header available for Pico/companion boards</li>
+      </ul>
+    </div>
+  </div>
+
+  <ul class="qs-checklist">
+    <li><span class="check">□</span><div><strong>2× SCK-2400 Mini radio boards</strong> — labeled 010 (Ground Station) and 011 (Remote)</div></li>
+    <li><span class="check">□</span><div><strong>2× 2.4GHz SMA antennas</strong> — hand-tighten only, do not over-torque</div></li>
+    <li><span class="check">□</span><div><strong>1× USB to serial adapter</strong> — for the Ground Station board's UART1 header</div></li>
+    <li><span class="check">□</span><div><strong>2× 5V 3A power supplies</strong> — one per board</div></li>
+  </ul>
+
+  <div class="qs-callout warn">
+    <div class="qs-callout-icon">⚠️</div>
+    <div>
+      <strong>Programming header is present, not required for normal use</strong>
+      Both boards ship pre-flashed and ready to run. The onboard JTAG/XDS110
+      header (J2) is only needed if you plan to load custom firmware — see
+      the <a href="documentation.html">Developer Guide</a> for details. Do
+      not connect a debug probe to J2 while a Pico or other payload processor
+      is connected to the UART0 header — both would drive the same signal
+      line at once.
+    </div>
+  </div>
+</div>
+
+<!-- SCK-2400 Step 2: Install Software -->
+<div class="qs-section">
+  <div class="step-header">
+    <div class="step-num">2</div>
+    <div>
+      <div class="step-title">Install the Ground Station Software</div>
+      <div class="step-sub">Same application used for SCK-915 — now with SCK-2400 board support</div>
+    </div>
+  </div>
+
+  <p class="qs-prose">
+    The SCK Ground Station application supports both SCK-915 and SCK-2400 —
+    it detects which board is connected and adjusts the interface accordingly.
+    If you already installed it for an SCK-915 kit, you can use the same
+    installation here; otherwise the installer is self-contained with no
+    separate prerequisites.
+  </p>
+
+  <ul class="qs-checklist">
+    <li>
+      <span class="check">□</span>
+      <div>
+        <strong>Download the installer</strong><br>
+        <span style="color:var(--text-muted);font-size:13px;">
+          From the
+          <a href="https://github.com/eor123/spacecommskit/raw/main/installer/OpenLST_Ground_Station_Setup_v1.0.0.exe">
+          SpaceCommsKit GitHub repository</a> or from the
+          <a href="software.html">Software page</a>.
+        </span>
+      </div>
+    </li>
+    <li>
+      <span class="check">□</span>
+      <div>
+        <strong>Run the installer as Administrator</strong><br>
+        <span style="color:var(--text-muted);font-size:13px;">
+          Right-click the .exe → Run as Administrator.
+          If Windows SmartScreen appears click <em>More info</em> → <em>Run anyway</em>.
+        </span>
+      </div>
+    </li>
+    <li>
+      <span class="check">□</span>
+      <div>
+        <strong>Launch the application</strong><br>
+        <span style="color:var(--text-muted);font-size:13px;">
+          Both boards ship with AES-128-CCM encryption active and production
+          keys already provisioned. The header bar's RF crypto status
+          indicator confirms the encrypted link is up once connected.
+        </span>
+      </div>
+    </li>
+  </ul>
+
+  <div class="qs-callout info">
+    <div class="qs-callout-icon">ℹ️</div>
+    <div>
+      <strong>Open Source</strong>
+      The ground station is fully open source under GPLv3.
+      Source code at <a href="https://github.com/eor123/spacecommskit" target="_blank">github.com/eor123/spacecommskit</a>.
+      Built with C# .NET 8 WinForms — Visual Studio 2022 opens the project directly.
+    </div>
+  </div>
+</div>
+
+<!-- SCK-2400 Step 3: Hardware Setup -->
+<div class="qs-section">
+  <div class="step-header">
+    <div class="step-num">3</div>
+    <div>
+      <div class="step-title">Connect the Hardware</div>
+      <div class="step-sub">Ground Station board to your PC — Remote board standalone with power</div>
+    </div>
+  </div>
+
+  <p class="qs-prose">
+    The Ground Station board connects to your PC via USB-serial on its UART1
+    header and communicates with the Remote board over the 2440MHz RF link.
+    The Remote board needs only power — no PC connection required. Place the
+    boards at least 0.5 meters apart to avoid receiver saturation.
+  </p>
+
+  <table class="qs-table">
+    <thead>
+      <tr>
+        <th>Connection</th>
+        <th>Ground Station Board</th>
+        <th>Remote Board</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Power</td>
+        <td>5V 3A adapter → DC jack</td>
+        <td>5V 3A adapter → DC jack</td>
+      </tr>
+      <tr>
+        <td>Serial</td>
+        <td>USB-serial adapter → UART1 header<br>
+          <span style="font-family:var(--font-mono);font-size:11px;color:var(--text-muted);">
+          TX→RX, RX→TX, GND→GND, 921600 baud
+          </span>
+        </td>
+        <td>Not required</td>
+      </tr>
+      <tr>
+        <td>Antenna</td>
+        <td>2.4GHz SMA antenna — hand-tighten</td>
+        <td>2.4GHz SMA antenna — hand-tighten</td>
+      </tr>
+      <tr>
+        <td>Separation</td>
+        <td colspan="2" style="color:var(--text-muted);">Minimum 0.5m — recommended 1–3m for initial testing</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="qs-callout info">
+    <div class="qs-callout-icon">🔌</div>
+    <div>
+      <strong>UART1 Header Pinout (Ground Station link)</strong>
+      A 5-pin 2.54mm connector.
+      Pin 1 = GND,
+      Pin 2 = RX,
+      Pin 3 = TX,
+      Pin 4 = +3.3V (reference only — do not connect to adapter VCC),
+      Pin 5 = bootloader backdoor (leave disconnected for normal use).
+      The board runs at <strong>921600 baud, 8N1</strong>.
+    </div>
+  </div>
+
+  <ul class="qs-checklist">
+    <li><span class="check">□</span><div><strong>Power on the Remote board first</strong> — it needs to be listening before the ground station transmits</div></li>
+    <li><span class="check">□</span><div><strong>Power on the Ground Station board</strong></div></li>
+    <li><span class="check">□</span><div><strong>Connect USB-serial adapter</strong> to PC — Windows installs driver automatically</div></li>
+    <li><span class="check">□</span><div><strong>Note the COM port</strong> — Device Manager → Ports (COM &amp; LPT) → note the COMx number</div></li>
+  </ul>
+</div>
+
+<!-- SCK-2400 Step 4: First Telemetry -->
+<div class="qs-section">
+  <div class="step-header">
+    <div class="step-num">4</div>
+    <div>
+      <div class="step-title">Establish Connection — First Telemetry</div>
+      <div class="step-sub">Verify the ground station talks to its own board locally before attempting RF</div>
+    </div>
+  </div>
+
+  <p class="qs-prose">
+    Start with the local Ground Station board connection before testing the
+    RF link. This confirms your USB-serial connection is working and the
+    board is responding.
+  </p>
+
+  <ul class="qs-checklist">
+    <li>
+      <span class="check">□</span>
+      <div>
+        <strong>Open the ground station application</strong><br>
+        <span style="color:var(--text-muted);font-size:13px;">The header bar shows Port, Baud, and Board fields.</span>
+      </div>
+    </li>
+    <li>
+      <span class="check">□</span>
+      <div>
+        <strong>Set Port to your COM port</strong> — e.g. COM5<br>
+        <span style="color:var(--text-muted);font-size:13px;">Select from the dropdown. Baud is pre-set to 921600 for SCK-2400.</span>
+      </div>
+    </li>
+    <li>
+      <span class="check">□</span>
+      <div>
+        <strong>Select the Ground Station board</strong><br>
+        <span style="color:var(--text-muted);font-size:13px;">This addresses the board physically connected to your PC.</span>
+      </div>
+    </li>
+    <li>
+      <span class="check">□</span>
+      <div>
+        <strong>Click Connect</strong><br>
+        <span style="color:var(--text-muted);font-size:13px;">Status bar turns green. The log panel shows the connection timestamp.</span>
+      </div>
+    </li>
+    <li>
+      <span class="check">□</span>
+      <div>
+        <strong>Click Get Telem on the Home tab</strong><br>
+        <span style="color:var(--text-muted);font-size:13px;">The Ground Station board responds with its telemetry. All panels update.</span>
+      </div>
+    </li>
+  </ul>
+
+  <p style="font-size:14px;color:var(--text-muted);margin-bottom:12px;">Expected telemetry response from the Ground Station board:</p>
+  <div class="qs-telemetry">
+    <div class="telem-row"><span class="telem-label">Uptime</span><span class="telem-val good">00:01:24 — counting up ✓</span></div>
+    <div class="telem-row"><span class="telem-label">RSSI</span><span class="telem-val">— dBm (local only, no RF yet)</span></div>
+    <div class="telem-row"><span class="telem-label">Good Packets</span><span class="telem-val good">1 ✓</span></div>
+    <div class="telem-row"><span class="telem-label">Reboot Count</span><span class="telem-val good">0 ✓</span></div>
+  </div>
+</div>
+
+<!-- SCK-2400 Step 5: RF Link -->
+<div class="qs-section">
+  <div class="step-header">
+    <div class="step-num">5</div>
+    <div>
+      <div class="step-title">Establish the RF Link — Ground Station to Remote</div>
+      <div class="step-sub">Your first over-the-air command and telemetry exchange at 2440MHz</div>
+    </div>
+  </div>
+
+  <p class="qs-prose">
+    With the Ground Station board connected and responding, switch addressing
+    to the Remote board. The Ground Station will relay your commands over the
+    2440MHz RF link to the Remote board and return its responses. You are now
+    commanding a remote radio over RF.
+  </p>
+
+  <ul class="qs-checklist">
+    <li>
+      <span class="check">□</span>
+      <div>
+        <strong>Select the Remote board</strong> in the header bar<br>
+        <span style="color:var(--text-muted);font-size:13px;">
+          All commands now address the Remote board via RF relay through the Ground Station.
+        </span>
+      </div>
+    </li>
+    <li>
+      <span class="check">□</span>
+      <div>
+        <strong>Click Get Telem</strong><br>
+        <span style="color:var(--text-muted);font-size:13px;">
+          The Ground Station transmits the request at 2440MHz. The Remote board
+          receives it, assembles a telemetry response, and transmits back.
+        </span>
+      </div>
+    </li>
+  </ul>
+
+  <p style="font-size:14px;color:var(--text-muted);margin-bottom:12px;">Expected telemetry response from the Remote board over RF:</p>
+  <div class="qs-telemetry">
+    <div class="telem-row"><span class="telem-label">Source</span><span class="telem-val good">Remote — response received ✓</span></div>
+    <div class="telem-row"><span class="telem-label">Uptime</span><span class="telem-val good">00:02:xx — counting independently ✓</span></div>
+    <div class="telem-row"><span class="telem-label">RSSI</span><span class="telem-val good">Typical at 1–3m ✓</span></div>
+    <div class="telem-row"><span class="telem-label">Good Packets</span><span class="telem-val good">1 ✓</span></div>
+    <div class="telem-row"><span class="telem-label">Reboot Count</span><span class="telem-val good">0 ✓</span></div>
+  </div>
+
+  <div class="qs-callout success">
+    <div class="qs-callout-icon">✅</div>
+    <div>
+      <strong>RF Link Confirmed</strong>
+      A telemetry response from the Remote board with RSSI values confirms a
+      working bidirectional 2440MHz RF link, encrypted end-to-end with
+      AES-128-CCM. Both boards are transmitting and receiving. Your ground
+      station is commanding a remote radio over RF.
+    </div>
+  </div>
+
+  <div class="qs-callout warn">
+    <div class="qs-callout-icon">⚠️</div>
+    <div>
+      <strong>No response from the Remote board?</strong>
+      Check: (1) The Remote board is powered on and its antenna is attached.
+      (2) Boards are at least 0.5m apart — too close causes receiver saturation.
+      (3) The correct board is selected in the header bar.
+      (4) The Ground Station board is still connected — check the status bar.
+    </div>
+  </div>
+</div>
+
+<!-- SCK-2400 Step 6: Verify -->
+<div class="qs-section">
+  <div class="step-header">
+    <div class="step-num">6</div>
+    <div>
+      <div class="step-title">Verify Your Setup — Quick Functional Check</div>
+      <div class="step-sub">Three commands that confirm full system operation</div>
+    </div>
+  </div>
+
+  <p class="qs-prose">
+    Run these three commands with the Remote board selected to confirm full
+    bidirectional RF link operation. All three should return responses from
+    the remote board.
+  </p>
+
+  <table class="qs-table">
+    <thead>
+      <tr><th>Command</th><th>Expected Response</th><th>What It Confirms</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Get Telem</strong><br><span class="mono">Commands tab</span></td>
+        <td>Telemetry from the Remote board with RSSI</td>
+        <td>Full bidirectional RF link working</td>
+      </tr>
+      <tr>
+        <td><strong>Get Time</strong><br><span class="mono">Commands tab</span></td>
+        <td>Timestamp from Remote board</td>
+        <td>Command routing functional</td>
+      </tr>
+      <tr>
+        <td><strong>Reboot</strong><br><span class="mono">Commands tab</span></td>
+        <td>Remote board reboots — uptime resets to 0</td>
+        <td>Remote command execution confirmed</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="qs-success">
+    <div style="font-size:48px;margin-bottom:16px;">🛰️</div>
+    <h3>RF Link Verified — You're Operational</h3>
+    <p>
+      Your SCK-2400 ground station is commanding a remote radio at 2440MHz
+      with bidirectional telemetry and remote command execution — the same
+      CCSDS-framed architecture built for CubeSat and HAB missions, now
+      running on your bench.
+    </p>
+  </div>
+</div>
+
+<!-- SCK-2400 What's Next -->
+<div class="qs-section">
+  <div class="step-header">
+    <div class="step-num" style="background:var(--cyan);color:var(--void);">→</div>
+    <div>
+      <div class="step-title">What's Next</div>
+      <div class="step-sub">Where to go from a working RF link</div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:8px;">
+    <a href="sck2400.html" style="text-decoration:none;">
+      <div class="qs-card" style="border:1.5px solid var(--border-lt);cursor:pointer;">
+        <div style="font-size:28px;margin-bottom:10px;">🛰️</div>
+        <h4 style="text-transform:none;font-size:15px;margin-bottom:6px;">SCK-2400 Product Page</h4>
+        <p style="font-size:13px;color:var(--text-muted);">Dev/Mini and CubeSat PC-104 variants, architecture overview, roadmap.</p>
+      </div>
+    </a>
+    <a href="pico.html" style="text-decoration:none;">
+      <div class="qs-card" style="border:1.5px solid var(--border-lt);cursor:pointer;">
+        <div style="font-size:28px;margin-bottom:10px;">📷</div>
+        <h4 style="text-transform:none;font-size:15px;margin-bottom:6px;">SCK-PBL-1 Payload Board</h4>
+        <p style="font-size:13px;color:var(--text-muted);">Add a Raspberry Pi Pico payload board over UART0 or the high-speed SPI interface.</p>
+      </div>
+    </a>
+    <a href="documentation.html" style="text-decoration:none;">
+      <div class="qs-card" style="border:1.5px solid var(--border-lt);cursor:pointer;">
+        <div style="font-size:28px;margin-bottom:10px;">📋</div>
+        <h4 style="text-transform:none;font-size:15px;margin-bottom:6px;">Developer Guide</h4>
+        <p style="font-size:13px;color:var(--text-muted);">CCSDS protocol reference, custom firmware development with Code Composer Studio, JTAG bring-up.</p>
+      </div>
+    </a>
+    <a href="https://github.com/eor123/spacecommskit" target="_blank" style="text-decoration:none;">
+      <div class="qs-card" style="border:1.5px solid var(--border-lt);cursor:pointer;">
+        <div style="font-size:28px;margin-bottom:10px;">⚙️</div>
+        <h4 style="text-transform:none;font-size:15px;margin-bottom:6px;">Firmware Source</h4>
+        <p style="font-size:13px;color:var(--text-muted);">TI-RTOS7 firmware, add custom CCSDS command opcodes, build with Code Composer Studio.</p>
       </div>
     </a>
   </div>
