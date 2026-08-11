@@ -202,16 +202,29 @@
          class="btn btn-primary">View Guide →</a>
     </div>
 
-    <div class="card" style="display:flex;flex-direction:column;justify-content:center;">
-      <div style="font-size:32px;margin-bottom:14px;">🧩</div>
-      <h3 style="margin-bottom:8px;">Extending the Firmware</h3>
-      <p style="font-size:14px;color:var(--text-muted);margin-bottom:20px;">
-        <code>main.py</code> is open source and built for extension — independent
-        subsystem init/fault flags, a documented opcode extension pattern, and
-        the same firmware whether you're bolted to SCK-915, SCK-2400, or
-        running standalone. See §9 of the User Guide.
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;">
+        <div style="font-size:36px;">📗</div>
+        <div>
+          <div class="tag tag-cyan mb-8">Developer Notes</div>
+          <h3>SCK-PBL-1<br>Developer Notes</h3>
+        </div>
+      </div>
+      <p style="color:var(--text-muted);font-size:14px;line-height:1.6;margin-bottom:20px;">
+        Real bugs found during payload board bringup, how each one was actually
+        tracked down, and the fix — including the MS5611 pressure bug, the GPS
+        airborne-mode config that silently never took, and the SD card timing
+        issue. Written so you don't have to re-derive the diagnosis from scratch.
       </p>
-      <a href="pico.html" class="btn btn-outline btn-sm" style="border-color:var(--border-lt);color:var(--blue);align-self:flex-start;">SCK-PBL-1 Product Page →</a>
+      <ul style="list-style:none;margin-bottom:24px;">
+        <li style="font-size:13px;color:var(--text-muted);padding:4px 0;">✓ MS5611 pressure bug — full root-cause writeup</li>
+        <li style="font-size:13px;color:var(--text-muted);padding:4px 0;">✓ GPS airborne-mode verification fix</li>
+        <li style="font-size:13px;color:var(--text-muted);padding:4px 0;">✓ SD card mount timing fix</li>
+        <li style="font-size:13px;color:var(--text-muted);padding:4px 0;">✓ Known open issue: command/reply matching</li>
+        <li style="font-size:13px;color:var(--text-muted);padding:4px 0;">✓ Reusable extension patterns</li>
+      </ul>
+      <a href="docs/SCK-PBL-1_Developer_Notes.html"
+         class="btn btn-primary">View Notes →</a>
     </div>
 
   </div>

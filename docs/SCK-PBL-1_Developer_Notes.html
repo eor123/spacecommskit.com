@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCK-PBL-1 Developer Notes — SpaceCommsKit</title>
+<meta name="description" content="SpaceCommsKit SCK-PBL-1 Payload Board Developer Notes — real bring-up bugs, root causes, fixes, and lessons learned, for anyone building on this board.">
+<link rel="canonical" href="https://www.spacecommskit.com/docs/SCK-PBL-1_Developer_Notes.html">
+<link rel="stylesheet" href="../style.css">
+<style>
+.doc-content { max-width: 900px; margin: 0 auto; }
+.doc-content h1 { display:none; }
+.doc-content h2 {
+  font-size: 28px; font-weight: 700; color: var(--text-hero);
+  letter-spacing: -0.5px; margin: 56px 0 18px; padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+.doc-content > h2:first-of-type { border-top: none; margin-top: 0; }
+.doc-content h3 {
+  font-size: 20px; font-weight: 600; color: var(--cyan);
+  margin: 36px 0 12px;
+}
+.doc-content h4 {
+  font-size: 15px; font-weight: 600; color: var(--text-hero);
+  margin: 24px 0 10px; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.doc-content p { color: var(--text-inv); font-size: 15px; line-height: 1.75; margin-bottom: 16px; }
+.doc-content ul, .doc-content ol { color: var(--text-inv); font-size: 15px; line-height: 1.8; margin: 0 0 16px 22px; }
+.doc-content li { margin-bottom: 4px; }
+.doc-content li > p { margin-bottom: 4px; }
+.doc-content a { color: var(--cyan); }
+.doc-content strong { color: #fff; }
+.doc-content hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+.doc-content code {
+  font-family: var(--font-mono); font-size: 13px;
+  background: rgba(0,200,224,0.1); color: var(--cyan);
+  padding: 2px 6px; border-radius: 4px;
+}
+.doc-content pre {
+  background: var(--void); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 20px 24px;
+  overflow-x: auto; margin: 0 0 20px;
+}
+.doc-content pre code {
+  background: none; color: #cbd5e1; padding: 0;
+  font-size: 13px; line-height: 1.7;
+}
+.doc-content table {
+  width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 0 0 24px;
+}
+.doc-content th {
+  background: var(--blue); color: #fff; padding: 10px 14px; text-align: left;
+  font-size: 11.5px; font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase;
+  font-family: var(--font-mono);
+}
+.doc-content td {
+  padding: 9px 14px; border-bottom: 1px solid var(--border);
+  color: var(--text-inv); vertical-align: top;
+}
+.doc-content tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+.doc-content td:first-child { font-weight: 500; color: #fff; }
+.doc-content blockquote {
+  border-left: 4px solid var(--blue); background: rgba(26,111,212,0.08);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 20px; margin: 0 0 20px; color: var(--text-inv); font-size: 14px;
+}
+.doc-content blockquote.warn { border-left-color: var(--gold); background: rgba(240,165,0,0.08); }
+.doc-content blockquote.crit { border-left-color: var(--red); background: rgba(224,60,46,0.08); }
+.doc-content blockquote p:last-child { margin-bottom: 0; }
+.doc-content blockquote strong.label {
+  display: block; font-family: var(--font-mono); font-size: 11px;
+  letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px;
+  color: var(--cyan);
+}
+.doc-content blockquote.warn strong.label { color: var(--gold); }
+.doc-content blockquote.crit strong.label { color: var(--red); }
+.doc-meta {
+  font-family: var(--font-mono); font-size: 12px; color: var(--text-inv);
+  letter-spacing: 0.5px; margin-bottom: 8px;
+}
+.doc-toc {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 24px 28px; margin: 40px 0 56px;
+}
+.doc-toc-title {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--cyan); margin-bottom: 14px;
+}
+.doc-toc ul { list-style: none; margin: 0; columns: 2; column-gap: 32px; }
+.doc-toc li { margin-bottom: 6px; break-inside: avoid; }
+.doc-toc a { color: var(--text-inv); font-size: 13.5px; text-decoration: none; }
+.doc-toc a:hover { color: var(--cyan); text-decoration: underline; }
+@media (max-width: 700px) { .doc-toc ul { columns: 1; } }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="../index.html" class="nav-logo">
+    SpaceComms<span>Kit</span>
+    <span class="logo-tag">SCK-915</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="../index.html">Home</a></li>
+    <li><a href="../kit.html">SCK-915</a></li>
+    <li><a href="../sck2400.html">SCK-2400</a></li>
+    <li><a href="../documentation.html" class="active">Documentation</a></li>
+    <li><a href="../quickstart.html">Quick Start</a></li>
+    <li><a href="../software.html">Software</a></li>
+    <li><a href="../pico.html">SCK-PBL-1</a></li>
+    <li><a href="../groundstation.html">Ground Station</a></li>
+    <li><a href="../hab-mission.html">HAB Mission</a></li>
+    <li><a href="../engineering.html">Engineering Services</a></li>
+    <li><a href="../about.html">About</a></li>
+    <li><a href="../classified.html">⬛ Section 7</a></li>
+    <li><a href="https://spacecommskit.myshopify.com" target="_blank" class="nav-cta">Buy a Kit</a></li>
+  </ul>
+</nav>
+
+<section class="hero" style="padding-bottom:40px;">
+  <div class="hero-inner" style="padding-bottom:40px;">
+    <span class="eyebrow">SCK-PBL-1 &middot; Documentation &middot; Developer Notes</span>
+    <h1 class="hero-title" style="font-size:clamp(28px,4vw,44px);">SCK-PBL-1 Developer Notes</h1>
+  </div>
+</section>
+
+<div class="section-dark">
+<div class="section">
+<div class="doc-content">
+
+<div class="doc-toc"><div class="doc-toc-title">On This Page</div><ul>
+<li><a href="#why-this-document-exists">Why This Document Exists</a></li>
+<li><a href="#1-the-ms5611-pressure-bug">1. The MS5611 Pressure Bug</a></li>
+<li><a href="#2-gps-airborne-mode-not-actually-taking">2. GPS Airborne Mode Not Actually Taking</a></li>
+<li><a href="#3-sd-card-mounting-intermittently">3. SD Card Mounting Intermittently</a></li>
+<li><a href="#4-known-issue-command-replies-arent-verified">4. Known Issue: Command Replies Aren't Verified</a></li>
+<li><a href="#5-ms5611-manufacturing-notes">5. MS5611 Manufacturing Notes</a></li>
+<li><a href="#6-patterns-worth-reusing">6. Patterns Worth Reusing</a></li>
+</ul></div>
+
+<h1 id="sck-pbl-1-developer-notes">SCK-PBL-1 Payload Board — Developer Notes</h1>
+<p><em>SpaceCommsKit — https://spacecommskit.com</em><br>
+<em>Version 1.0</em></p>
+
+<p>This is a companion to the <a href="SCK-PBL-1_User_Guide.html">SCK-PBL-1 User
+Guide</a>. The User Guide tells you what's on the board and how to talk to
+it. This page is different: it's a record of real problems found during
+bring-up of this board, exactly how each one was tracked down, and what the
+actual fix turned out to be — including a couple of cases where the obvious
+suspect was wrong and the real bug was hiding somewhere nobody was looking.</p>
+
+<p>If you're building on this board and hit a symptom that sounds like
+anything below, start here. It'll likely save you the time it took us to
+find it the first time.</p>
+
+<hr />
+
+<h2 id="1-the-ms5611-pressure-bug">1. The MS5611 Pressure Bug</h2>
+
+<p>The board's altimeter is an MS5611-01BA03 barometric pressure sensor. It
+measures air pressure and reports it over I2C along with a set of factory
+calibration numbers; the firmware combines the two using a formula from the
+sensor's datasheet to produce a pressure reading in hPa (hectopascals — the
+standard unit for atmospheric pressure; sea-level pressure is typically
+around 1013 hPa) and a derived altitude.</p>
+
+<p>On a brand-new, fully assembled board, the very first pressure readings
+out of this sensor were consistently around <strong>1970–1973 hPa</strong> — roughly
+double normal atmospheric pressure at ground level. Temperature readings
+from the same sensor looked completely normal throughout. The mismatch was
+stable and repeatable, not noisy or occasional.</p>
+
+<blockquote class="warn"><strong class="label">Why this took a while</strong>
+Every individual step below was a reasonable thing to check given what was
+known at the time, and each one came back clean. That's actually the
+useful part of this story: a long list of "not the problem" is often what
+it takes to find something that's genuinely unusual, and it's worth reading
+through even though the real answer turns out to be short.</blockquote>
+
+<h3>What was ruled out, and how</h3>
+
+<table>
+<thead><tr><th>Suspected cause</th><th>How it was tested</th><th>Result</th></tr></thead>
+<tbody>
+<tr><td>Corrupted calibration data</td><td>Reverse-derived all six calibration
+coefficients by hand from the sensor's own printed output and checked them
+against normal MS5611 factory ranges</td><td>All six were realistic, genuine
+values — not corrupted</td></tr>
+<tr><td>Formula implemented wrong</td><td>Re-ran the datasheet's compensation
+formula by hand using the sensor's own logged numbers</td><td>The arithmetic
+matched exactly, given those inputs</td></tr>
+<tr><td>Sealed pressure port</td><td>Physically inspected the sensor package for
+shipping tape/film over the two pressure ports</td><td>Both ports open, no
+seal present</td></tr>
+<tr><td>Power pins wired wrong</td><td>Measured supply (VDD), protocol-select
+(PS), and ground (GND) pins directly with a multimeter</td><td>All three
+measured exactly correct</td></tr>
+<tr><td>I2C wiring wrong</td><td>Traced SDA/SCL connections against the
+schematic and confirmed pull-up resistor values</td><td>Correctly wired,
+standard pull-ups</td></tr>
+<tr><td>ADC conversion read too early</td><td>Widened the conversion wait time
+well past the datasheet's stated minimum</td><td>Reduced reading-to-reading
+noise, but did not move the actual offset</td></tr>
+<tr><td>Sensor hadn't finished settling after reflow soldering</td><td>Checked
+the manufacturer's own soldering guidance, which recommends 48 hours of
+rest after the last solder step before trusting readings</td><td>Board was
+already well past that window</td></tr>
+<tr><td>A specific "reserved" pin wired to the wrong rail</td><td>Physically
+reworked the board to tie the pin to ground per the datasheet's reference
+circuit, retested</td><td>No change in the reading — directly disproven</td></tr>
+<tr><td>One defective sensor</td><td>Swapped in a second, then a third
+physically different sensor (different manufacturing date, opposite end of
+the same reel), retested each</td><td>All three produced the same wrong
+reading — rules out a single bad part</td></tr>
+</tbody>
+</table>
+
+<h3>The actual bug</h3>
+
+<p>The detail that cracked it: the wrong reading wasn't random or vague, it
+was landing at almost <em>exactly</em> double the correct pressure — 2.00×, to
+four significant figures, confirmed against an independently measured
+reference reading and reproduced across three different physical sensors.
+A clean, precise ratio like that is the signature of a units or scaling
+error, not a hardware fault — random defects don't converge on an exact
+multiplier.</p>
+
+<p>Cross-checking the firmware's compensation math against a trusted,
+independent open-source MS5611 library turned up the real issue: the
+MS5611 sensor family has <strong>two different sets of internal math constants</strong>
+depending on the exact chip variant, and this firmware had been using the
+wrong set — every one of four constants was set to a value meant for a
+closely related sensor, not this one. Using the wrong constants doesn't
+cause an error or a crash; it just silently computes a pressure that's
+exactly double what it should be, for any sensor, every time.</p>
+
+<blockquote class="crit"><strong class="label">Root cause</strong>
+Four shift constants in the pressure compensation formula were using
+values from a related sensor variant instead of the genuine MS5611
+datasheet values. This inflated the computed pressure by exactly 2× on
+every reading, regardless of which physical sensor was attached — which is
+exactly why swapping sensors never changed anything.</blockquote>
+
+<pre><code># Wrong (silently doubled every pressure reading):
+OFF  = C2 * (1 &lt;&lt; 17) + (C4 * dT) // (1 &lt;&lt; 6)
+SENS = C1 * (1 &lt;&lt; 16) + (C3 * dT) // (1 &lt;&lt; 7)
+
+# Correct:
+OFF  = C2 * (1 &lt;&lt; 16) + (C4 * dT) // (1 &lt;&lt; 7)
+SENS = C1 * (1 &lt;&lt; 15) + (C3 * dT) // (1 &lt;&lt; 8)</code></pre>
+
+<p>After the fix, pressure readings matched an independently measured
+reference value to within normal sensor accuracy, and computed altitude
+finally agreed with GPS altitude for the first time in the investigation.</p>
+
+<h3>Lessons</h3>
+<ul>
+<li>A precise, repeatable ratio in a bad reading (like an exact 2×) is a
+strong clue on its own — it usually means a units, scaling, or constant
+error, not a flaky connection or a bad part.</li>
+<li>If the same wrong answer shows up on multiple physically different
+units of the same part, stop suspecting the hardware and start suspecting
+the code or the math.</li>
+<li>Confirming that a formula's arithmetic is internally consistent proves
+you haven't mistyped an operator. It does not prove the constants going
+into that formula are the right ones for your specific part — check those
+against an independent reference too.</li>
+</ul>
+
+<hr />
+
+<h2 id="2-gps-airborne-mode-not-actually-taking">2. GPS Airborne Mode Not Actually Taking</h2>
+
+<p>The onboard GPS module needs to be switched from its default "Portable"
+navigation mode into "Airborne" mode to track altitude reliably above
+roughly 12km — necessary for high-altitude balloon flights. This is done
+by sending the module a specific configuration command at startup
+(a UBX-CFG-NAV5 message, in u-blox's binary protocol).</p>
+
+<p>The original firmware sent this command but never actually confirmed the
+module accepted it — it just printed a success message regardless. On
+inspection, the command being sent was malformed: it was missing its
+checksum bytes, meaning the GPS module had no valid way to accept it and
+was silently ignoring it every time. The board would have flown with the
+GPS still in default mode without anyone knowing.</p>
+
+<h3>The fix, in three parts</h3>
+<ol>
+<li><strong>Corrected the command itself</strong> so it's a complete, properly
+checksummed message the module can actually parse.</li>
+<li><strong>Narrowed what the command changes.</strong> The original command tried to
+set every navigation parameter at once. Some GPS module variants will
+silently reject a request like that if they don't like any single
+parameter in the batch. Limiting the command to change only the one
+setting that actually matters (the navigation dynamic model) fixed this on
+a module that had been rejecting the broader request.</li>
+<li><strong>Added real verification.</strong> Some GPS modules acknowledge
+configuration commands directly; others don't, even though they're
+otherwise working normally. The firmware now checks for an acknowledgment
+first, and if none arrives, falls back to asking the module directly what
+mode it's currently in — a stronger check either way, since it confirms
+the setting actually stuck rather than just that a command was sent.</li>
+</ol>
+
+<p>The firmware now reports this status as part of every GPS reading — the
+ground station or any downstream tooling can see whether airborne mode is
+confirmed active, failed, or unconfirmed, instead of trusting a print
+statement that never checked anything.</p>
+
+<h3>Lesson</h3>
+<blockquote>Sending a configuration command successfully is not the same as the
+receiving device actually applying it. If a setting matters for how your
+mission behaves, verify it took effect — with an acknowledgment if the
+device supports one, with a direct read-back if it doesn't — and report the
+real, confirmed state, not just "we sent the command."</blockquote>
+
+<hr />
+
+<h2 id="3-sd-card-mounting-intermittently">3. SD Card Mounting Intermittently</h2>
+
+<p>During bench testing, the SD card sometimes failed to mount at boot and
+sometimes mounted fine, with no consistent pattern. The first
+explanation — that the board had been physically bumped and the card had
+worked loose — turned out to be a real, confirmed cause on at least one
+occasion. But a later, controlled test showed the same on/off pattern
+happening across power cycles with the board sitting completely
+untouched, which ruled out physical handling as the explanation for that
+pattern.</p>
+
+<p>This points at a marginal timing issue rather than a mechanical one: SD
+cards need their supply voltage and a short settle period before their
+initialization sequence will reliably succeed, and that margin can vary
+slightly from one power-up to the next for reasons that have nothing to do
+with how the card is seated.</p>
+
+<h3>The fix</h3>
+<p>A short retry loop at boot — if the first mount attempt fails, wait
+briefly and try again, up to a few times, before giving up:</p>
+
+<pre><code>SD_MOUNT_RETRIES = 3
+for attempt in range(1, SD_MOUNT_RETRIES + 1):
+    if mount_sd():
+        break
+    print(f"SD mount attempt {attempt}/{SD_MOUNT_RETRIES} failed, retrying...")
+    time.sleep_ms(300)
+else:
+    print("SD mount failed after all retries -- flight log will not record")</code></pre>
+
+<p>This resolved the issue cleanly across repeated testing.</p>
+
+<h3>For actual flight use</h3>
+<p>A reliable boot-time mount doesn't guarantee the card stays seated through
+real flight conditions — vibration during ascent and temperature extremes
+at altitude can still work a friction-fit card loose even when bench
+testing looks perfect. Worth considering before flight, roughly in order
+of how much protection each gives:</p>
+<ul>
+<li>A small printed or fabricated bracket that physically prevents the card
+from backing out of its socket</li>
+<li>A strip of Kapton (or similar high-temperature-rated) tape anchoring the
+card in place — simple, common in amateur high-altitude ballooning, and
+tolerant of the temperature range involved</li>
+<li>A small dab of glue at the card's edge, away from the electrical
+contacts, for a more permanent hold at the cost of easy removal</li>
+<li>Specifying a socket with a push-push latching mechanism on a future
+board revision, rather than a plain friction-fit slot</li>
+</ul>
+
+<h3>Lesson</h3>
+<blockquote>An intermittent failure that happens with no physical handling involved is a
+different kind of problem than one that happens after the board gets
+bumped. Both are real and worth fixing, but they point in different
+directions — check which one you're actually looking at before deciding on
+a fix.</blockquote>
+
+<hr />
+
+<h2 id="4-known-issue-command-replies-arent-verified">4. Known Issue: Command Replies Aren't Verified</h2>
+
+<blockquote class="warn"><strong class="label">Open issue — not yet fixed</strong>
+This is a structural gap in the current firmware, not a bug that's been
+resolved. It's included here as a known risk for anyone building on this
+board today.</blockquote>
+
+<p>Both the SCK-915 and SCK-2400 radio boards bridge commands to this
+payload board over a simple UART link. When the radio board sends a
+command to the payload processor and waits for a reply, it currently
+accepts <strong>whatever response arrives next</strong> as the answer — it doesn't check
+that the reply actually corresponds to the command it sent.</p>
+
+<p>Normally this isn't a problem. But the payload board also sends
+autonomous GPS telemetry (a "beacon") on its own independent timer,
+completely decoupled from command/response timing. If that beacon happens
+to transmit at the same moment an unrelated command is waiting for a
+reply, the radio board can mistake the beacon data for the answer to a
+completely different command — this was directly observed: a request for
+onboard temperature came back holding GPS coordinates instead.</p>
+
+<p>Compounding this, the radio board's command-handling loop blocks — it
+can't process anything else — for up to several seconds while waiting for
+a reply that may never come. With a beacon interval on the same order as
+typical command round-trip time, the odds of this kind of collision on any
+given command turn out to be uncomfortably high, not a rare edge case.</p>
+
+<h3>Current mitigation</h3>
+<p>None built into the firmware yet. During development, the autonomous
+beacon can be temporarily disabled to get reliable command testing done —
+but the beacon is the actual telemetry downlink in flight, so this is a
+testing convenience only, not something to rely on for a real mission.</p>
+
+<h3>What actually needs to happen</h3>
+<p>The command protocol between the radio board and the payload processor
+needs real request/response matching — a sequence number or command echo
+that lets the radio board confirm a reply actually corresponds to what it
+asked for, so beacon traffic arriving at an inconvenient moment gets
+correctly ignored instead of mistaken for an answer. Until this lands,
+any use case involving frequent on-demand commands running at the same
+time as the autonomous beacon should be treated as carrying real risk of
+this kind of mismatch.</p>
+
+<hr />
+
+<h2 id="5-ms5611-manufacturing-notes">5. MS5611 Manufacturing Notes</h2>
+<p>From the sensor manufacturer's own soldering guidance (application note
+AN808), for anyone assembling boards with this part:</p>
+<ul>
+<li>No special moisture bake-out step is required before reflow — standard
+industry-standard reflow profiles apply.</li>
+<li>Hand soldering this part is not recommended; it's designed for machine
+reflow.</li>
+<li>Use "no-clean" solder flux, and don't wash the board afterward — cleaning
+fluid can get into the sensor's exposed pressure port and damage it.</li>
+<li>Let a freshly soldered board rest at room temperature for at least 48
+hours before trusting sensor accuracy. Thermal stress from soldering
+affects readings until it has time to settle. Worth checking explicitly if
+you're seeing an unexplained pressure offset on a board assembled within
+the last two days.</li>
+</ul>
+
+<hr />
+
+<h2 id="6-patterns-worth-reusing">6. Patterns Worth Reusing</h2>
+<p>A few practices from this bring-up that are worth carrying into future
+work on this firmware:</p>
+<ul>
+<li><strong>Retry loops for anything with a startup timing margin.</strong> Both the GPS
+mode configuration and the SD card mount needed the same shape of fix: try
+a few times with a short pause in between, rather than a single
+fixed-length delay and a hard failure.</li>
+<li><strong>Verify configuration commands, don't just send them.</strong> Anything that
+configures external hardware should report a real, checked outcome that
+the rest of the system — and ground telemetry — can act on.</li>
+<li><strong>Leave useful debug instrumentation in place, disabled, with a note.</strong>
+The diagnostic output that eventually found the pressure bug above is
+still in the firmware today, commented out, with an explanation of exactly
+what it caught. The next person chasing a strange sensor reading gets a
+head start instead of starting over.</li>
+<li><strong>When a bug seems to follow the code rather than the hardware, prove it
+by swapping the hardware.</strong> Reasoning about it is a good start; actually
+testing a second and third physical unit is what turned "probably a bad
+sensor" into "definitely not a bad sensor" here.</li>
+</ul>
+
+<hr />
+
+<p>Found something that isn't covered here, or have your own hard-won lesson
+to add? Open an issue or PR against the firmware repo — this document is
+meant to grow with the project.</p>
+
+</div>
+</div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="nav-logo" style="color:#fff;">SpaceComms<span style="color:var(--cyan);">Kit</span></div>
+      <p>OpenLST inspired. SCK-915 evolved. Open-source software, hand-assembled hardware. Tennessee, USA.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <a href="../kit.html">The Kit</a>
+      <a href="../kit.html#specs">Specifications</a>
+      <a href="https://spacecommskit.myshopify.com" target="_blank">Buy Now</a>
+    </div>
+    <div class="footer-col">
+      <h4>Resources</h4>
+      <a href="../documentation.html">Documentation</a>
+      <a href="../software.html">Software</a>
+      <a href="../pico.html">SCK-PBL-1</a>
+      <a href="../hab-mission.html">HAB Mission</a>
+      <a href="https://github.com/eor123/spacecommskit" target="_blank">GitHub</a>
+    </div>
+    <div class="footer-col">
+      <h4>Mission V1</h4>
+      <a href="../mission-v1.html">Flight Data</a>
+      <a href="../mission-v1.html#download">Download Flight File</a>
+      <a href="../groundstation.html">Ground Station</a>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <a href="mailto:info@spacecommskit.com">info@spacecommskit.com</a>
+      <a href="mailto:support@spacecommskit.com">support@spacecommskit.com</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2026 SpaceCommsKit &middot; Tennessee, USA &middot; Ships to United States only</p>
+    <p>Based on OpenLST by Planet Labs Inc. (GPLv3)</p>
+  </div>
+</footer>
+
+</body>
+</html>
