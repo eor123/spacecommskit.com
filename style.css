@@ -96,6 +96,98 @@ a:hover { text-decoration: underline; }
 }
 .nav-cta:hover { background: var(--blue-lt) !important; }
 
+/* ===== Rotating Hero Background ===== */
+.hero-rotating {
+  position: relative;
+  min-height: 92vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background: #050510;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+/* Lightened version */
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity 1.4s ease-in-out;
+  will-change: opacity;
+  /* Brighten the images a bit */
+  filter: brightness(1.18) contrast(1.05);
+}
+
+.hero-slide.active {
+  opacity: 1;
+  animation: subtleZoom 12s ease-out forwards;
+}
+
+@keyframes subtleZoom {
+  from { transform: scale(1); }
+  to   { transform: scale(1.06); }
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  /* Lighter overlay so the images show through more */
+  background: linear-gradient(
+    105deg,
+    rgba(5, 5, 16, 0.72) 0%,
+    rgba(5, 5, 16, 0.55) 45%,
+    rgba(5, 5, 16, 0.38) 100%
+  );
+  pointer-events: none;
+}
+
+.hero-rotating .hero-inner {
+  position: relative;
+  z-index: 2;
+}
+
+/* Navigation dots */
+.hero-dots {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  display: flex;
+  gap: 10px;
+}
+
+.hero-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.55);
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.25s ease;
+}
+
+.hero-dot:hover {
+  background: rgba(255, 255, 255, 0.35);
+  border-color: rgba(255, 255, 255, 0.85);
+}
+
+.hero-dot.active {
+  background: var(--cyan, #00cfff);
+  border-color: var(--cyan, #00cfff);
+  transform: scale(1.25);
+}
+
 /* ── Hero (dark sections) ──────────────────────────────────── */
 .hero {
   background: var(--void);

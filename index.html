@@ -48,8 +48,20 @@
   </ul>
 </nav>
 
-<!-- Hero -->
-<section class="hero">
+<!-- Hero with Rotating Background -->
+<section class="hero hero-rotating" id="hero">
+  <!-- Rotating background images -->
+  <div class="hero-bg">
+    <div class="hero-slide active" style="background-image: url('images/rotatingimages/kMahs.jpg');"></div>
+    <div class="hero-slide" style="background-image: url('images/rotatingimages/Qdy0G.jpg');"></div>
+    <div class="hero-slide" style="background-image: url('images/rotatingimages/HcxX6.jpg');"></div>
+    <div class="hero-slide" style="background-image: url('images/rotatingimages/MP2GM.jpg');"></div>
+    <div class="hero-slide" style="background-image: url('images/rotatingimages/MwHMa.jpg');"></div>
+  </div>
+
+  <!-- Dark overlay for text readability -->
+  <div class="hero-overlay"></div>
+
   <div class="hero-inner">
     <span class="eyebrow">SpaceCommsKit Explorer · SCK-915 · Hand-assembled in Tennessee</span>
     <h1 class="hero-title">
@@ -90,6 +102,15 @@
         <div class="stat-label">Open Source Software</div>
       </div>
     </div>
+  </div>
+
+  <!-- Navigation dots -->
+  <div class="hero-dots" id="heroDots">
+    <button class="hero-dot active" data-index="0" aria-label="Slide 1"></button>
+    <button class="hero-dot" data-index="1" aria-label="Slide 2"></button>
+    <button class="hero-dot" data-index="2" aria-label="Slide 3"></button>
+    <button class="hero-dot" data-index="3" aria-label="Slide 4"></button>
+    <button class="hero-dot" data-index="4" aria-label="Slide 5"></button>
   </div>
 </section>
 
@@ -945,6 +966,59 @@
     <p>OpenLST inspired — based on Planet Labs OpenLST (GPLv3) · <a href="https://github.com/OpenLST/openlst" target="_blank">Original Project</a></p>
   </div>
 </footer>
+<script>
+  (function () {
+    const slides = document.querySelectorAll('.hero-slide');
+    const dots   = document.querySelectorAll('.hero-dot');
+    const hero   = document.getElementById('hero');
+    if (!slides.length) return;
 
+    let current  = 0;
+    let timer    = null;
+    const INTERVAL = 3500; // 3.5 seconds
+
+    function goTo(index) {
+      slides[current].classList.remove('active');
+      dots[current].classList.remove('active');
+
+      current = index;
+
+      slides[current].classList.add('active');
+      dots[current].classList.add('active');
+    }
+
+    function next() {
+      goTo((current + 1) % slides.length);
+    }
+
+    function start() {
+      stop();
+      timer = setInterval(next, INTERVAL);
+    }
+
+    function stop() {
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+      }
+    }
+
+    // Dot click handlers
+    dots.forEach(dot => {
+      dot.addEventListener('click', () => {
+        const idx = parseInt(dot.dataset.index, 10);
+        goTo(idx);
+        start(); // restart timer after manual click
+      });
+    });
+
+    // Pause on hover
+    hero.addEventListener('mouseenter', stop);
+    hero.addEventListener('mouseleave', start);
+
+    // Start the carousel
+    start();
+  })();
+</script>
 </body>
 </html>
