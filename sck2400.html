@@ -28,15 +28,34 @@
   <a href="index.html" class="nav-logo">SpaceComms<span>Kit</span><span class="logo-tag">SCK-2400</span></a>
   <ul class="nav-links">
     <li><a href="index.html">Home</a></li>
-    <li><a href="kit.html">SCK-915</a></li>
-    <li><a href="sck2400.html" class="active">SCK-2400</a></li>
-    <li><a href="documentation.html">Documentation</a></li>
-    <li><a href="quickstart.html">Quick Start</a></li>
-    <li><a href="software.html">Software</a></li>
-    <li><a href="pico.html">SCK-PBL-1</a></li>
-    <li><a href="groundstation.html">Ground Station</a></li>
+    <li class="nav-dd"><button class="nav-dd-btn active" aria-haspopup="true">Products ▾</button>
+      <ul class="nav-dd-menu">
+        <li><a href="kit.html">SCK-915 · 915 MHz Kit</a></li>
+        <li><a href="sck2400.html" class="active">SCK-2400 · PC-104 CubeSat</a></li>
+        <li><a href="sck2400m.html">SCK-2400-M · Mini</a></li>
+        <li><a href="pico.html">SCK-PBL-1 · Payload Board</a></li>
+      </ul></li>
+    <li class="nav-dd"><button class="nav-dd-btn" aria-haspopup="true">Docs ▾</button>
+      <ul class="nav-dd-menu">
+        <li><a href="documentation.html">Documentation</a></li>
+        <li><a href="quickstart.html">Quick Start</a></li>
+        <li><a href="software.html">Software</a></li>
+        <li><a href="groundstation.html">Ground Station (Windows)</a></li>
+      </ul></li>
+    <li class="nav-dd"><button class="nav-dd-btn" aria-haspopup="true">Missions ▾</button>
+      <ul class="nav-dd-menu">
+        <li><a href="mission-v1.html">Mission V1 Flight</a></li>
+        <li><a href="hab-mission.html">HAB Mission Guide</a></li>
+      </ul></li>
+    <li><a href="engineering.html">Engineering</a></li>
     <li><a href="about.html">About</a></li>
-    <li><a href="#buy" class="nav-cta">Get Notified</a></li>
+    <li class="nav-dd"><button class="nav-dd-btn" aria-haspopup="true">Lab ▾</button>
+      <ul class="nav-dd-menu">
+        <li><a href="classified.html">⬛ Section 7 · Restricted Research</a></li>
+        <li><a href="hv-lab.html">High Voltage Lab</a></li>
+        <li><a href="hv-001.html">HV-001 Marx Generator</a></li>
+      </ul></li>
+    <li><a href="https://spacecommskit.myshopify.com" target="_blank" class="nav-cta">Buy a Kit</a></li>
   </ul>
 </nav>
 
@@ -65,9 +84,9 @@
     <!-- Dev Variant -->
     <div class="card">
       <div style="background:var(--panel);border-radius:var(--radius);aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
-        <span style="color:var(--text-muted);font-size:13px;font-family:var(--font-mono);">[ SCK-2400 Mini board photo ]</span>
+        <img src="images/placeholders/sck-2400-m.svg" alt="SCK-2400-M (Mini) — photo coming soon" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius);">
       </div>
-      <h3 style="margin-bottom:8px;">SCK-2400 Mini</h3>
+      <h3 style="margin-bottom:8px;">SCK-2400 Mini (SCK-2400-M) · <a href="sck2400m.html" style="font-size:14px;">Full page →</a></h3>
       <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px;">
         Drop-in upgrade from SCK-915. Same PCB footprint, same mounting holes, same 3D-printed stands and SCK-PBL-1 payload connections. Swap the board, update the firmware, keep everything else.
       </p>
@@ -88,7 +107,7 @@
     <!-- CubeSat Variant -->
     <div class="card">
       <div style="background:var(--panel);border-radius:var(--radius);aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
-        <span style="color:var(--text-muted);font-size:13px;font-family:var(--font-mono);">[ SCK-2400 board photo ]</span>
+        <img src="images/placeholders/sck-2400.svg" alt="SCK-2400 PC-104 — photo coming soon" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius);">
       </div>
       <h3 style="margin-bottom:8px;">SCK-2400</h3>
       <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px;">
@@ -208,13 +227,13 @@
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:40px;">
     <div>
       <div style="background:var(--surface);border-radius:var(--radius-lg);aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
-        <span style="color:var(--text-muted);font-size:13px;font-family:var(--font-mono);">[ SCK-2400 Mini Kit contents photo ]</span>
+        <img src="images/placeholders/sck-2400-m.svg" alt="SCK-2400-M kit — photo coming soon" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius);">
       </div>
       <p class="text-muted text-center mt-16">SCK-2400 Mini Kit — two boards, stands, antennas, cables</p>
     </div>
     <div>
       <div style="background:var(--surface);border-radius:var(--radius-lg);aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
-        <span style="color:var(--text-muted);font-size:13px;font-family:var(--font-mono);">[ SCK-2400 variant photo ]</span>
+        <img src="images/placeholders/sck-2400.svg" alt="SCK-2400 PC-104 — photo coming soon" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius);">
       </div>
       <p class="text-muted text-center mt-16">SCK-2400 — PC-104 form factor with connector detail</p>
     </div>

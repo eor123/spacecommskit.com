@@ -33,17 +33,33 @@
   </a>
   <ul class="nav-links">
     <li><a href="index.html" class="active">Home</a></li>
-    <li><a href="kit.html">SCK-915</a></li>
-    <li><a href="sck2400.html">SCK-2400</a></li>
-    <li><a href="documentation.html">Documentation</a></li>
-    <li><a href="quickstart.html">Quick Start</a></li>
-    <li><a href="software.html">Software</a></li>
-    <li><a href="pico.html">SCK-PBL-1</a></li>
-    <li><a href="groundstation.html">Ground Station</a></li>
-    <li><a href="hab-mission.html">HAB Mission</a></li>
-    <li><a href="engineering.html">Engineering Services</a></li>
+    <li class="nav-dd"><button class="nav-dd-btn" aria-haspopup="true">Products ▾</button>
+      <ul class="nav-dd-menu">
+        <li><a href="kit.html">SCK-915 · 915 MHz Kit</a></li>
+        <li><a href="sck2400.html">SCK-2400 · PC-104 CubeSat</a></li>
+        <li><a href="sck2400m.html">SCK-2400-M · Mini</a></li>
+        <li><a href="pico.html">SCK-PBL-1 · Payload Board</a></li>
+      </ul></li>
+    <li class="nav-dd"><button class="nav-dd-btn" aria-haspopup="true">Docs ▾</button>
+      <ul class="nav-dd-menu">
+        <li><a href="documentation.html">Documentation</a></li>
+        <li><a href="quickstart.html">Quick Start</a></li>
+        <li><a href="software.html">Software</a></li>
+        <li><a href="groundstation.html">Ground Station (Windows)</a></li>
+      </ul></li>
+    <li class="nav-dd"><button class="nav-dd-btn" aria-haspopup="true">Missions ▾</button>
+      <ul class="nav-dd-menu">
+        <li><a href="mission-v1.html">Mission V1 Flight</a></li>
+        <li><a href="hab-mission.html">HAB Mission Guide</a></li>
+      </ul></li>
+    <li><a href="engineering.html">Engineering</a></li>
     <li><a href="about.html">About</a></li>
-    <li><a href="classified.html">⬛ Section 7</a></li>
+    <li class="nav-dd"><button class="nav-dd-btn" aria-haspopup="true">Lab ▾</button>
+      <ul class="nav-dd-menu">
+        <li><a href="classified.html">⬛ Section 7 · Restricted Research</a></li>
+        <li><a href="hv-lab.html">High Voltage Lab</a></li>
+        <li><a href="hv-001.html">HV-001 Marx Generator</a></li>
+      </ul></li>
     <li><a href="https://spacecommskit.myshopify.com" target="_blank" class="nav-cta">Buy a Kit</a></li>
   </ul>
 </nav>
@@ -65,25 +81,29 @@
   <div class="hero-inner">
     <span class="eyebrow">SpaceCommsKit Explorer · SCK-915 · Hand-assembled in Tennessee</span>
     <h1 class="hero-title">
-      Passing the Torch.<br>
-      <span>From OpenLST to SCK-915.</span>
+      A 915 MHz Radio Kit Built on Flight-Proven Heritage.<br>
+      <span>No License Needed.</span>
     </h1>
     <p class="hero-sub">
-      This isn't just another RF development kit — it's the evolution of a radio design
-      that flew in space, made accessible to every engineer, researcher, and university.
+      The SCK-915 is a hand-assembled 915 MHz ISM-band radio kit that evolves Planet Labs' OpenLST —
+      a radio design that flew in space — into a pre-flashed, plug-and-play system for engineers,
+      researchers, universities, and high-altitude balloon teams.
       <strong style="color:var(--cyan);">Live telemetry in 5 minutes. No radio license required. HAB mission ready.</strong>
       Open source software, pre-flashed hardware, one installer. Works on day one.
       Extensible from day two.
     </p>
     <div class="flex gap-16" style="flex-wrap:wrap;">
-      <a href="kit.html" class="btn btn-primary">Explore the Kit →</a>
-      <a href="hab-mission.html" class="btn btn-outline" style="border-color:var(--cyan);color:var(--cyan);">🎈 HAB Mission Guide</a>
-      <a href="about.html" class="btn btn-outline">Our Story</a>
+      <a href="kit.html" class="btn btn-primary">Explore the SCK-915 →</a>
+      <a href="#flight-replay" class="btn btn-outline" style="border-color:var(--cyan);color:var(--cyan);">▶ Replay a Real 30 km Flight — Free</a>
+      <a href="#products" class="btn btn-outline">See All Products</a>
     </div>
+    <p style="font-size:13px;color:var(--text-inv);margin-top:14px;font-family:var(--font-mono);">
+      ⓘ The SCK Ground Station app is <strong style="color:#fff;">Windows-only</strong> (.NET 8 runtime bundled). macOS / Linux support: TBD.
+    </p>
     <div class="stat-bar">
       <div class="stat">
         <div class="stat-num">200+</div>
-        <div class="stat-label">Cumulative Years On-Orbit</div>
+        <div class="stat-label">Years On-Orbit · OpenLST Heritage*</div>
       </div>
       <div class="stat">
         <div class="stat-num">915</div>
@@ -102,6 +122,7 @@
         <div class="stat-label">Open Source Software</div>
       </div>
     </div>
+    <p style="font-size:11px;color:#8899aa;margin-top:10px;">*Cumulative on-orbit time of the OpenLST radio design by Planet Labs, on which the SCK-915 is based — not SCK-915 flight hours.</p>
   </div>
 
   <!-- Navigation dots -->
@@ -117,7 +138,7 @@
 <!-- ═══════════════════════════════════════════════════════
      EXPERIENCE BEFORE YOU BUY
      ═══════════════════════════════════════════════════════ -->
-<div style="background:var(--void);padding:80px 5%;border-top:1px solid #1a1a2e;border-bottom:1px solid #1a1a2e;">
+<div id="flight-replay" style="background:var(--void);padding:80px 5%;border-top:1px solid #1a1a2e;border-bottom:1px solid #1a1a2e;">
   <div style="max-width:1100px;margin:0 auto;">
 
     <div style="text-align:center;margin-bottom:56px;">
@@ -273,6 +294,62 @@
       <span class="tag tag-blue">No License Required</span>
     </div>
   </div>
+</div>
+
+<!-- ═══════════ PRODUCT LINEUP (added) ═══════════ -->
+<div class="section-dark" id="products">
+<div class="section">
+  <span class="eyebrow">The SpaceCommsKit Lineup</span>
+  <h2 class="section-title-inv section-title">One Ecosystem. Every Stage of Your Mission.</h2>
+  <p class="section-lead-inv section-lead">Same ground station software, same SCK-PBL-1 payload board, from your first bench link to a PC-104 CubeSat stack.</p>
+  <div class="product-grid">
+    <a class="product-card" href="kit.html">
+      <img src="images/SCK-915_Product_Images/MainImage.jpg" alt="SCK-915 radio board">
+      <div class="product-card-body">
+        <span class="tag tag-cyan" style="align-self:flex-start;">Available Now · from $500</span>
+        <h3>SCK-915</h3>
+        <p>915 MHz ISM-band radio kit (CC1110) based on OpenLST. +27 dBm, no radio license, pre-flashed and provisioned.</p>
+        <span class="more">Explore the kit →</span>
+      </div>
+    </a>
+    <a class="product-card" href="pico.html">
+      <img src="images/pico_circuit.jpg" alt="SCK-PBL-1 payload board">
+      <div class="product-card-body">
+        <span class="tag tag-cyan" style="align-self:flex-start;">Payload Board · Pricing TBD</span>
+        <h3>SCK-PBL-1</h3>
+        <p>Raspberry Pi Pico payload board — GPS, barometric altitude, camera-to-SD and RF telemetry for HAB science missions.</p>
+        <span class="more">See the payload board →</span>
+      </div>
+    </a>
+    <a class="product-card" href="sck2400m.html">
+      <img src="images/placeholders/sck-2400-m.svg" alt="SCK-2400-M (Mini) — photo coming soon">
+      <div class="product-card-body">
+        <span class="tag tag-blue" style="align-self:flex-start;">Coming Soon · Pricing TBD</span>
+        <h3>SCK-2400-M (Mini)</h3>
+        <p>2.4 GHz CCSDS radio, AES-128-CCM encrypted, OAD in &lt;25 s. Drop-in SCK-915 footprint — keep your stands and SCK-PBL-1.</p>
+        <span class="more">SCK-2400-M details →</span>
+      </div>
+    </a>
+    <a class="product-card" href="sck2400.html">
+      <img src="images/placeholders/sck-2400.svg" alt="SCK-2400 PC-104 — photo coming soon">
+      <div class="product-card-body">
+        <span class="tag tag-blue" style="align-self:flex-start;">In Design · Pricing TBD</span>
+        <h3>SCK-2400 (PC-104)</h3>
+        <p>The same encrypted 2.4 GHz CCSDS firmware on a PC-104 compliant board for CubeSat stacks. RF sections only.</p>
+        <span class="more">SCK-2400 details →</span>
+      </div>
+    </a>
+    <a class="product-card" href="hv-001.html">
+      <img src="images/flyback_transformer.jpg" alt="HV-001 Marx Generator build">
+      <div class="product-card-body">
+        <span class="tag tag-blue" style="align-self:flex-start;">Section 7 · Lab Project</span>
+        <h3>HV-001 Marx Generator</h3>
+        <p>A documented build from our restricted high-voltage research lab. Full build docs and STL files for supporters.</p>
+        <span class="more">Enter the HV Lab →</span>
+      </div>
+    </a>
+  </div>
+</div>
 </div>
 
 <!-- Is This Kit Right For Me? -->
@@ -480,6 +557,20 @@
       </div>
     </div>
 
+  </div>
+
+  <div style="max-width:860px;margin:48px auto 0;">
+    <h3 style="text-align:center;margin-bottom:8px;">What $500 Gets You vs. Building From the OpenLST Files</h3>
+    <p class="text-muted text-center" style="margin-bottom:20px;">OpenLST is open hardware — you can build it yourself. Here's what the kit saves you.</p>
+    <table class="spec-table compare-table">
+      <tr><th>Step</th><th>SCK-915 Kit</th><th>DIY from OpenLST</th></tr>
+      <tr><td>Board fab &amp; assembly</td><td>✓ Hand-assembled &amp; tested in Tennessee</td><td>Order PCBs, source parts, assemble RF board yourself</td></tr>
+      <tr><td>Bootloader</td><td>✓ Pre-flashed</td><td>Flash with your own debugger and toolchain</td></tr>
+      <tr><td>AES keys &amp; HWID</td><td>✓ Lab keys loaded · HWID assigned</td><td>Generate and provision yourself</td></tr>
+      <tr><td>Ground station</td><td>✓ SCK Ground Station installer (Windows) — GPS map, flight recorder, OTA updates</td><td>Command-line tools</td></tr>
+      <tr><td>Documentation</td><td>✓ SCK-915 User Guide + Developer Guide</td><td>Community repo docs</td></tr>
+      <tr><td>Time to first packet</td><td>✓ Live telemetry in ~5 minutes</td><td>Depends on your RF/embedded experience</td></tr>
+    </table>
   </div>
 
   <p class="text-muted text-center mt-24">
@@ -909,7 +1000,7 @@
 <div class="section-dark">
 <div class="section">
   <div class="classified-banner">
-    <span class="classified-label">⬛ Restricted Access · Section 7</span>
+    <span class="classified-label">⬛ Restricted Access · Section 7 · Our High-Voltage Research Lab</span>
     <h2 class="section-title" style="color:#fff;">CLASSIFIED: Section 7</h2>
     <p>Our RF research doesn't stop at communications. Certain experiments — and their data —
        are available only to vetted researchers and supporters.
@@ -934,6 +1025,8 @@
       <h4>Product</h4>
       <a href="kit.html">SCK-915</a>
       <a href="sck2400.html">SCK-2400</a>
+      <a href="sck2400m.html">SCK-2400-M</a>
+      <a href="pico.html">SCK-PBL-1</a>
       <a href="kit.html#specs">Specifications</a>
       <a href="engineering.html">Engineering Services</a>
       <a href="https://spacecommskit.myshopify.com" target="_blank">Buy Now</a>
@@ -958,7 +1051,7 @@
       <h4>Contact</h4>
       <a href="mailto:info@spacecommskit.com">info@spacecommskit.com</a>
       <a href="mailto:support@spacecommskit.com">support@spacecommskit.com</a>
-      <a href="classified.html">Section 7</a>
+      <a href="classified.html">Section 7 · HV Research Lab</a>
     </div>
   </div>
   <div class="footer-bottom">
