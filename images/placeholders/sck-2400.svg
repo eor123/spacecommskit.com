@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-label="SCK-2400 board photo coming soon">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0D1520"/><stop offset="1" stop-color="#080C14"/></linearGradient>
+<pattern id="p" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#1E2D42" stroke-width="1"/></pattern></defs>
+<rect width="800" height="600" fill="url(#g)"/><rect width="800" height="600" fill="url(#p)" opacity=".6"/>
+<g fill="none" stroke="#00C8E0" stroke-width="3" opacity=".85">
+<rect x="230" y="150" width="340" height="250" rx="14"/>
+<rect x="350" y="230" width="100" height="100" rx="6"/>
+<path d="M350 255h-40M350 280h-60M350 305h-40M450 255h40M450 280h70M450 305h40M400 230v-40M400 330v40"/>
+<circle cx="255" cy="175" r="8"/><circle cx="545" cy="175" r="8"/><circle cx="255" cy="375" r="8"/><circle cx="545" cy="375" r="8"/>
+<path d="M250 160v-0M260 395h280" stroke-dasharray="6 8"/><path d="M250 400v-0"/>
+</g>
+<text x="400" y="470" text-anchor="middle" font-family="DM Mono,monospace" font-size="34" fill="#FFFFFF" font-weight="600">SCK-2400 · Dev Board</text>
+<text x="400" y="510" text-anchor="middle" font-family="DM Mono,monospace" font-size="18" fill="#00C8E0" letter-spacing="4">PHOTO COMING SOON</text>
+</svg>

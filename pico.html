@@ -28,7 +28,8 @@
     <li class="nav-dd"><button class="nav-dd-btn active" aria-haspopup="true">Products ▾</button>
       <ul class="nav-dd-menu">
         <li><a href="kit.html">SCK-915 · 915 MHz Kit</a></li>
-        <li><a href="sck2400.html">SCK-2400-M · Module</a></li>
+        <li><a href="sck2400.html">SCK-2400 · Dev Board</a></li>
+        <li><a href="sck2400m.html">SCK-2400-M · Module</a></li>
         <li><a href="pico.html" class="active">SCK-PBL-1 · Payload Board</a></li>
       </ul></li>
     <li class="nav-dd"><button class="nav-dd-btn" aria-haspopup="true">Docs ▾</button>
@@ -88,12 +89,12 @@
       </div>
       <h3 style="margin-bottom:8px;">Bolt-On Mode</h3>
       <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px;">
-        Mounts to an SCK-915 or SCK-2400-M over a 4-pin UART header (GND/RX/TX/+3V3). Same ESP-framed command protocol on both, so the same firmware runs unmodified against either radio.
+        Mounts to an SCK-915 or SCK-2400 over a 4-pin UART header (GND/RX/TX/+3V3). Same ESP-framed command protocol on both, so the same firmware runs unmodified against either radio.
       </p>
       <table class="spec-table">
         <tr><th>Parameter</th><th>Value</th></tr>
         <tr><td>Radio interface</td><td>UART0, ESP framing, 115200 baud</td></tr>
-        <tr><td>Compatible radios</td><td>SCK-915 (CC1110) &amp; SCK-2400-M (CC2652P)</td></tr>
+        <tr><td>Compatible radios</td><td>SCK-915 (CC1110), SCK-2400 &amp; SCK-2400-M (CC2652P)</td></tr>
         <tr><td>Command set</td><td>10 opcodes — PING through BEACON_CTRL</td></tr>
         <tr><td>Autonomous beacon</td><td>Fused GPS+baro every 10s</td></tr>
       </table>
@@ -125,7 +126,7 @@
 <div class="section">
   <span class="eyebrow eyebrow-dark">Bolt-On System Overview</span>
   <h2 class="section-title">How It Works — Bolt-On to a Radio</h2>
-  <p class="section-lead">In bolt-on mode, the Pico acts as a remote payload processor. The radio board (SCK-915 or SCK-2400-M) receives RF commands and forwards them to the Pico over UART. The Pico handles GPS, altimeter, camera, storage, and telemetry.</p>
+  <p class="section-lead">In bolt-on mode, the Pico acts as a remote payload processor. The radio board (SCK-915 or SCK-2400) receives RF commands and forwards them to the Pico over UART. The Pico handles GPS, altimeter, camera, storage, and telemetry.</p>
 
   <div style="background:var(--void);border-radius:var(--radius-lg);padding:32px;margin-top:40px;font-family:var(--font-mono);font-size:13px;line-height:2.2;color:var(--text-inv);">
     <div style="color:var(--cyan);">// Complete RF payload pipeline — fused telemetry + imaging</div>
@@ -423,7 +424,7 @@
     </div>
 
     <div style="margin-top:24px;">
-      <h3 style="margin-bottom:12px;color:var(--blue);">SCK-2400-M High-Speed Interface (SPI1)</h3>
+      <h3 style="margin-bottom:12px;color:var(--blue);">SCK-2400 High-Speed Interface (SPI1)</h3>
       <table class="spec-table">
         <tr><th>SCK-2400 Signal</th><th>Pico Pin</th></tr>
         <tr><td>DIO23 (SSI1 SCLK)</td><td>GP26</td></tr>
@@ -594,7 +595,7 @@
     <div class="card" style="text-align:center;">
       <div style="font-size:36px;margin-bottom:12px;">🎈</div>
       <h3 style="margin-bottom:8px;">Bolt-On Payload</h3>
-      <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px;">Drop-in for SCK-915 or SCK-2400-M · GPS + baro fused beacon · camera SNAP · SD file transfer over RF</p>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px;">Drop-in for SCK-915 or SCK-2400 · GPS + baro fused beacon · camera SNAP · SD file transfer over RF</p>
       <div style="font-size:22px;font-weight:700;color:var(--cyan);margin-bottom:4px;">Pricing TBD</div>
       <p style="color:var(--text-muted);font-size:12px;margin-bottom:0;">Sign up below to be notified at launch</p>
     </div>

@@ -74,11 +74,15 @@ Key capabilities:
 
 Status: SCK-2400 is in active bringup on LAUNCHXL-CC1352P-2 development hardware.
 OAD streaming and the CCSDS<->ESP payload bridge are RF-verified end to end with
-a ~2 second round trip. Production hardware ships as a single
-module, the SCK-2400-M (CC2652P, +20 dBm high-power TX), running the same
-firmware verified during this bringup. It uses the SCK-915 footprint, a drop-in
-replacement compatible with existing SCK-915 3D-printed stands and the SCK-PBL-1
-payload board.
+a ~2 second round trip. Production hardware ships in two
+forms, both CC2652P with +20 dBm high-power TX and running the same firmware
+verified during this bringup: (1) the SCK-2400 board, same form and fit as the
+SCK-915 (drop-in for existing 3D-printed stands and the SCK-PBL-1 payload board),
+with onboard power supply and conditioning and headers for power, UART, SPI and
+I2C, for development and HAB/LEO missions (https://www.spacecommskit.com/sck2400.html);
+and (2) the SCK-2400-M module, the same RF path with no power supply and
+castellated edge pads for power, UART, SPI and I2C, for soldering directly onto a
+customer's own board (https://www.spacecommskit.com/sck2400m.html).
 
 Full documentation: github.com/eor123/spacecommskit/blob/main/docs/SCK-2400_User_Guide.md
 and SCK-2400_Developer_Guide.md. Bringup dev-log notes:

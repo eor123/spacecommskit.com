@@ -132,7 +132,7 @@
 <p>The SCK-PBL-1 is SpaceCommsKit's payload board: a Raspberry Pi Pico
 (RP2040)-based flight computer with onboard camera, GPS, SD storage,
 and barometric sensing, designed to bolt directly onto an SCK-915 or
-SCK-2400-M radio board for HAB and CubeSat missions.</p>
+SCK-2400 radio board for HAB and CubeSat missions.</p>
 <p><strong>It is also a standalone development board in its own right.</strong> Every
 Pico GPIO is brought out to breakout headers, the firmware (<code>main.py</code>)
 is open source, and the board can be powered and operated with no
@@ -143,7 +143,7 @@ starting point.</p>
 <p>This guide covers both uses:</p>
 <ul>
 <li>
-<p><strong>Bolt-on mode</strong> — SCK-PBL-1 mounted to an SCK-915 or SCK-2400-M,
+<p><strong>Bolt-on mode</strong> — SCK-PBL-1 mounted to an SCK-915 or SCK-2400,
   running the stock payload pipeline firmware</p>
 </li>
 <li>
@@ -199,7 +199,7 @@ starting point.</p>
 </tr>
 <tr>
 <td>Radio interface</td>
-<td>UART0 — connects to SCK-915 (CC1110) or SCK-2400-M (CC2652P)</td>
+<td>UART0 — connects to SCK-915 (CC1110) or SCK-2400 (CC2652P)</td>
 <td>UART, ESP framing</td>
 </tr>
 <tr>
@@ -297,7 +297,7 @@ caught and fixed on the PCB itself.</p>
 <p>The SCK-PBL-1 was designed as a bolt-on payload for two radio boards:</p>
 <ul>
 <li><strong>SCK-915</strong> — 915MHz CC1110-based radio (OpenLST-derived)</li>
-<li><strong>SCK-2400-M</strong> — 2.4GHz CC2652P-based radio</li>
+<li><strong>SCK-2400</strong> — 2.4GHz CC2652P-based radio</li>
 </ul>
 <p>Both interface with the Pico over a 4-pin UART header (GND / RX / TX
 / +3V3) using the same ESP framing protocol
@@ -318,13 +318,13 @@ runs unmodified against either radio board for basic commands.</p>
 <td>115200 (Pico UART0, GPIO0/GPIO1)</td>
 </tr>
 <tr>
-<td>SCK-2400-M (CC2652P)</td>
+<td>SCK-2400 (CC2652P)</td>
 <td>DIO12(RX)/DIO13(TX) → Pico UART0</td>
 <td>115200 (Pico UART0, GPIO0/GPIO1)</td>
 </tr>
 </tbody>
 </table>
-<p>SCK-2400-M additionally exposes a high-speed SPI1 payload interface
+<p>SCK-2400 additionally exposes a high-speed SPI1 payload interface
 (DIO23–26, see §6.4) for future higher-bandwidth payload data — not
 yet implemented in firmware as of this writing.</p>
 <p><strong>Hardware variants referenced in firmware comments:</strong></p>
@@ -630,7 +630,7 @@ select I2C mode.</p>
 </tr>
 </tbody>
 </table>
-<h3 id="66-sck-2400-mini-high-speed-interface-spi1-reserved-not-yet-implemented">6.6 SCK-2400-M High-Speed Interface (SPI1) — reserved, not yet implemented</h3>
+<h3 id="66-sck-2400-mini-high-speed-interface-spi1-reserved-not-yet-implemented">6.6 SCK-2400 High-Speed Interface (SPI1) — reserved, not yet implemented</h3>
 <table>
 <thead>
 <tr>
