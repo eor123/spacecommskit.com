@@ -36,8 +36,7 @@
     <li class="nav-dd"><button class="nav-dd-btn" aria-haspopup="true">Products ▾</button>
       <ul class="nav-dd-menu">
         <li><a href="kit.html">SCK-915 · 915 MHz Kit</a></li>
-        <li><a href="sck2400.html">SCK-2400 · PC-104 CubeSat</a></li>
-        <li><a href="sck2400m.html">SCK-2400-M · Mini</a></li>
+        <li><a href="sck2400.html">SCK-2400-M · Module</a></li>
         <li><a href="pico.html">SCK-PBL-1 · Payload Board</a></li>
       </ul></li>
     <li class="nav-dd"><button class="nav-dd-btn" aria-haspopup="true">Docs ▾</button>
@@ -301,7 +300,7 @@
 <div class="section">
   <span class="eyebrow">The SpaceCommsKit Lineup</span>
   <h2 class="section-title-inv section-title">One Ecosystem. Every Stage of Your Mission.</h2>
-  <p class="section-lead-inv section-lead">Same ground station software, same SCK-PBL-1 payload board, from your first bench link to a PC-104 CubeSat stack.</p>
+  <p class="section-lead-inv section-lead">Same ground station software, same SCK-PBL-1 payload board, from your first bench link to an encrypted 2.4 GHz flight radio.</p>
   <div class="product-grid">
     <a class="product-card" href="kit.html">
       <img src="images/SCK-915_Product_Images/MainImage.jpg" alt="SCK-915 radio board">
@@ -321,22 +320,13 @@
         <span class="more">See the payload board →</span>
       </div>
     </a>
-    <a class="product-card" href="sck2400m.html">
-      <img src="images/placeholders/sck-2400-m.svg" alt="SCK-2400-M (Mini) — photo coming soon">
+    <a class="product-card" href="sck2400.html">
+      <img src="images/placeholders/sck-2400-m.svg" alt="SCK-2400-M module — photo coming soon">
       <div class="product-card-body">
         <span class="tag tag-blue" style="align-self:flex-start;">Coming Soon · Pricing TBD</span>
-        <h3>SCK-2400-M (Mini)</h3>
+        <h3>SCK-2400-M</h3>
         <p>2.4 GHz CCSDS radio, AES-128-CCM encrypted, OAD in &lt;25 s. Drop-in SCK-915 footprint — keep your stands and SCK-PBL-1.</p>
         <span class="more">SCK-2400-M details →</span>
-      </div>
-    </a>
-    <a class="product-card" href="sck2400.html">
-      <img src="images/placeholders/sck-2400.svg" alt="SCK-2400 PC-104 — photo coming soon">
-      <div class="product-card-body">
-        <span class="tag tag-blue" style="align-self:flex-start;">In Design · Pricing TBD</span>
-        <h3>SCK-2400 (PC-104)</h3>
-        <p>The same encrypted 2.4 GHz CCSDS firmware on a PC-104 compliant board for CubeSat stacks. RF sections only.</p>
-        <span class="more">SCK-2400 details →</span>
       </div>
     </a>
     <a class="product-card" href="hv-001.html">
@@ -872,11 +862,11 @@
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;">
     <div>
       <span class="eyebrow eyebrow-dark">Coming Soon</span>
-      <h2 class="section-title">SCK-2400<br>CubeSat Comms Board</h2>
+      <h2 class="section-title">SCK-2400-M<br>2.4 GHz Radio Module</h2>
       <p class="section-lead">
         The next generation of SpaceCommsKit — AES-128-CCM encrypted 2.4GHz RF,
         CCSDS Space Packet Protocol, and over-air firmware updates in under 25 seconds.
-        Available in Dev (SCK-915 drop-in footprint) and CubeSat (PC-104) variants.
+        Ships as the SCK-2400-M module in the SCK-915 drop-in footprint.
         Firmware bringup is complete — encrypted RF, OAD, GPS, and safe mode are all
         verified working on hardware.
       </p>
@@ -894,7 +884,7 @@
       </form>
     </div>
     <div class="card" style="padding:36px;">
-      <div class="mono" style="color:var(--cyan);font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:20px;">// SCK-2400 · Status: RF Bringup Complete</div>
+      <div class="mono" style="color:var(--cyan);font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:20px;">// SCK-2400-M · Status: RF Bringup Complete</div>
       <div style="display:flex;flex-direction:column;gap:14px;">
         <div style="display:flex;justify-content:space-between;padding-bottom:12px;border-bottom:1px solid var(--border-lt);">
           <span style="font-size:14px;">AES-128-CCM Encrypted RF</span>
@@ -912,13 +902,9 @@
           <span style="font-size:14px;">Reset Counter · Safe Mode</span>
           <span class="tag tag-cyan">✓ Verified</span>
         </div>
-        <div style="display:flex;justify-content:space-between;padding-bottom:12px;border-bottom:1px solid var(--border-lt);">
-          <span style="font-size:14px;">SCK-2400 Dev · SCK-915 Footprint</span>
-          <span class="tag tag-cyan">In Production</span>
-        </div>
         <div style="display:flex;justify-content:space-between;">
-          <span style="font-size:14px;">SCK-2400 CubeSat · PC-104</span>
-          <span class="tag tag-cyan">In Design</span>
+          <span style="font-size:14px;">SCK-2400-M Module · SCK-915 Footprint</span>
+          <span class="tag tag-cyan">In Production</span>
         </div>
       </div>
     </div>
@@ -934,7 +920,7 @@
       <span class="eyebrow eyebrow-dark">Custom Engineering</span>
       <h2 class="section-title">Need Something<br>We Haven't Built Yet?</h2>
       <p class="section-lead">
-        The SCK-2400 PC-104 CubeSat board is a platform, not just a product.
+        The SCK-2400-M module is a platform, not just a product.
         If your mission needs a custom payload process, a specific sensor suite,
         or a bespoke RF solution built on our validated hardware framework —
         we do that work. Boutique engineering at the intersection of RF,
@@ -957,7 +943,7 @@
           <div style="display:flex;gap:14px;align-items:flex-start;padding-bottom:14px;border-bottom:1px solid var(--border-lt);">
             <span style="color:var(--cyan);font-size:18px;flex-shrink:0;">◈</span>
             <div>
-              <div style="font-size:14px;font-weight:600;margin-bottom:3px;">Custom PC-104 Payload Boards</div>
+              <div style="font-size:14px;font-weight:600;margin-bottom:3px;">Custom Payload Boards</div>
               <div style="font-size:12px;color:var(--text-muted);">CubeSat-compatible hardware designed around your mission requirements</div>
             </div>
           </div>
@@ -1024,8 +1010,7 @@
     <div class="footer-col">
       <h4>Product</h4>
       <a href="kit.html">SCK-915</a>
-      <a href="sck2400.html">SCK-2400</a>
-      <a href="sck2400m.html">SCK-2400-M</a>
+      <a href="sck2400.html">SCK-2400-M</a>
       <a href="pico.html">SCK-PBL-1</a>
       <a href="kit.html#specs">Specifications</a>
       <a href="engineering.html">Engineering Services</a>

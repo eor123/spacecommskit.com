@@ -263,14 +263,9 @@ talking to a CC1110 (SCK-915) or a CC1352P (SCK-2400).</p>
 <td>Firmware validated here before custom PCB spin</td>
 </tr>
 <tr>
-<td>SCK-2400 Mini</td>
-<td>CC2652P1FRGZ, SCK-915 footprint — drop-in for existing 3D-printed stands and SCK-PBL-1</td>
+<td>SCK-2400-M</td>
+<td>CC2652P1FRGZ module, +20 dBm high-power TX, SCK-915 footprint — drop-in for existing 3D-printed stands and SCK-PBL-1</td>
 <td>In production</td>
-</tr>
-<tr>
-<td>SCK-2400</td>
-<td>CC2652P1FRGZ, RF sections only, PC-104 compliant</td>
-<td>In design</td>
 </tr>
 <tr>
 <td>SCK-PBL-1 Payload</td>
@@ -280,15 +275,13 @@ talking to a CC1110 (SCK-915) or a CC1352P (SCK-2400).</p>
 </tbody>
 </table>
 <blockquote>
-<p>Both production variants share identical firmware to what's being bringup-tested
-on SCK-2400 Mini in this guide — the CC1352P and CC2652P are
+<p>The production SCK-2400-M module runs identical firmware to what's being bringup-tested
+in this guide — the CC1352P and CC2652P are
 pin/peripheral-compatible within the SimpleLink family, so the CCSDS dispatch,
 OAD transport, and payload bridge code carries forward unchanged. The
-<strong>SCK-2400 Mini variant</strong> is a footprint-compatible drop-in replacement for
-SCK-915 — same mounting, same payload board connector — intended for
-development work and HAB missions. The <strong>SCK-2400 variant</strong> strips the
-board to RF sections only on a PC-104 compliant form factor, for integration
-into real CubeSat flight stacks.</p>
+<strong>SCK-2400-M module</strong> is a footprint-compatible drop-in replacement for
+SCK-915 — same mounting, same payload board connector — for development work,
+HAB missions, and flight integration.</p>
 </blockquote>
 <h3 id="13-firmware-components">1.3 Firmware Components</h3>
 <table>
@@ -526,7 +519,7 @@ correct in both numbering systems, which is what made the DIO16 error
 easy to miss initially.</p>
 </blockquote>
 <p>Both boards are 3.3V — no level shifter required.</p>
-<h3 id="231-physical-connector-pinouts-sck-2400-mini-production-board">2.3.1 Physical Connector Pinouts — SCK-2400 Mini Production Board</h3>
+<h3 id="231-physical-connector-pinouts-sck-2400-mini-production-board">2.3.1 Physical Connector Pinouts — SCK-2400-M Production Board</h3>
 <p><strong>UART0 header (Pico payload link, <code>DEBUG_UART</code>):</strong></p>
 <table>
 <thead>
@@ -604,7 +597,7 @@ currently wired into the UART2 driver config.</p>
 </table>
 <blockquote>
 <p><strong>Layout correction (2026-07):</strong> this header was originally wired to
-package pins 10/11 (DIO5/DIO6) on the SCK-2400 Mini — the LaunchPad's
+package pins 10/11 (DIO5/DIO6) on the SCK-2400-M — the LaunchPad's
 proven Pico-bridge pins, wired here by mistake. Corrected to
 DIO12(RX)/DIO13(TX), matching <code>PAYLOAD_UART</code>'s actual SysConfig/
 firmware definition. No firmware or SysConfig changes were needed —
@@ -661,7 +654,7 @@ already in internal flash.</p>
 image to internal flash, and the new firmware runs.</p>
 <p>See Section 3.2 for the full OAD streaming protocol.</p>
 <h3 id="25-programming-debug-connector-j2">2.5 Programming / Debug Connector (J2)</h3>
-<p>The SCK-2400 Mini carries a <strong>2×5 (10-pin), 0.05" pitch programming/debug
+<p>The SCK-2400-M carries a <strong>2×5 (10-pin), 0.05" pitch programming/debug
 header (J2)</strong>, matching the standard <strong>TI LaunchPad XDS110 debug-out</strong>
 pinout used on LAUNCHXL-CC1352P-2 boards. It allows an external XDS110
 (including a LaunchPad's onboard XDS110 in pass-through mode) to

@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SCK-2400 — SpaceCommsKit 2.4GHz CCSDS Radio</title>
-<meta name="description" content="SpaceCommsKit SCK-2400 — 2.4GHz CCSDS radio board for CubeSat and HAB missions. AES-128-CCM encrypted RF, OAD firmware updates, CC2652P with +20 dBm high-power TX. Dev Kit and CubeSat variant. Hand-assembled in Tennessee.">
+<title>SCK-2400-M — SpaceCommsKit 2.4GHz CCSDS Radio Module</title>
+<meta name="description" content="SpaceCommsKit SCK-2400-M — 2.4GHz CCSDS radio module for HAB and CubeSat missions. AES-128-CCM encrypted RF, OAD firmware updates, CC2652P with +20 dBm high-power TX. Hand-assembled in Tennessee.">
 <meta name="keywords" content="SCK-2400, CCSDS radio, CubeSat radio, 2.4GHz RF board, CC2652P, AES encrypted radio, HAB radio, OAD firmware update, SpaceCommsKit">
 <link rel="canonical" href="https://www.spacecommskit.com/sck2400.html">
 <link rel="stylesheet" href="style.css">
@@ -12,12 +12,11 @@
 {
   "@context": "https://schema.org",
   "@type": "Product",
-  "name": "SpaceCommsKit SCK-2400",
-  "description": "2.4GHz CCSDS radio board with AES-128-CCM encryption, OAD over-air firmware updates, and Raspberry Pi Pico payload bridge. Available in Dev (SCK-915 footprint) and CubeSat (PC-104) variants. Hand-assembled in Tennessee.",
+  "name": "SpaceCommsKit SCK-2400-M",
+  "description": "2.4GHz CCSDS radio board with AES-128-CCM encryption, OAD over-air firmware updates, and Raspberry Pi Pico payload bridge. SCK-915 footprint, drop-in module. Hand-assembled in Tennessee.",
   "brand": { "@type": "Brand", "name": "SpaceCommsKit" },
   "offers": [
-    { "@type": "Offer", "name": "SCK-2400 Mini Kit", "price": "TBD", "priceCurrency": "USD", "eligibleRegion": "US" },
-    { "@type": "Offer", "name": "SCK-2400 Kit", "price": "TBD", "priceCurrency": "USD", "eligibleRegion": "US" }
+    { "@type": "Offer", "name": "SCK-2400-M Kit", "price": "TBD", "priceCurrency": "USD", "eligibleRegion": "US" }
   ]
 }
 </script>
@@ -31,8 +30,7 @@
     <li class="nav-dd"><button class="nav-dd-btn active" aria-haspopup="true">Products ▾</button>
       <ul class="nav-dd-menu">
         <li><a href="kit.html">SCK-915 · 915 MHz Kit</a></li>
-        <li><a href="sck2400.html" class="active">SCK-2400 · PC-104 CubeSat</a></li>
-        <li><a href="sck2400m.html">SCK-2400-M · Mini</a></li>
+        <li><a href="sck2400.html" class="active">SCK-2400-M · Module</a></li>
         <li><a href="pico.html">SCK-PBL-1 · Payload Board</a></li>
       </ul></li>
     <li class="nav-dd"><button class="nav-dd-btn" aria-haspopup="true">Docs ▾</button>
@@ -62,9 +60,9 @@
 <!-- Hero -->
 <section class="hero">
   <div class="hero-inner">
-    <span class="eyebrow">SpaceCommsKit · SCK-2400 · 2.4GHz CCSDS Radio</span>
-    <h1 class="hero-title">SCK-2400<br><span>CCSDS · Encrypted · OAD · CC2652P · +20 dBm TX</span></h1>
-    <p class="hero-sub">The next generation SpaceCommsKit board — AES-128-CCM encrypted 2.4GHz RF, CCSDS Space Packet Protocol, over-air firmware updates in under 25 seconds, and a drop-in upgrade path from SCK-915. Two hardware variants: Dev (SCK-915 footprint) and CubeSat (PC-104).</p>
+    <span class="eyebrow">SpaceCommsKit · SCK-2400-M · 2.4GHz CCSDS Radio Module</span>
+    <h1 class="hero-title">SCK-2400-M<br><span>CCSDS · Encrypted · OAD · CC2652P · +20 dBm TX</span></h1>
+    <p class="hero-sub">The next generation SpaceCommsKit board — AES-128-CCM encrypted 2.4GHz RF, CCSDS Space Packet Protocol, over-air firmware updates in under 25 seconds, and a drop-in upgrade path from SCK-915. Ships as the SCK-2400-M module in the SCK-915 footprint.</p>
     <div class="flex gap-16">
       <a href="#buy" class="btn btn-primary">Get Notified →</a>
       <a href="documentation.html" class="btn btn-outline">Read the Docs</a>
@@ -76,17 +74,17 @@
 <div class="section-panel">
 <div class="section">
   <span class="eyebrow eyebrow-dark">The Hardware</span>
-  <h2 class="section-title">Two Variants · One Firmware · One Ground Station</h2>
-  <p class="section-lead">The SCK-2400 comes in two hardware variants sharing identical firmware and the same ground station software. Pick the form factor that fits your mission.</p>
+  <h2 class="section-title">One Module · One Firmware · One Ground Station</h2>
+  <p class="section-lead">The SCK-2400 ships as the SCK-2400-M module: the same footprint as the SCK-915, running the same ground station software and SCK-PBL-1 payload board.</p>
 
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;margin-top:40px;">
+  <div style="display:grid;max-width:640px;margin-top:40px;">
 
     <!-- Dev Variant -->
     <div class="card">
       <div style="background:var(--panel);border-radius:var(--radius);aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
-        <img src="images/placeholders/sck-2400-m.svg" alt="SCK-2400-M (Mini) — photo coming soon" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius);">
+        <img src="images/placeholders/sck-2400-m.svg" alt="SCK-2400-M module — photo coming soon" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius);">
       </div>
-      <h3 style="margin-bottom:8px;">SCK-2400 Mini (SCK-2400-M) · <a href="sck2400m.html" style="font-size:14px;">Full page →</a></h3>
+      <h3 style="margin-bottom:8px;">SCK-2400-M Module</h3>
       <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px;">
         Drop-in upgrade from SCK-915. Same PCB footprint, same mounting holes, same 3D-printed stands and SCK-PBL-1 payload connections. Swap the board, update the firmware, keep everything else.
       </p>
@@ -101,29 +99,6 @@
         <tr><td>Encryption</td><td>AES-128-CCM per-packet</td></tr>
         <tr><td>OAD</td><td>Over-air firmware update in &lt;25s</td></tr>
         <tr><td>Payload interface</td><td>115200 baud UART — Pico bridge</td></tr>
-      </table>
-    </div>
-
-    <!-- CubeSat Variant -->
-    <div class="card">
-      <div style="background:var(--panel);border-radius:var(--radius);aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
-        <img src="images/placeholders/sck-2400.svg" alt="SCK-2400 PC-104 — photo coming soon" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius);">
-      </div>
-      <h3 style="margin-bottom:8px;">SCK-2400</h3>
-      <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px;">
-        PC-104 compliant form factor for CubeSat integrations. RF sections only — no onboard GPS or sensors. Two Samtec ESQ-126-12-G-D connectors (104 pins total) for PC-104 stack compatibility.
-      </p>
-      <table class="spec-table">
-        <tr><th>Parameter</th><th>Value</th></tr>
-        <tr><td>Footprint</td><td>PC-104 compliant</td></tr>
-        <tr><td>Microcontroller</td><td>TI CC2652P1FRGZ</td></tr>
-        <tr><td>RF Frequency</td><td>2.4GHz ISM band</td></tr>
-        <tr><td>TX Power</td><td>+20 dBm</td></tr>
-        <tr><td>Modulation</td><td>2-GFSK 250 kbps</td></tr>
-        <tr><td>Protocol</td><td>CCSDS Space Packet</td></tr>
-        <tr><td>Encryption</td><td>AES-128-CCM per-packet</td></tr>
-        <tr><td>OAD</td><td>Over-air firmware update in &lt;25s</td></tr>
-        <tr><td>Bus connector</td><td>PC-104 (2× Samtec ESQ-126-12-G-D)</td></tr>
       </table>
     </div>
 
@@ -224,18 +199,12 @@
   <h2 class="section-title-inv section-title">Kit Contents</h2>
   <p class="section-lead-inv section-lead">Every kit ships bootloader-flashed, provisioned with a unique key set, and verified on the bench before leaving Tennessee.</p>
 
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:40px;">
+  <div style="display:grid;grid-template-columns:1fr;max-width:520px;margin-left:auto;margin-right:auto;gap:24px;margin-top:40px;">
     <div>
       <div style="background:var(--surface);border-radius:var(--radius-lg);aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
         <img src="images/placeholders/sck-2400-m.svg" alt="SCK-2400-M kit — photo coming soon" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius);">
       </div>
-      <p class="text-muted text-center mt-16">SCK-2400 Mini Kit — two boards, stands, antennas, cables</p>
-    </div>
-    <div>
-      <div style="background:var(--surface);border-radius:var(--radius-lg);aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;margin-bottom:12px;">
-        <img src="images/placeholders/sck-2400.svg" alt="SCK-2400 PC-104 — photo coming soon" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius);">
-      </div>
-      <p class="text-muted text-center mt-16">SCK-2400 — PC-104 form factor with connector detail</p>
+      <p class="text-muted text-center mt-16">SCK-2400-M Kit — two modules, stands, antennas, cables</p>
     </div>
   </div>
 </div>
@@ -245,11 +214,11 @@
 <div class="section-panel">
 <div class="section">
   <span class="eyebrow eyebrow-dark">Upgrade Path</span>
-  <h2 class="section-title">SCK-915 → SCK-2400</h2>
-  <p class="section-lead">Already running SCK-915? The SCK-2400 Mini variant is a drop-in replacement for your existing setup.</p>
+  <h2 class="section-title">SCK-915 → SCK-2400-M</h2>
+  <p class="section-lead">Already running SCK-915? The SCK-2400-M module is a drop-in replacement for your existing setup.</p>
 
   <table class="spec-table" style="margin-top:32px;max-width:860px;">
-    <tr><th>Feature</th><th>SCK-915</th><th>SCK-2400</th></tr>
+    <tr><th>Feature</th><th>SCK-915</th><th>SCK-2400-M</th></tr>
     <tr><td>RF Band</td><td>915 MHz</td><td>2.4 GHz</td></tr>
     <tr><td>Protocol</td><td>OpenLST</td><td>CCSDS Space Packet</td></tr>
     <tr><td>Encryption</td><td>AES-128-CTR (key in bootloader)</td><td>AES-128-CCM per-packet, 8-byte MAC</td></tr>
@@ -261,7 +230,6 @@
     <tr><td>Pico payload</td><td>✓ Same SCK-PBL-1</td><td>✓ Same SCK-PBL-1 — zero Pico firmware changes</td></tr>
     <tr><td>Ground station</td><td>SCK Ground Station (SCK-915 mode)</td><td>SCK Ground Station (SCK-2400 mode)</td></tr>
     <tr><td>Dev footprint</td><td>50 × 60 mm</td><td>Same (drop-in)</td></tr>
-    <tr><td>CubeSat variant</td><td>—</td><td>PC-104 compliant</td></tr>
     <tr><td>Reset counter / safe mode</td><td>—</td><td>✓ NVS-backed, ground-clearable</td></tr>
     <tr><td>Firmware source</td><td>Open source (GitHub)</td><td>Open source (GitHub)</td></tr>
   </table>
@@ -272,28 +240,18 @@
 <div class="section-panel" id="buy">
 <div class="section">
   <span class="eyebrow eyebrow-dark">Availability</span>
-  <h2 class="section-title">SCK-2400 — Coming Soon</h2>
-  <p class="section-lead">The SCK-2400 firmware is in active bringup on SCK-2400 Mini hardware — encrypted RF, OAD, GPS, and safe mode are all verified working. Production PCB design is in progress. Sign up to be notified when kits are available.</p>
+  <h2 class="section-title">SCK-2400-M — Coming Soon</h2>
+  <p class="section-lead">The SCK-2400 firmware is in active bringup on SCK-2400-M hardware — encrypted RF, OAD, GPS, and safe mode are all verified working. Production PCB design is in progress. Sign up to be notified when kits are available.</p>
 
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;margin:40px 0;">
+  <div style="display:grid;grid-template-columns:1fr;max-width:520px;margin-left:auto;margin-right:auto;gap:32px;margin:40px 0;">
 
     <div class="card" style="text-align:center;">
       <div style="font-size:36px;margin-bottom:12px;">🛠️</div>
-      <h3 style="margin-bottom:8px;">SCK-2400 Mini Kit</h3>
+      <h3 style="margin-bottom:8px;">SCK-2400-M Kit</h3>
       <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px;">Two boards · SCK-915 footprint · Drop-in for existing stands and SCK-PBL-1 · Encrypted RF · OAD · Pico bridge</p>
       <div style="font-size:22px;font-weight:700;color:var(--cyan);margin-bottom:4px;">Pricing TBD</div>
       <p style="color:var(--text-muted);font-size:12px;margin-bottom:0;">Sign up below to be notified at launch</p>
     </div>
-
-    <div class="card" style="text-align:center;">
-      <div style="font-size:36px;margin-bottom:12px;">🛰️</div>
-      <h3 style="margin-bottom:8px;">SCK-2400</h3>
-      <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px;">Single board · PC-104 compliant · RF sections only · Same firmware and ground station · Samtec ESQ-126-12-G-D connectors</p>
-      <div style="font-size:22px;font-weight:700;color:var(--cyan);margin-bottom:4px;">Pricing TBD</div>
-      <p style="color:var(--text-muted);font-size:12px;margin-bottom:0;">Sign up below to be notified at launch</p>
-    </div>
-
-  </div>
 
   <form style="display:flex;gap:10px;max-width:440px;margin:0 auto 40px;"
         action="https://formspree.io/f/xwvwzvaj" method="POST">
