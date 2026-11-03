@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SCK-2400-M — SpaceCommsKit 2.4GHz Solder-down Radio Module</title>
-<meta name="description" content="SCK-2400-M: the SCK-2400 2.4GHz CCSDS radio (CC2652P, +20 dBm TX, AES-128-CCM, OAD) as a compact module with castellated edge pads for power, UART, SPI and I2C. Solder it onto your own board. Coming soon.">
+<meta name="description" content="SCK-2400-M: the SCK-2400 2.4GHz CCSDS radio (CC2652P, +20 dBm TX, AES-128-CCM, OAD) as a compact module with castellated edge pads for power, UART0/UART1, SPI, I2C, JTAG and spare GPIO. A fully programmable CC2652P platform. Solder it onto your own board. Coming soon.">
 <link rel="canonical" href="https://www.spacecommskit.com/sck2400m.html">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -50,7 +50,7 @@
   <div class="hero-inner">
     <span class="eyebrow">SpaceCommsKit · SCK-2400-M · Coming Soon</span>
     <h1 class="hero-title">SCK-2400-M<br><span>The SCK-2400 Radio, Ready to Solder Onto Your Board</span></h1>
-    <p class="hero-sub">The same RF path as the SCK-2400 (CC2652P, +20 dBm high-power TX) in a much smaller module. No power supply and no headers: power, UART, SPI and I2C come out on castellated edge pads, so you solder it directly onto your own custom board and get AES-128-CCM encrypted CCSDS packets and over-air firmware updates in under 25 seconds.</p>
+    <p class="hero-sub">The same RF path as the SCK-2400 (CC2652P, +20 dBm high-power TX) in a much smaller module. No power supply and no headers: power in, UART0, UART1, SPI, I2C, JTAG and spare GPIO come out on castellated edge pads along its two long edges, so you solder it directly onto your own custom board and get AES-128-CCM encrypted CCSDS packets and over-air firmware updates in under 25 seconds.</p>
     <div class="flex gap-16">
       <a href="sck2400.html#buy" class="btn btn-primary">Get Notified →</a>
       <a href="docs/SCK-2400_User_Guide.html" class="btn btn-outline">SCK-2400 User Guide</a>
@@ -69,11 +69,13 @@
     <div>
       <span class="eyebrow eyebrow-dark">Specifications</span>
       <h2 class="section-title">SCK-2400-M at a Glance</h2>
+      <p class="text-muted" style="margin-bottom:16px;">A fully programmable CC2652P platform in module form. Our open source (GPLv3) firmware is a working starting point. Program the module over JTAG and change it for your own use case. Hardware design is proprietary.</p>
       <table class="spec-table">
         <tr><th>Parameter</th><th>Value</th></tr>
-        <tr><td>Form factor</td><td>Compact solder-down module (dimensions TBD)</td></tr>
+        <tr><td>Form factor</td><td>Compact solder-down module, approx. 43.7 × 33.6 mm</td></tr>
         <tr><td>Power</td><td>None onboard — supplied by your host board (input requirements TBD)</td></tr>
-        <tr><td>Interfaces</td><td>Castellated edge pads: power, UART, SPI, I2C (pinout TBD)</td></tr>
+        <tr><td>Interfaces</td><td>Castellated edge pads on both long edges: power in, UART0, UART1, SPI, I2C, JTAG and spare GPIO (exact per-pad pinout TBD)</td></tr>
+        <tr><td>Programming / debug</td><td>JTAG on the edge pads (no 2×5 debug header)</td></tr>
         <tr><td>RF path</td><td>Same as SCK-2400</td></tr>
         <tr><td>Microcontroller</td><td>TI CC2652P1FRGZ</td></tr>
         <tr><td>RF Frequency</td><td>2.4GHz ISM band</td></tr>
@@ -105,8 +107,8 @@
   <table class="spec-table" style="margin-top:24px;max-width:860px;">
     <tr><th></th><th>SCK-2400</th><th>SCK-2400-M</th></tr>
     <tr><td>Power supply</td><td>Onboard supply and conditioning</td><td>None — from your host board</td></tr>
-    <tr><td>Connections</td><td>Headers: power, UART, SPI, I2C</td><td>Castellated edge pads: power, UART, SPI, I2C</td></tr>
-    <tr><td>Form factor</td><td>Same as SCK-915 (larger)</td><td>Compact module (smaller)</td></tr>
+    <tr><td>Connections</td><td>Headers: power, UART, SPI, I2C</td><td>Edge pads on two long edges: power in, UART0, UART1, SPI, I2C, JTAG, spare GPIO</td></tr>
+    <tr><td>Form factor</td><td>Same as SCK-915 (larger)</td><td>Compact module, approx. 43.7 × 33.6 mm</td></tr>
     <tr><td>Best for</td><td>Development, HAB, LEO</td><td>Embedding in your own board</td></tr>
     <tr><td>RF path</td><td colspan="2">Identical: CC2652P, 2.4 GHz, +20 dBm TX</td></tr>
   </table>

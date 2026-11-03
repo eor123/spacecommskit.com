@@ -77,7 +77,7 @@
 <div class="section">
   <span class="eyebrow eyebrow-dark">The Hardware</span>
   <h2 class="section-title">One RF Path · Two Form Factors · One Ground Station</h2>
-  <p class="section-lead">The SCK-2400 is the full development board. The SCK-2400-M is the same CC2652P RF path as a compact module with no power supply and castellated edge pads, for soldering straight onto your own board. Same firmware, same ground station.</p>
+  <p class="section-lead">Both are fully programmable CC2652P platforms. Our open source (GPLv3) firmware is a jumpstart you modify for your own use case; hardware designs are proprietary. The SCK-2400 is the full development board. The SCK-2400-M is the same CC2652P RF path as a compact module with no power supply and castellated edge pads, for soldering straight onto your own board. Same firmware, same ground station.</p>
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;margin-top:40px;">
 
@@ -114,13 +114,13 @@
       </div>
       <h3 style="margin-bottom:8px;">SCK-2400-M · Solder-down Module · <a href="sck2400m.html" style="font-size:14px;">Full page →</a></h3>
       <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px;">
-        The same RF path as the SCK-2400 in a much smaller module. No power supply on board, and no headers: power, UART, SPI and I2C come out on castellated edge pads so you can solder it straight onto your own custom board.
+        The same RF path as the SCK-2400 in a much smaller module. No power supply on board, and no headers: power in, UART0, UART1, SPI, I2C, JTAG and spare GPIO come out on castellated edge pads along its two long edges, so you can solder it straight onto your own custom board.
       </p>
       <table class="spec-table">
         <tr><th>Parameter</th><th>Value</th></tr>
-        <tr><td>Form factor</td><td>Compact solder-down module (dimensions TBD)</td></tr>
+        <tr><td>Form factor</td><td>Compact solder-down module, approx. 43.7 × 33.6 mm; JTAG on edge pads (no 2×5 header)</td></tr>
         <tr><td>Power</td><td>None onboard — supplied by your host board</td></tr>
-        <tr><td>Interfaces</td><td>Castellated edge pads: power, UART, SPI, I2C</td></tr>
+        <tr><td>Interfaces</td><td>Edge pads on two long edges: power in, UART0, UART1, SPI, I2C, JTAG, spare GPIO</td></tr>
         <tr><td>RF path</td><td>Same as SCK-2400</td></tr>
         <tr><td>Microcontroller</td><td>TI CC2652P1FRGZ</td></tr>
         <tr><td>TX Power</td><td>+20 dBm (high-power PA)</td></tr>
@@ -290,7 +290,7 @@
     <div class="card" style="text-align:center;">
       <div style="font-size:36px;margin-bottom:12px;">🛰️</div>
       <h3 style="margin-bottom:8px;"><a href="sck2400m.html">SCK-2400-M Module</a></h3>
-      <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px;">Same RF path · No power supply · Castellated edge pads for power, UART, SPI, I2C · Solder onto your own board</p>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:16px;">Same RF path · No power supply · Edge pads: power, UART0/1, SPI, I2C, JTAG, GPIO · Solder onto your own board</p>
       <div style="font-size:22px;font-weight:700;color:var(--cyan);margin-bottom:4px;">Pricing TBD</div>
       <p style="color:var(--text-muted);font-size:12px;margin-bottom:0;">Sign up below to be notified at launch</p>
     </div>

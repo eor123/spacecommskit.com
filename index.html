@@ -89,8 +89,8 @@
       a radio design that flew in space — into a pre-flashed, plug-and-play system for engineers,
       researchers, universities, and high-altitude balloon teams.
       <strong style="color:var(--cyan);">Live telemetry in 5 minutes. No radio license required. HAB mission ready.</strong>
-      Open source software, pre-flashed hardware, one installer. Works on day one.
-      Extensible from day two.
+      A fully programmable CC1110 platform (SCK-915) and CC2652P platform (SCK-2400 / SCK-2400-M).
+      Our open source firmware and ground station work on day one, and you can modify them for your own mission from day two.
     </p>
     <div class="flex gap-16" style="flex-wrap:wrap;">
       <a href="kit.html" class="btn btn-primary">Explore the SCK-915 →</a>
@@ -297,6 +297,19 @@
 </div>
 
 <!-- ═══════════ PRODUCT LINEUP (added) ═══════════ -->
+<section class="section" id="your-platform">
+  <div class="container">
+    <span class="eyebrow">Development Platforms, Not Black Boxes</span>
+    <h2 class="section-title">Your Platform. Your Firmware.</h2>
+    <p class="section-lead">SCK kits are fully programmable RF development platforms. Our software is where you start. You're expected to change it.</p>
+    <div class="grid-3" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;margin-top:24px;">
+      <div class="card"><h3>SCK-915 · CC1110</h3><p>A fully programmable TI CC1110 platform at 915 MHz. Rewrite the radio firmware, protocol and commands to fit your application.</p></div>
+      <div class="card"><h3>SCK-2400 / SCK-2400-M · CC2652P</h3><p>A fully programmable TI CC2652P platform at 2.4 GHz with +20 dBm TX. Develop on the board, then embed the module in your own design.</p></div>
+      <div class="card"><h3>Open source jumpstart</h3><p>Firmware, Pico payload code and the SCK Ground Station are open source (GPLv3). They're a working example and dev path for your integration. Hardware designs are proprietary.</p></div>
+    </div>
+  </div>
+</section>
+
 <div class="section-dark" id="products">
 <div class="section">
   <span class="eyebrow">The SpaceCommsKit Lineup</span>
@@ -335,7 +348,7 @@
       <div class="product-card-body">
         <span class="tag tag-blue" style="align-self:flex-start;">Coming Soon · Pricing TBD</span>
         <h3>SCK-2400-M</h3>
-        <p>The SCK-2400 RF path as a compact solder-down module. No power supply; power, UART, SPI and I2C on castellated edge pads for your own custom board.</p>
+        <p>The SCK-2400 RF path as a compact solder-down module. No power supply; power in, UART0/1, SPI, I2C, JTAG and spare GPIO on castellated edge pads for your own custom board.</p>
         <span class="more">SCK-2400-M details →</span>
       </div>
     </a>
@@ -353,9 +366,9 @@
   <table class="spec-table" style="max-width:860px;">
     <tr><th></th><th>SCK-2400</th><th>SCK-2400-M</th></tr>
     <tr><td>Power supply</td><td>Onboard supply and conditioning</td><td>None — powered by your board</td></tr>
-    <tr><td>Connections</td><td>Headers: power, UART, SPI, I2C</td><td>Castellated edge pads: power, UART, SPI, I2C</td></tr>
+    <tr><td>Connections</td><td>Headers: power, UART, SPI, I2C</td><td>Edge pads on two long edges: power in, UART0, UART1, SPI, I2C, JTAG, spare GPIO</td></tr>
     <tr><td>Best for</td><td>Development, HAB, LEO</td><td>Embedding in your own board</td></tr>
-    <tr><td>Size</td><td>Larger (SCK-915 form factor)</td><td>Smaller module</td></tr>
+    <tr><td>Size</td><td>Larger (SCK-915 form factor)</td><td>Approx. 43.7 × 33.6 mm module</td></tr>
     <tr><td>RF path</td><td colspan="2">Identical: CC2652P · 2.4 GHz · +20 dBm TX · CCSDS · AES-128-CCM</td></tr>
   </table>
 </div>

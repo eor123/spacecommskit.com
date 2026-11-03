@@ -283,8 +283,10 @@ OAD transport, and payload bridge code carries forward unchanged. The
 SCK-915 — same mounting, same payload board connector, onboard power supply and
 conditioning, headers for power, UART, SPI and I2C — for development work and
 HAB/LEO missions. The <strong>SCK-2400-M module</strong> carries the same RF path with
-no power supply, bringing power, UART, SPI and I2C out on castellated edge pads
-for soldering directly onto a customer's own board.</p>
+no power supply, bringing power in, UART0, UART1, SPI, I2C, JTAG (programming and
+debug, so no 2×5 header) and several spare GPIO out on castellated edge pads along its
+two long edges (module approx. 43.7 × 33.6 mm; exact per-pad pinout TBD), for soldering
+directly onto a customer's own board.</p>
 </blockquote>
 <h3 id="13-firmware-components">1.3 Firmware Components</h3>
 <table>
