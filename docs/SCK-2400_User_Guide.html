@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SCK-2400 User Guide — SpaceCommsKit</title>
-<meta name="description" content="SpaceCommsKit SCK-2400 Ground Station User Guide — CCSDS commands, OAD firmware updates, payload board commands, troubleshooting, and specifications.">
+<meta name="description" content="SpaceCommsKit SCK-2400 Ground Station User Guide — CCSDS commands, OAD firmware updates with trial boot and golden-image fallback, J4 recovery, payload board commands, troubleshooting, and specifications.">
 <link rel="canonical" href="https://www.spacecommskit.com/docs/SCK-2400_User_Guide.html">
 <link rel="stylesheet" href="../style.css">
 <style>
@@ -84,6 +84,26 @@
 .doc-toc a { color: var(--text-inv); font-size: 13.5px; text-decoration: none; }
 .doc-toc a:hover { color: var(--cyan); text-decoration: underline; }
 @media (max-width: 700px) { .doc-toc ul { columns: 1; } }
+/* Firmware update / failover flow chart (11/2026) */
+.fc-wrap { overflow-x: auto; margin: 8px 0 28px; background: var(--void); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px; }
+.fc-wrap svg.fc { display: block; width: 100%; min-width: 640px; height: auto; }
+.fc-box { stroke-width: 1.5; }
+.fc-step { fill: var(--surface); stroke: var(--blue); }
+.fc-dec  { fill: var(--surface); stroke: var(--cyan); stroke-dasharray: 5 3; }
+.fc-info { fill: var(--surface); stroke: var(--border); }
+.fc-ok   { fill: rgba(34,197,94,0.10); stroke: #22c55e; }
+.fc-fall { fill: rgba(240,165,0,0.10); stroke: var(--gold); }
+.fc-warn { fill: rgba(240,165,0,0.06); stroke: var(--gold); stroke-dasharray: 5 3; }
+.fc-crit { fill: rgba(224,60,46,0.08); stroke: var(--red); }
+.fc-t { fill: var(--text-hero); font-family: var(--font-sans, system-ui, sans-serif); font-size: 14px; font-weight: 600; text-anchor: middle; }
+.fc-s { fill: var(--text-inv); font-family: var(--font-sans, system-ui, sans-serif); font-size: 12px; text-anchor: middle; }
+.fc-l { fill: var(--cyan); font-family: var(--font-mono); font-size: 11px; text-anchor: middle; }
+.fc-la { text-anchor: start; }
+.fc-ln { stroke: #8aa0b8; stroke-width: 1.5; fill: none; }
+.fc-dash { stroke-dasharray: 4 3; }
+.fc-head { fill: #8aa0b8; }
+.fc-sep { stroke: var(--border); stroke-dasharray: 6 4; }
+.fc-legend { font-size: 13px; color: var(--text-inv); margin: -18px 0 24px; }
 </style>
 </head>
 <body>
@@ -125,11 +145,12 @@
 <li><a href="#gps-map-tab">GPS / Map Tab</a></li>
 <li><a href="#files-tab">Files Tab</a></li>
 <li><a href="#firmware-tab">Firmware Tab</a></li>
+<li><a href="#firmware-updates-recovery">Firmware Updates, Failover &amp; Recovery</a></li>
 <li><a href="#provision-tab">Provision Tab</a></li>
 <li><a href="#troubleshooting">Troubleshooting</a></li>
 <li><a href="#specifications">Specifications</a></li></ul></div>
 <h1 id="spacecommskit-sck-2400-ground-station-user-guide">SpaceCommsKit SCK-2400 — Ground Station User Guide</h1>
-<p><strong>Version 1.10 — July 2026</strong>
+<p><strong>Version 1.11 — November 2026</strong>
 <strong>SpaceCommsKit — https://spacecommskit.com</strong></p>
 <hr />
 <h2 id="overview">Overview</h2>
@@ -151,7 +172,8 @@ logging.</p>
 </li>
 <li>
 <p>Update remote firmware over RF using OAD (Over-Air Download) — a full
-  firmware image transfers in under 30 seconds</p>
+  firmware image transfers in about 85 seconds, runs on trial, and falls
+  back to a known-good golden image automatically if it fails</p>
 </li>
 <li>
 <p>Query the payload board for GPS position, barometric altitude, and
@@ -379,11 +401,15 @@ or automatically if the board's autonomous beacon is enabled.</p>
 </tr>
 <tr>
 <td>Inter-chunk delay</td>
-<td>10ms (production default) to 100ms — controls streaming speed</td>
+<td>10 ms to 100 ms, default 30 ms — controls streaming speed. Values below 30 ms are for link testing only</td>
 </tr>
 <tr>
-<td>OAD Status</td>
-<td>Query bytes received / total size during a transfer</td>
+<td>Flash Status</td>
+<td>Transfer progress, plus the trial state of the running image and whether a golden image is stored</td>
+</tr>
+<tr>
+<td>Set Golden Image</td>
+<td>Store the running, confirmed firmware as the board's fallback image</td>
 </tr>
 <tr>
 <td>Abort OAD</td>
@@ -391,14 +417,16 @@ or automatically if the board's autonomous beacon is enabled.</p>
 </tr>
 </tbody>
 </table>
-<p><strong>OAD performance:</strong> A full 335KB firmware image transfers in approximately
-<strong>24 seconds at the 10ms setting</strong> — about 5% of a typical 8-minute LEO
-ground station pass, leaving ample time for acquisition and telemetry.</p>
+<p><strong>OAD performance:</strong> A full 312 KB firmware image transfers in about
+<strong>85 seconds at the 30 ms default</strong> (measured on SCK-2400 V3 hardware,
+encrypted RF link). That is about 18% of a typical 8-minute LEO ground station
+pass, leaving time for acquisition, confirmation and telemetry.</p>
 <blockquote>
-<p>The remote board automatically reboots into the new firmware once the
-transfer completes and the image CRC is verified. If the connection is
-lost before verification, the board's bootloader (BIM) keeps the
-previous working firmware — OAD never bricks the board.</p>
+<p>The remote board reboots into the new firmware once the transfer
+completes and the image CRC is verified. The new firmware then runs
+<strong>on trial</strong> until it hears from the ground. See
+<a href="#firmware-updates-recovery">Firmware Updates, Failover &amp; Recovery</a>
+for how a failed update is rolled back automatically.</p>
 </blockquote>
 <hr />
 <h2 id="custom-commands-tab">Custom Commands Tab</h2>
@@ -566,11 +594,243 @@ object files are the most common cause of mysterious firmware behavior.</p>
 <p>After flashing, send 2–3 <strong>Get Telem</strong> commands before moving the board
 to remote RF operation to confirm the radio stack is healthy.</p>
 </blockquote>
+<h2 id="firmware-updates-recovery">Firmware Updates, Failover &amp; Recovery</h2>
+<p>An SCK-2400 remote board can be updated over the air during a pass, and a
+bad update cannot leave it dead. Each update is checked twice. It then runs
+<strong>on trial</strong> and is only kept if the board hears from the ground.
+If it never does, the board puts back a known-good <strong>golden image</strong>
+by itself. If even that is gone, a wired recovery path through the
+J4 header can reflash the chip from scratch.</p>
+
+<div class="fc-wrap">
+<svg class="fc" viewBox="0 0 880 1150" role="img" aria-labelledby="fc-title fc-desc" xmlns="http://www.w3.org/2000/svg">
+<title id="fc-title">SCK-2400 firmware update, failover and recovery flow</title>
+<desc id="fc-desc">An over-the-air update is verified twice, installed as a trial, and kept only if the board hears from the ground. After three unconfirmed boots the bootloader restores the golden image. If nothing valid remains, the ROM bootloader on J4 allows a full reflash.</desc>
+<defs>
+  <marker id="fc-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" class="fc-head"/>
+  </marker>
+</defs>
+
+<!-- main column: x 160..480 (centre 320); side column: x 550..850 (centre 700) -->
+
+<!-- 1 -->
+<rect class="fc-box fc-step" x="160" y="20" width="320" height="60" rx="8"/>
+<text class="fc-t" x="320" y="44">1 · Ground station sends the update</text>
+<text class="fc-s" x="320" y="64">128-byte chunks → external-flash candidate slot</text>
+<line class="fc-ln" x1="320" y1="80" x2="320" y2="118" marker-end="url(#fc-arr)"/>
+
+<!-- 2 decision -->
+<rect class="fc-box fc-dec" x="160" y="120" width="320" height="60" rx="8"/>
+<text class="fc-t" x="320" y="144">2 · Received image CRC-16 matches?</text>
+<text class="fc-s" x="320" y="164">checked by the board at OAD END</text>
+<line class="fc-ln" x1="480" y1="150" x2="548" y2="150" marker-end="url(#fc-arr)"/>
+<text class="fc-l" x="514" y="142">No</text>
+<rect class="fc-box fc-info" x="550" y="120" width="300" height="60" rx="8"/>
+<text class="fc-t" x="700" y="144">Update refused</text>
+<text class="fc-s" x="700" y="164">Running firmware untouched; retry</text>
+<line class="fc-ln" x1="320" y1="180" x2="320" y2="218" marker-end="url(#fc-arr)"/>
+<text class="fc-l fc-la" x="330" y="204">Yes</text>
+
+<!-- 3 -->
+<rect class="fc-box fc-step" x="160" y="220" width="320" height="60" rx="8"/>
+<text class="fc-t" x="320" y="244">3 · Candidate marked ready</text>
+<text class="fc-s" x="320" y="264">OAD END ACK (status 0x00) · board resets</text>
+<line class="fc-ln" x1="320" y1="280" x2="320" y2="318" marker-end="url(#fc-arr)"/>
+
+<!-- 4 decision -->
+<rect class="fc-box fc-dec" x="160" y="320" width="320" height="60" rx="8"/>
+<text class="fc-t" x="320" y="344">4 · BIM: image CRC-32 valid?</text>
+<text class="fc-s" x="320" y="364">computed over the copy in external flash</text>
+<line class="fc-ln" x1="480" y1="350" x2="548" y2="350" marker-end="url(#fc-arr)"/>
+<text class="fc-l" x="514" y="342">No</text>
+<rect class="fc-box fc-info" x="550" y="320" width="300" height="60" rx="8"/>
+<text class="fc-t" x="700" y="344">Not installed</text>
+<text class="fc-s" x="700" y="364">Board boots its current firmware</text>
+<line class="fc-ln" x1="320" y1="380" x2="320" y2="418" marker-end="url(#fc-arr)"/>
+<text class="fc-l fc-la" x="330" y="404">Yes</text>
+
+<!-- 5 -->
+<rect class="fc-box fc-step" x="160" y="420" width="320" height="60" rx="8"/>
+<text class="fc-t" x="320" y="444">5 · BIM installs and starts it</text>
+<text class="fc-s" x="320" y="464">copied to internal flash · trial boot 1 of 3</text>
+<line class="fc-ln" x1="320" y1="480" x2="320" y2="518" marker-end="url(#fc-arr)"/>
+
+<!-- 6 decision -->
+<rect class="fc-box fc-dec" x="160" y="520" width="320" height="60" rx="8"/>
+<text class="fc-t" x="320" y="544">6 · Command from ground within 30 min?</text>
+<text class="fc-s" x="320" y="564">any valid command to this board confirms it</text>
+<line class="fc-ln" x1="480" y1="550" x2="548" y2="550" marker-end="url(#fc-arr)"/>
+<text class="fc-l" x="514" y="542">Yes</text>
+<rect class="fc-box fc-ok" x="550" y="510" width="300" height="80" rx="8"/>
+<text class="fc-t" x="700" y="536">CONFIRMED</text>
+<text class="fc-s" x="700" y="556">Normal operation from here on</text>
+<text class="fc-s" x="700" y="574">Set Golden once you trust this build</text>
+<line class="fc-ln" x1="320" y1="580" x2="320" y2="618" marker-end="url(#fc-arr)"/>
+<text class="fc-l fc-la" x="330" y="604">No — timeout, crash or watchdog</text>
+
+<!-- 7 -->
+<rect class="fc-box fc-step" x="160" y="620" width="320" height="60" rx="8"/>
+<text class="fc-t" x="320" y="644">7 · Board resets</text>
+<text class="fc-s" x="320" y="664">BIM records another unconfirmed boot</text>
+<line class="fc-ln" x1="320" y1="680" x2="320" y2="718" marker-end="url(#fc-arr)"/>
+
+<!-- 8 decision + loop -->
+<rect class="fc-box fc-dec" x="160" y="720" width="320" height="60" rx="8"/>
+<text class="fc-t" x="320" y="744">8 · Three unconfirmed boots?</text>
+<text class="fc-s" x="320" y="764">counted in the candidate's metadata</text>
+<polyline class="fc-ln" points="160,750 110,750 110,450 158,450" marker-end="url(#fc-arr)"/>
+<text class="fc-l" x="0" y="0" transform="translate(98 600) rotate(-90)">No — next trial boot</text>
+<line class="fc-ln" x1="320" y1="780" x2="320" y2="818" marker-end="url(#fc-arr)"/>
+<text class="fc-l fc-la" x="330" y="804">Yes</text>
+
+<!-- 9 -->
+<rect class="fc-box fc-fall" x="160" y="820" width="320" height="76" rx="8"/>
+<text class="fc-t" x="320" y="846">9 · Candidate REJECTED</text>
+<text class="fc-s" x="320" y="866">BIM verifies the golden image CRC,</text>
+<text class="fc-s" x="320" y="884">then restores it to internal flash</text>
+<line class="fc-ln fc-dash" x1="480" y1="858" x2="548" y2="858" marker-end="url(#fc-arr)"/>
+<rect class="fc-box fc-warn" x="550" y="820" width="300" height="76" rx="8"/>
+<text class="fc-t" x="700" y="846">No golden image set?</text>
+<text class="fc-s" x="700" y="866">Nothing to revert to: the rejected</text>
+<text class="fc-s" x="700" y="884">image keeps running</text>
+<line class="fc-ln" x1="320" y1="896" x2="320" y2="928" marker-end="url(#fc-arr)"/>
+
+<!-- 10 -->
+<rect class="fc-box fc-ok" x="160" y="930" width="320" height="60" rx="8"/>
+<text class="fc-t" x="320" y="954">10 · Board back on the golden image</text>
+<text class="fc-s" x="320" y="974">Flash Status: REJECTED · boots used 3</text>
+
+<!-- last resort -->
+<line class="fc-sep" x1="40" y1="1012" x2="840" y2="1012"/>
+<rect class="fc-box fc-crit" x="40" y="1030" width="800" height="100" rx="8"/>
+<text class="fc-t" x="440" y="1058">Last resort — no valid image anywhere</text>
+<text class="fc-s" x="440" y="1080">The BIM never parks the chip in low-power mode: it waits about 10 s and resets, forever.</text>
+<text class="fc-s" x="440" y="1100">Hold J4.5 (DIO6) low through a reset → the ROM bootloader starts on J4.2 / J4.3 (UART)</text>
+<text class="fc-s" x="440" y="1118">→ reflash the merged hex (BIM + app). Works even if internal flash is fully erased.</text>
+</svg>
+</div>
+
+
+<p class="fc-legend">Blue: normal steps · dashed cyan: checks · green: good outcome · amber: automatic fallback · red: hands-on recovery.</p>
+
+<h3 id="update-step-by-step">Sending an Update</h3>
+<ol>
+<li><strong>Build the new firmware</strong> on the Firmware tab for the board you are updating.
+   Choose the remote's role (for example Remote 1, <code>0x011</code>), then click
+   <strong>Clean + Build</strong>. <strong>Don't</strong> click Flash. The Ground Station
+   patches the image header and CRC for you.</li>
+<li>On the Commands tab, set the <strong>APID</strong> to the remote board and click
+   <strong>Flash Status</strong>. The board should reply with
+   <code>trial: confirmed</code> (or <code>none</code>) and
+   <code>golden image: present</code>.</li>
+<li>Click <strong>Start OAD</strong>. A 312 KB image takes about
+   <strong>85 seconds</strong> at the default 30 ms inter-chunk delay.</li>
+<li>When the log shows <code>image verified OK — board is rebooting...</code>,
+   wait. The Ground Station polls the board until it answers, which usually takes about 10 seconds.
+   That first answer also <strong>confirms</strong> the new firmware.</li>
+<li>Click <strong>Flash Status</strong> again. You should see
+   <code>trial: confirmed  boots used: 1</code>.</li>
+<li>Once you have tested the new build and trust it, click <strong>Set Golden Image</strong>
+   so it becomes the board's fallback. This takes about 7 seconds.</li>
+</ol>
+
+<blockquote class="warn">
+<p><strong>Set a golden image on every board before it flies.</strong> The automatic
+fallback can only restore a golden image that exists. With no golden image,
+a rejected update simply keeps running. Set Golden is part of
+<a href="#provision-tab">provisioning</a>.</p>
+</blockquote>
+
+<h3 id="trial-boot">What "On Trial" Means</h3>
+<p>A newly installed image has to prove the board can still talk to the ground.
+It does that by receiving <strong>any valid command addressed to that board</strong>,
+such as Get Telem. Until then it is on trial:</p>
+<ul>
+<li>If no command arrives within <strong>30 minutes</strong>, the board resets itself.
+   A crash or a watchdog reset counts the same way.</li>
+<li>Each of those resets uses up one of <strong>three trial boots</strong>.</li>
+<li>After the third unconfirmed boot, the bootloader rejects the new image.
+   It checks the golden image's CRC, restores it, and the board is back on
+   the golden image at its usual address.</li>
+</ul>
+<p>In practice, a build that crashes falls back within a few minutes. A build that
+runs but can't hear the ground falls back after about 90 minutes, roughly one
+LEO orbit. Either way the board comes back on its own, with no one at the bench.</p>
+
+<blockquote>
+<p><strong>Confirmation only proves the link works.</strong> A build that talks to the
+ground but has some other bug (for example a payload command) is confirmed and
+stays. To roll back a confirmed build, send the previous build with another OAD.</p>
+</blockquote>
+
+<h3 id="flash-status">Reading Flash Status</h3>
+<table>
+<thead><tr><th>Trial</th><th>Meaning</th><th>What to do</th></tr></thead>
+<tbody>
+<tr><td><code>none</code></td><td>No over-the-air update on record</td><td>Normal</td></tr>
+<tr><td><code>PENDING</code></td><td>New image installed, not yet confirmed (shows the boots used so far)</td><td>Send Get Telem to confirm it</td></tr>
+<tr><td><code>confirmed</code></td><td>New image accepted and running</td><td>Normal · Set Golden when you trust it</td></tr>
+<tr><td><code>REJECTED</code></td><td>New image never confirmed; board fell back to the golden image</td><td>Find out why the build failed before sending it again</td></tr>
+</tbody>
+</table>
+<p><code>golden image: present</code> means a verified fallback is stored.
+<code>NONE</code> means no fallback exists. Run <strong>Set Golden Image</strong>.</p>
+
+<h3 id="set-golden">Set Golden Image</h3>
+<p>Copies the firmware <strong>currently running</strong> on the addressed board into
+its golden slot, verifies every byte, and records it as the fallback. The board
+refuses the command and the log explains why if:</p>
+<ul>
+<li>an OAD transfer is in progress, or</li>
+<li>the running image is still <strong>on trial</strong>. Send Get Telem first to confirm it.</li>
+</ul>
+<p>Only set golden firmware that you have tested on that board. Golden is the
+image the board trusts when everything else has failed.</p>
+
+<h3 id="wired-recovery">Wired Recovery (J4 Header)</h3>
+<p>If no valid firmware is left anywhere, the bootloader doesn't give up. It
+waits about 10 seconds and resets, over and over. The chip's built-in ROM
+bootloader can then be used to reflash it over a plain 3.3 V USB-serial adapter:</p>
+<table>
+<thead><tr><th>J4 Pin</th><th>Signal</th><th>Connect to</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>GND</td><td>Adapter GND</td></tr>
+<tr><td>2</td><td>RX (DIO12)</td><td>Adapter TX</td></tr>
+<tr><td>3</td><td>TX (DIO13)</td><td>Adapter RX</td></tr>
+<tr><td>4</td><td>+3V3</td><td>Leave unconnected if the board is powered</td></tr>
+<tr><td>5</td><td>BACKDOOR (DIO6)</td><td>Jumper to GND to enter the bootloader</td></tr>
+<tr><td>6</td><td>RST (production V3)</td><td>Momentary to GND to reset</td></tr>
+</tbody>
+</table>
+<ol>
+<li>Connect the adapter (3.3 V logic only) and jumper <strong>J4.5 to GND</strong>.</li>
+<li>Reset the board. Tap J4.6 to GND, or power-cycle boards without the RST pin.
+   The ROM bootloader starts instead of the firmware.</li>
+<li>Reflash the merged image (bootloader + application) using the steps in the
+   <a href="SCK-2400_Developer_Guide.html#24-bim-oad-boot-chain">Developer Guide, Section 2.4</a>.</li>
+<li><strong>Remove the J4.5 jumper</strong>, reset, and confirm Get Telem works.
+   Then run Set Golden Image again.</li>
+</ol>
+<blockquote class="crit">
+<p>With J4.5 held low the board will <strong>always</strong> start the ROM bootloader, so
+never leave the jumper fitted in flight. In normal use a pull-up resistor holds the
+pin high.</p>
+</blockquote>
+<p>If the board is on the bench, a normal <strong>Flash</strong> over the J2 programming
+header (Firmware tab) does the same job faster. J4 recovery is for boards where
+J2 isn't reachable or the debug probe can't connect.</p>
 <hr />
+
 <h2 id="provision-tab">Provision Tab</h2>
 <p>One-time setup for new boards — flashes the bootloader (BIM) and sets
 the board's APID (address). BIM is permanent after initial flashing and
 is never overwritten by subsequent application or OAD updates.</p>
+<p><strong>Last provisioning step:</strong> once the board's firmware has passed
+your tests, address the board and click <strong>Set Golden Image</strong>
+(Commands tab). Then confirm <strong>Flash Status</strong> shows
+<code>golden image: present</code>. A board without a golden image has no
+automatic fallback.</p>
 <hr />
 <h2 id="troubleshooting">Troubleshooting</h2>
 <h3 id="no-reply-to-get-telem-on-ground-station-board-0x010">No reply to Get Telem on Ground Station board (0x010)</h3>
@@ -622,11 +882,49 @@ is never overwritten by subsequent application or OAD updates.</p>
 <li>Confirm the remote board responded to <strong>OAD Status</strong> before starting</li>
 <li>
 <p>If a transfer fails partway through, the Ground Station automatically
-  retries — re-erasing the flash slot and re-streaming</p>
+  retries once — re-erasing the flash slot and re-streaming</p>
 </li>
 <li>
-<p>A failed or interrupted OAD never corrupts the running firmware — BIM
-  always falls back to the last known-good image</p>
+<p>A failed or interrupted transfer never touches the running firmware —
+  the new image is only installed after both CRC checks pass</p>
+</li>
+<li>
+<p>Use the 30 ms default inter-chunk delay. Shorter delays can drop chunks
+  on the RF link</p>
+</li>
+</ul>
+<h3 id="board-silent-after-an-update">Board silent after an update</h3>
+<ul>
+<li>
+<p>Wait. If the new image can't hear the ground, it resets itself every
+  30 minutes. After three tries the board restores its golden image and
+  answers again, about 90 minutes in the worst case. A build that crashes
+  falls back within minutes</p>
+</li>
+<li>
+<p>On the bench you can speed this up: each power-cycle uses up one trial boot</p>
+</li>
+<li>
+<p>When it answers, Flash Status shows <code>REJECTED</code>. The update was
+  rolled back</p>
+</li>
+<li>
+<p>If it never comes back (no golden image was set, or the board is
+  damaged), use <a href="#wired-recovery">wired recovery through J4</a></p>
+</li>
+</ul>
+<h3 id="set-golden-refused">Set Golden Image refused</h3>
+<ul>
+<li>
+<p><code>running image is still on trial</code> — send Get Telem to confirm
+  it, then retry</p>
+</li>
+<li>
+<p><code>an OAD session is active</code> — finish or abort the transfer first</p>
+</li>
+<li>
+<p>Any flash error or <code>verify mismatch</code> — retry once. If it repeats, the
+  board's external flash needs checking</p>
 </li>
 </ul>
 <h3 id="board-unresponsive-after-a-firmware-flash">Board unresponsive after a firmware flash</h3>
@@ -672,8 +970,16 @@ is never overwritten by subsequent application or OAD updates.</p>
 <td>CCSDS Space Packet Protocol</td>
 </tr>
 <tr>
-<td>OAD transfer (335KB image)</td>
-<td>~24 seconds @ 10ms inter-chunk delay</td>
+<td>OAD transfer (312 KB image)</td>
+<td>~85 seconds @ 30 ms inter-chunk delay</td>
+</tr>
+<tr>
+<td>Update failover</td>
+<td>Trial boot (3 boots, 30-minute confirm window) with automatic golden-image restore</td>
+</tr>
+<tr>
+<td>Wired recovery</td>
+<td>ROM serial bootloader on J4 (backdoor DIO6, active low)</td>
 </tr>
 <tr>
 <td>Cold boot time</td>
@@ -690,7 +996,7 @@ is never overwritten by subsequent application or OAD updates.</p>
 </tbody>
 </table>
 <hr />
-<p><em>SpaceCommsKit SCK-2400 User Guide v1.10</em>
+<p><em>SpaceCommsKit SCK-2400 User Guide v1.11</em>
 <em>For updates and source code see https://spacecommskit.com</em></p>
 </div>
 </div>

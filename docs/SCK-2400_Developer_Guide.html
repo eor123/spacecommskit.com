@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SCK-2400 Developer Guide — SpaceCommsKit</title>
-<meta name="description" content="SpaceCommsKit SCK-2400 Developer Guide — CCSDS packet structure, OAD transport, CCSDS/ESP bridge architecture, SysConfig reference, and hard-won lessons.">
+<meta name="description" content="SpaceCommsKit SCK-2400 Developer Guide — CCSDS packet structure, OAD transport, trial boot and golden-image failover, ROM bootloader recovery, CCSDS/ESP bridge architecture, SysConfig reference, and hard-won lessons.">
 <link rel="canonical" href="https://www.spacecommskit.com/docs/SCK-2400_Developer_Guide.html">
 <link rel="stylesheet" href="../style.css">
 <style>
@@ -84,6 +84,26 @@
 .doc-toc a { color: var(--text-inv); font-size: 13.5px; text-decoration: none; }
 .doc-toc a:hover { color: var(--cyan); text-decoration: underline; }
 @media (max-width: 700px) { .doc-toc ul { columns: 1; } }
+/* Firmware update / failover flow chart (11/2026) */
+.fc-wrap { overflow-x: auto; margin: 8px 0 28px; background: var(--void); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px; }
+.fc-wrap svg.fc { display: block; width: 100%; min-width: 640px; height: auto; }
+.fc-box { stroke-width: 1.5; }
+.fc-step { fill: var(--surface); stroke: var(--blue); }
+.fc-dec  { fill: var(--surface); stroke: var(--cyan); stroke-dasharray: 5 3; }
+.fc-info { fill: var(--surface); stroke: var(--border); }
+.fc-ok   { fill: rgba(34,197,94,0.10); stroke: #22c55e; }
+.fc-fall { fill: rgba(240,165,0,0.10); stroke: var(--gold); }
+.fc-warn { fill: rgba(240,165,0,0.06); stroke: var(--gold); stroke-dasharray: 5 3; }
+.fc-crit { fill: rgba(224,60,46,0.08); stroke: var(--red); }
+.fc-t { fill: var(--text-hero); font-family: var(--font-sans, system-ui, sans-serif); font-size: 14px; font-weight: 600; text-anchor: middle; }
+.fc-s { fill: var(--text-inv); font-family: var(--font-sans, system-ui, sans-serif); font-size: 12px; text-anchor: middle; }
+.fc-l { fill: var(--cyan); font-family: var(--font-mono); font-size: 11px; text-anchor: middle; }
+.fc-la { text-anchor: start; }
+.fc-ln { stroke: #8aa0b8; stroke-width: 1.5; fill: none; }
+.fc-dash { stroke-dasharray: 4 3; }
+.fc-head { fill: #8aa0b8; }
+.fc-sep { stroke: var(--border); stroke-dasharray: 6 4; }
+.fc-legend { font-size: 13px; color: var(--text-inv); margin: -18px 0 24px; }
 </style>
 </head>
 <body>
@@ -124,7 +144,7 @@
 <li><a href="#70-hard-won-lessons">7.0 Hard-Won Lessons</a></li>
 <li><a href="#80-ground-station-sck-2400-integration-notes">8.0 Ground Station — SCK-2400 Integration Notes</a></li></ul></div>
 <h1 id="spacecommskit-sck-2400-developer-guide">SpaceCommsKit SCK-2400 Developer Guide</h1>
-<p><strong>Version 1.10 — July 2026</strong>
+<p><strong>Version 1.11 — November 2026</strong>
 <strong>SpaceCommsKit — https://spacecommskit.com/docs</strong></p>
 <blockquote>
 <p>This document covers the SCK-2400 development stack — from the CCSDS
@@ -168,7 +188,7 @@ relevant section:</p>
 </tr>
 <tr>
 <td><code>SCK-DEV: BIM_OAD</code></td>
-<td>Bootloader / OAD boot chain</td>
+<td>Bootloader / OAD boot chain, golden image, trial boot, J4 recovery</td>
 <td>2.4</td>
 </tr>
 <tr>
@@ -563,7 +583,7 @@ easy to miss initially.</p>
 with no flow control. Present in hardware for future use, not
 currently wired into the UART2 driver config.</p>
 </blockquote>
-<p><strong>UART1 header (Ground Station link, <code>PAYLOAD_UART</code>), 5-pin:</strong></p>
+<p><strong>J4 — UART1 header (Ground Station link, <code>PAYLOAD_UART</code>, ROM bootloader), 6-pin on production V3:</strong></p>
 <table>
 <thead>
 <tr>
@@ -597,6 +617,11 @@ currently wired into the UART2 driver config.</p>
 <td>5</td>
 <td>BACKDOOR</td>
 <td>DIO6 (package pin 11), 10kΩ pull-up to +3V3</td>
+</tr>
+<tr>
+<td>6</td>
+<td>RST</td>
+<td><code>RESET_N</code> — added for production V3 (11/2026); 5-pin prototypes reset by power cycle</td>
 </tr>
 </tbody>
 </table>
@@ -640,24 +665,350 @@ payload command avoids this entirely. Also enable <strong>"Enable Nonblocking
 Mode"</strong> on <code>DEBUG_UART</code> in SysConfig — this allocates the RX ring buffer
 required for <code>UART2_Mode_NONBLOCKING</code> reads to return immediately when no
 data is available.</p>
-<h3 id="24-bim-oad-boot-chain">2.4 BIM / OAD Boot Chain [SCK-DEV: BIM_OAD]</h3>
-<pre><code>Power-on reset
-    ↓
-BIM (Boot Image Manager) — runs first, permanent, never updated by OAD
-    ↓ scans ext flash page 0 for OAD_EFL_MAGIC + imgCpStat == NEED_COPY
-    ├─ found valid image → copy ext flash → internal flash → boot it
-    └─ not found / invalid → boot existing internal flash application
+<h3 id="24-bim-oad-boot-chain">2.4 BIM / OAD Boot Chain, Golden Image and Recovery [SCK-DEV: BIM_OAD]</h3>
+<p>The SCK-2400 is designed so that a remote board <strong>cannot be bricked by a
+firmware update</strong>, including one sent to a board in orbit. Four layers
+each cover what the one before cannot:</p>
+<table>
+<thead><tr><th>Layer</th><th>Protects against</th><th>Where</th></tr></thead>
+<tbody>
+<tr><td>1. Transfer CRC-16</td><td>Lost or corrupted chunks during the RF transfer</td><td>App, <code>handle_oad_end()</code></td></tr>
+<tr><td>2. Image CRC-32</td><td>An image that went bad in external flash before install</td><td>BIM, <code>Bim_sckCrc32()</code></td></tr>
+<tr><td>3. Trial boot + golden image</td><td>An image that installs fine but crashes or can't talk to the ground</td><td>BIM <code>Bim_trialCheck()</code> + app <code>oad_trial_*()</code></td></tr>
+<tr><td>4. ROM serial bootloader on J4</td><td>No valid image left anywhere; wiped or corrupted internal flash</td><td>CCFG (BIM build), chip ROM</td></tr>
+</tbody>
+</table>
+<p>The BIM itself is flashed once at provisioning and is never written by
+application builds or OAD.</p>
+
+<div class="fc-wrap">
+<svg class="fc" viewBox="0 0 880 1150" role="img" aria-labelledby="fc-title fc-desc" xmlns="http://www.w3.org/2000/svg">
+<title id="fc-title">SCK-2400 firmware update, failover and recovery flow</title>
+<desc id="fc-desc">An over-the-air update is verified twice, installed as a trial, and kept only if the board hears from the ground. After three unconfirmed boots the bootloader restores the golden image. If nothing valid remains, the ROM bootloader on J4 allows a full reflash.</desc>
+<defs>
+  <marker id="fc-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" class="fc-head"/>
+  </marker>
+</defs>
+
+<!-- main column: x 160..480 (centre 320); side column: x 550..850 (centre 700) -->
+
+<!-- 1 -->
+<rect class="fc-box fc-step" x="160" y="20" width="320" height="60" rx="8"/>
+<text class="fc-t" x="320" y="44">1 · Ground station sends the update</text>
+<text class="fc-s" x="320" y="64">128-byte chunks → external-flash candidate slot</text>
+<line class="fc-ln" x1="320" y1="80" x2="320" y2="118" marker-end="url(#fc-arr)"/>
+
+<!-- 2 decision -->
+<rect class="fc-box fc-dec" x="160" y="120" width="320" height="60" rx="8"/>
+<text class="fc-t" x="320" y="144">2 · Received image CRC-16 matches?</text>
+<text class="fc-s" x="320" y="164">checked by the board at OAD END</text>
+<line class="fc-ln" x1="480" y1="150" x2="548" y2="150" marker-end="url(#fc-arr)"/>
+<text class="fc-l" x="514" y="142">No</text>
+<rect class="fc-box fc-info" x="550" y="120" width="300" height="60" rx="8"/>
+<text class="fc-t" x="700" y="144">Update refused</text>
+<text class="fc-s" x="700" y="164">Running firmware untouched; retry</text>
+<line class="fc-ln" x1="320" y1="180" x2="320" y2="218" marker-end="url(#fc-arr)"/>
+<text class="fc-l fc-la" x="330" y="204">Yes</text>
+
+<!-- 3 -->
+<rect class="fc-box fc-step" x="160" y="220" width="320" height="60" rx="8"/>
+<text class="fc-t" x="320" y="244">3 · Candidate marked ready</text>
+<text class="fc-s" x="320" y="264">OAD END ACK (status 0x00) · board resets</text>
+<line class="fc-ln" x1="320" y1="280" x2="320" y2="318" marker-end="url(#fc-arr)"/>
+
+<!-- 4 decision -->
+<rect class="fc-box fc-dec" x="160" y="320" width="320" height="60" rx="8"/>
+<text class="fc-t" x="320" y="344">4 · BIM: image CRC-32 valid?</text>
+<text class="fc-s" x="320" y="364">computed over the copy in external flash</text>
+<line class="fc-ln" x1="480" y1="350" x2="548" y2="350" marker-end="url(#fc-arr)"/>
+<text class="fc-l" x="514" y="342">No</text>
+<rect class="fc-box fc-info" x="550" y="320" width="300" height="60" rx="8"/>
+<text class="fc-t" x="700" y="344">Not installed</text>
+<text class="fc-s" x="700" y="364">Board boots its current firmware</text>
+<line class="fc-ln" x1="320" y1="380" x2="320" y2="418" marker-end="url(#fc-arr)"/>
+<text class="fc-l fc-la" x="330" y="404">Yes</text>
+
+<!-- 5 -->
+<rect class="fc-box fc-step" x="160" y="420" width="320" height="60" rx="8"/>
+<text class="fc-t" x="320" y="444">5 · BIM installs and starts it</text>
+<text class="fc-s" x="320" y="464">copied to internal flash · trial boot 1 of 3</text>
+<line class="fc-ln" x1="320" y1="480" x2="320" y2="518" marker-end="url(#fc-arr)"/>
+
+<!-- 6 decision -->
+<rect class="fc-box fc-dec" x="160" y="520" width="320" height="60" rx="8"/>
+<text class="fc-t" x="320" y="544">6 · Command from ground within 30 min?</text>
+<text class="fc-s" x="320" y="564">any valid command to this board confirms it</text>
+<line class="fc-ln" x1="480" y1="550" x2="548" y2="550" marker-end="url(#fc-arr)"/>
+<text class="fc-l" x="514" y="542">Yes</text>
+<rect class="fc-box fc-ok" x="550" y="510" width="300" height="80" rx="8"/>
+<text class="fc-t" x="700" y="536">CONFIRMED</text>
+<text class="fc-s" x="700" y="556">Normal operation from here on</text>
+<text class="fc-s" x="700" y="574">Set Golden once you trust this build</text>
+<line class="fc-ln" x1="320" y1="580" x2="320" y2="618" marker-end="url(#fc-arr)"/>
+<text class="fc-l fc-la" x="330" y="604">No — timeout, crash or watchdog</text>
+
+<!-- 7 -->
+<rect class="fc-box fc-step" x="160" y="620" width="320" height="60" rx="8"/>
+<text class="fc-t" x="320" y="644">7 · Board resets</text>
+<text class="fc-s" x="320" y="664">BIM records another unconfirmed boot</text>
+<line class="fc-ln" x1="320" y1="680" x2="320" y2="718" marker-end="url(#fc-arr)"/>
+
+<!-- 8 decision + loop -->
+<rect class="fc-box fc-dec" x="160" y="720" width="320" height="60" rx="8"/>
+<text class="fc-t" x="320" y="744">8 · Three unconfirmed boots?</text>
+<text class="fc-s" x="320" y="764">counted in the candidate's metadata</text>
+<polyline class="fc-ln" points="160,750 110,750 110,450 158,450" marker-end="url(#fc-arr)"/>
+<text class="fc-l" x="0" y="0" transform="translate(98 600) rotate(-90)">No — next trial boot</text>
+<line class="fc-ln" x1="320" y1="780" x2="320" y2="818" marker-end="url(#fc-arr)"/>
+<text class="fc-l fc-la" x="330" y="804">Yes</text>
+
+<!-- 9 -->
+<rect class="fc-box fc-fall" x="160" y="820" width="320" height="76" rx="8"/>
+<text class="fc-t" x="320" y="846">9 · Candidate REJECTED</text>
+<text class="fc-s" x="320" y="866">BIM verifies the golden image CRC,</text>
+<text class="fc-s" x="320" y="884">then restores it to internal flash</text>
+<line class="fc-ln fc-dash" x1="480" y1="858" x2="548" y2="858" marker-end="url(#fc-arr)"/>
+<rect class="fc-box fc-warn" x="550" y="820" width="300" height="76" rx="8"/>
+<text class="fc-t" x="700" y="846">No golden image set?</text>
+<text class="fc-s" x="700" y="866">Nothing to revert to: the rejected</text>
+<text class="fc-s" x="700" y="884">image keeps running</text>
+<line class="fc-ln" x1="320" y1="896" x2="320" y2="928" marker-end="url(#fc-arr)"/>
+
+<!-- 10 -->
+<rect class="fc-box fc-ok" x="160" y="930" width="320" height="60" rx="8"/>
+<text class="fc-t" x="320" y="954">10 · Board back on the golden image</text>
+<text class="fc-s" x="320" y="974">Flash Status: REJECTED · boots used 3</text>
+
+<!-- last resort -->
+<line class="fc-sep" x1="40" y1="1012" x2="840" y2="1012"/>
+<rect class="fc-box fc-crit" x="40" y="1030" width="800" height="100" rx="8"/>
+<text class="fc-t" x="440" y="1058">Last resort — no valid image anywhere</text>
+<text class="fc-s" x="440" y="1080">The BIM never parks the chip in low-power mode: it waits about 10 s and resets, forever.</text>
+<text class="fc-s" x="440" y="1100">Hold J4.5 (DIO6) low through a reset → the ROM bootloader starts on J4.2 / J4.3 (UART)</text>
+<text class="fc-s" x="440" y="1118">→ reflash the merged hex (BIM + app). Works even if internal flash is fully erased.</text>
+</svg>
+</div>
+
+
+<h4 id="241-flash-maps">2.4.1 Flash Maps</h4>
+<p><strong>Internal flash (CC2652P1F, 352 KB):</strong></p>
+<table>
+<thead><tr><th>Address</th><th>Contents</th></tr></thead>
+<tbody>
+<tr><td><code>0x00000</code></td><td>BIM (off-chip BIM, <code>sck2400_bim</code> project)</td></tr>
+<tr><td><code>0x04000</code></td><td>Application with OAD image header (<code>oad_image_header_app.c</code>). Max length <code>0x4E000</code></td></tr>
+<tr><td><code>0x52000</code></td><td>NVS (reset counter / safe mode, Section 3.10). Never part of an OAD image</td></tr>
+<tr><td><code>0x57FA8</code></td><td>CCFG (from the BIM build). <code>BL_CONFIG</code> at <code>0x57FD8</code></td></tr>
+</tbody>
+</table>
+<p><strong>External flash (MX25R8035F, 1 MB, 4 KB pages) — layout since November 2026:</strong></p>
+<table>
+<thead><tr><th>Address</th><th>Contents</th><th>Written by</th></tr></thead>
+<tbody>
+<tr><td><code>0x000000</code> (page 0)</td><td>Golden metadata (<code>ExtImageInfo_t</code>, <code>counter = 0x444C4F47</code> "GOLD")</td><td><code>CMD_OAD_SET_GOLDEN</code> only</td></tr>
+<tr><td><code>0x001000</code> (page 1)</td><td>Candidate metadata (the image being updated)</td><td><code>CMD_OAD_END</code>; trial bits by the BIM and app</td></tr>
+<tr><td><code>0x002000</code></td><td>Candidate image (up to <code>0x4E000</code>)</td><td><code>CMD_OAD_CHUNK</code></td></tr>
+<tr><td><code>0x080000</code></td><td>Golden image (up to <code>0x4E000</code>)</td><td><code>CMD_OAD_SET_GOLDEN</code></td></tr>
+</tbody>
+</table>
+<blockquote class="warn">
+<p><strong>Layout change.</strong> Before November 2026 the OAD metadata lived on page 0.
+That is TI's <code>EFL_ADDR_META_FACT_IMG</code>, so the BIM's "factory revert"
+only ever re-copied the last OAD image and there was no real fallback.
+<code>handle_oad_start()</code> erases a leftover non-GOLD page 0, so boards
+migrate on their first OAD. The BIM and the app <strong>must</strong> agree on this
+map (<code>SCK_GOLDEN_MAGIC</code> block in <code>bim_offchip_main_local.c</code>,
+<code>OAD_*</code> defines in <code>uart.c</code>).</p>
+</blockquote>
+
+<h4 id="242-trial-state">2.4.2 Trial State Encoding</h4>
+<p>Trial state lives in the candidate metadata's 32-bit <code>counter</code> field.
+Flash bits can only be cleared without an erase, so each change is a single
+1→0 write. No page erase happens during a boot.</p>
+<table>
+<thead><tr><th>Field</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>counter = 0xFFFFFFFF</code></td><td>Written by <code>CMD_OAD_END</code>: fresh candidate, no boots used</td></tr>
+<tr><td>Low byte, one bit cleared per boot</td><td>Boots used = number of 0 bits. The BIM clears one before every jump to an unconfirmed candidate (the first boot after the copy counts as boot 1)</td></tr>
+<tr><td>Top byte cleared (<code>counter &amp; 0xFF000000 == 0</code>)</td><td>Confirmed by the app (<code>SCK_TRIAL_CONFIRM_MASK</code>)</td></tr>
+<tr><td><code>crcStat = CRC_INVALID</code></td><td>Rejected by the BIM after <code>SCK_TRIAL_MAX_BOOTS</code> (3) boots</td></tr>
+</tbody>
+</table>
+<p><code>CMD_OAD_STATUS</code> reports this as <code>trialState</code>: 0 none, 1 pending,
+2 rejected, 3 confirmed, plus <code>bootsUsed</code> and <code>goldenPresent</code>.</p>
+
+<h4 id="243-bim-decision-order">2.4.3 BIM Decision Order</h4>
+<p>On every reset, <code>Bim_checkImages()</code> runs:</p>
+<ol>
+<li><strong><code>Bim_trialCheck()</code></strong>: if the page-1 candidate is copied
+   (<code>COPY_DONE</code>), not rejected and not confirmed, count the boots used.
+   At 3 it marks the candidate <code>CRC_INVALID</code> and calls
+   <code>Bim_revertFactoryImage()</code>. Otherwise it clears one more low-byte bit.</li>
+<li><strong><code>checkImagesExtFlash()</code></strong>: a candidate marked
+   <code>NEED_COPY</code> is checked with CRC-32 in external flash, copied to
+   <code>0x4000</code>, recorded as trial boot 1, and started.</li>
+<li><strong><code>checkImagesIntFlash()</code></strong>: otherwise, boot the valid image
+   already in internal flash.</li>
+<li><strong><code>Bim_revertFactoryImage()</code></strong>: no valid internal image.
+   This requires the GOLD marker on page 0 <strong>and</strong> a good CRC-32 of the
+   golden image in external flash <strong>before</strong> internal flash is erased.
+   A bad or missing golden image is never installed over a working one.</li>
+<li><strong>Nothing valid:</strong> TI's BIM would park the chip in low-power mode
+   forever. The SCK BIM waits about 10 s (<code>CPUdelay</code>) and calls
+   <code>SysCtrlSystemReset()</code>, retrying forever. The ROM bootloader stays
+   reachable on every reset.</li>
+</ol>
+
+<h4 id="244-app-side">2.4.4 Application Side</h4>
+<ul>
+<li><code>oad_trial_init()</code>, called from <code>rfTask</code> after crypto init,
+   reads both metadata pages to set <code>sTrialState</code>, <code>sTrialBootsUsed</code>
+   and <code>sGoldenPresent</code>. If the running image is <strong>pending</strong>, it arms a
+   one-shot Clock for <code>SCK_TRIAL_TIMEOUT_S</code> (default <strong>1800 s</strong>)
+   that calls <code>SysCtrlSystemReset()</code>.</li>
+<li><code>oad_trial_confirm()</code> runs at the top of
+   <code>uart_dispatch_ccsds_packet()</code> on the first valid command addressed
+   to this board. That is over RF on a remote (<code>viaRf</code>), or over UART on
+   the GS board. It clears the counter's top byte and stops the Clock. The Ground
+   Station's post-OAD reboot poll (<code>get_telem</code>) therefore confirms a
+   good image automatically.</li>
+<li>Crashes and watchdog resets (Section 3.8) end a trial boot the same way the
+   timeout does. Each one is a reset the BIM counts.</li>
+</ul>
+<blockquote>
+<p><strong>Worst-case fallback time</strong> = 3 × the time to the next reset. With the
+production timeout that is about 90 minutes for an image that runs but never hears
+the ground (about one LEO orbit). It is about 3–4 minutes for one that hangs
+(watchdog about 65 s, see L18). For bench tests, build with
+<code>-DSCK_TRIAL_TIMEOUT_S=60</code>, or edit the default in <code>uart.c</code> and
+<strong>put it back</strong>.</p>
+</blockquote>
+
+<h4 id="245-set-golden">2.4.5 <code>CMD_OAD_SET_GOLDEN</code> (0x15)</h4>
+<p>Copies the <strong>running</strong> app (from <code>0x4000</code>, length from its own
+header) byte-for-byte to <code>0x080000</code>. It reads back and compares every
+page, yields between sectors for the watchdog, and writes the GOLD record on page 0
+<strong>last</strong>, so an interrupted copy never looks valid. The copy is exact: the
+header's CRC-32 and <code>crcStat</code> are unchanged, so the BIM's CRC check on
+revert covers the same bytes. It takes about 7 s for a 312 KB image.</p>
+<p>ACK: <code>[0x15][status][err][4B len BE]</code>, status 0x00 = OK.</p>
+<table>
+<thead><tr><th>err</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td>0x01</td><td>OAD session active</td></tr>
+<tr><td>0x02</td><td>Running image still on trial — confirm it first</td></tr>
+<tr><td>0x03</td><td>Bad image length in the app header</td></tr>
+<tr><td>0x04</td><td>External flash open failed</td></tr>
+<tr><td>0x05</td><td>External flash erase failed</td></tr>
+<tr><td>0x06</td><td>External flash write failed</td></tr>
+<tr><td>0x07</td><td>Readback verify mismatch</td></tr>
+<tr><td>0x08</td><td>Golden record write failed</td></tr>
+</tbody>
+</table>
+<p>The golden image is in external flash, so it <strong>survives a J2 reflash</strong>
+(<code>srfprog</code> programs internal flash only).</p>
+
+<h4 id="246-image-crc">2.4.6 Image CRC-32</h4>
+<p>The BIM checks images with <strong>CRC-32/IEEE</strong> (reflected polynomial
+<code>0xEDB88320</code>, init and final XOR <code>0xFFFFFFFF</code>, identical to
+<code>zlib.crc32</code>). It covers image bytes <code>[12, len)</code>, skipping the
+image ID and the CRC field itself. After every build the Ground Station computes it
+(<code>PatchSck2400ImageCrc32()</code>) and writes it into the header at hex
+address <code>0x4008</code>. The log shows <code>Image CRC32 patched: 0x........</code>.
+The BIM uses its own <code>Bim_sckCrc32()</code> because TI's
+<code>CRC32_calc</code> could not read external flash in this BIM build. Before
+November 2026 the field was left at <code>0xFFFFFFFF</code>.</p>
+
+<h4 id="247-rom-bootloader">2.4.7 ROM Bootloader Recovery (J4)</h4>
+<p>The CC2652P has a serial bootloader in ROM that does not depend on anything in
+flash. The BIM's CCFG enables it with a backdoor pin:</p>
+<pre><code class="language-c">/* sck2400_bim/ccfg_sck.c — replaces ccfg_app.c in the BIM project */
+#define SET_CCFG_BL_CONFIG_BOOTLOADER_ENABLE  0xC5   /* enabled           */
+#define SET_CCFG_BL_CONFIG_BL_LEVEL           0x0    /* active low        */
+#define SET_CCFG_BL_CONFIG_BL_PIN_NUMBER      0x6    /* DIO6 = J4.5       */
+#define SET_CCFG_BL_CONFIG_BL_ENABLE          0xC5   /* backdoor enabled  */
+#include &lt;ti/common/bim/ccfg_app.c&gt;
 </code></pre>
-<p>BIM is flashed once during board provisioning and is <strong>never</strong> touched by
-application builds or OAD transfers. This is the safety net: a failed or
-corrupted OAD image simply isn't copied, and the board boots whatever was
-already in internal flash.</p>
-<p>OAD writes the new application image to <strong>external flash</strong> (MX25R8035F,
-1MB SPI flash) starting at <code>OAD_IMG_OFFSET = 0x001000</code>, then writes an
-<code>ExtImageInfo_t</code> metadata header to <code>OAD_SLOT_OFFSET = 0x000000</code> with
-<code>imgCpStat = NEED_COPY</code>. On next boot, BIM finds this header, copies the
-image to internal flash, and the new firmware runs.</p>
-<p>See Section 3.2 for the full OAD streaming protocol.</p>
+<p>Expected <code>BL_CONFIG = 0xC5FE06C5</code>. The flashed CCFG comes from the
+BIM, so check it on <strong>both</strong> the BIM hex and the merged hex before
+provisioning:</p>
+<pre><code>py check_ccfg.py V3\sck2400_bim.hex
+py check_ccfg.py sck2400_merged.hex
+</code></pre>
+<p><code>build_bim_v3.bat</code> compiles with <code>-Werror=macro-redefined</code>, so a
+project that still compiles TI's <code>ccfg_app.c</code> alongside
+<code>ccfg_sck.c</code> fails the build instead of shipping with the bootloader
+disabled (see L33).</p>
+<p><strong>J4 header (production V3, 1×6):</strong> 1 GND · 2 RX (DIO12) · 3 TX (DIO13)
+· 4 +3V3 · 5 BACKDOOR (DIO6, R40 pull-up) · 6 RST (<code>RESET_N</code>). The
+bootloader UART uses the same pins as <code>PAYLOAD_UART</code>, so a board's
+Ground Station link and its recovery port are the same connector.</p>
+<p><strong>Entering the bootloader:</strong> connect a 3.3 V USB-serial adapter (adapter
+TX → J4.2, RX → J4.3, GND → J4.1). Hold J4.5 low and reset the board, using
+J4.6 or a power cycle. The ROM samples DIO6 only at reset. If the flash has no
+valid image (for example after a mass erase), the ROM starts the bootloader without
+the backdoor.</p>
+<p><strong>Tool:</strong> <code>cc2538_bsl.py</code> (open source, pyserial; add
+<code>intelhex</code> for <code>.hex</code> input). It reports the chip as
+"CC1350 PG2.1 … 352KB Flash". That name comes from its chip table; the flash size
+and CCFG address are correct for the CC2652P1F.</p>
+<pre><code># Read-only check (proven on V3 board #1, 11/09/2026): reads 4 KB, changes nothing
+py .\cc2538_bsl.py -p COM6 -b 115200 -r -a 0 -l 4096 bim_readback.bin
+py compare_readback.py bim_readback.bin V3\sck2400_bim.hex      # expect MATCH
+
+# Full recovery (proven on V3 board #1, 11/10/2026): mass erase, write all
+# 360,448 bytes (0x00000-0x57FFF: BIM + app + CCFG), verify by CRC-32. About 1 minute.
+py -m pip install pyserial intelhex
+py .\cc2538_bsl.py -p COM6 -b 115200 -e -w -v sck2400_merged.hex
+#   Performing mass erase ... Erase done
+#   Writing 360448 bytes starting at address 0x00000000 ... Write done
+#   Verifying by comparing CRC32 calculations.  Verified (match: 0x........)
+</code></pre>
+<p>The Ground Station writes <code>sck2400_merged.hex</code> to the CCS workspace folder
+(for example <code>C:\Users\&lt;you&gt;\workspace_ccstheia\</code>) each time
+<strong>Flash</strong> is clicked. Run <code>check_ccfg.py</code> on it before writing it
+through the ROM bootloader.</p>
+<blockquote class="warn">
+<p>Tool notes: the current file name uses an <strong>underscore</strong>
+(<code>cc2538_bsl.py</code>). A file argument is required even for a read.
+<code>-a</code>/<code>-l</code> take <strong>decimal</strong>. Without <code>-e</code>/<code>-w</code>
+nothing is changed. A J2 programmer on the board can hold the reset line, so
+unplug it first.</p>
+</blockquote>
+<p>After recovery: remove the J4.5 jumper, reset, confirm Get Telem, then
+<strong>Set Golden Image</strong> again. The ROM bootloader only touches internal flash,
+so the old golden image and candidate records in external flash are still there.
+Setting golden again makes sure the fallback matches the recovered build.</p>
+
+<h4 id="248-verification">2.4.8 Verification Procedure</h4>
+<p>Run this whenever the BIM, the flash map, the OAD code or the confirm rule changes.
+All four passed on SCK-2400 V3 board #1 on 11/09–11/10/2026.</p>
+<table>
+<thead><tr><th>Test</th><th>Steps</th><th>Pass</th></tr></thead>
+<tbody>
+<tr><td>1. Baseline</td><td>Flash merged hex over J2; Flash Status</td><td>Board answers; trial <code>none</code></td></tr>
+<tr><td>2. Set Golden</td><td>Set Golden Image; Flash Status</td><td>ACK 0x00 in about 7 s; <code>golden image: present</code></td></tr>
+<tr><td>3. Good update</td><td>Build same role (do not flash), Start OAD</td><td>END 0x00; board answers about 10 s later; <code>confirmed</code>, boots 1</td></tr>
+<tr><td>4. Bad update</td><td>Build as a <em>different</em> APID with <code>SCK_TRIAL_TIMEOUT_S</code> 60, OAD it to the board's real APID, send nothing to the new APID</td><td>3 resets about 1 min apart, then the board answers at its real APID: <code>REJECTED</code>, boots 3, golden present</td></tr>
+</tbody>
+</table>
+<p>A build for another APID never sees a command addressed to it, so it never
+confirms. That gives a reproducible "update that can't talk to the ground"
+without writing a deliberately broken image. After Test 4, put the timeout back
+to 1800 s, OAD a clean build, and Set Golden.</p>
+
+<h4 id="249-limits">2.4.9 Design Limits</h4>
+<ul>
+<li><strong>Confirmation proves the link, not the build.</strong> An image that answers
+   commands but has another bug is confirmed and kept. Roll it back with an OAD of
+   the previous build. There is no "revert to golden" command yet.</li>
+<li><strong>No golden image means no automatic fallback.</strong> The rejected image
+   keeps running. Set Golden is a provisioning step.</li>
+<li>The golden image is only as good as the build you set. Only set firmware that has
+   been tested on that board.</li>
+<li>The BIM is not field-updatable by design. A BIM change requires J2 or J4.</li>
+</ul>
 <h3 id="25-programming-debug-connector-j2">2.5 Programming / Debug Connector (J2)</h3>
 <p>The SCK-2400 carries a <strong>2×5 (10-pin), 0.05" pitch programming/debug
 header (J2)</strong>, matching the standard <strong>TI LaunchPad XDS110 debug-out</strong>
@@ -816,7 +1167,7 @@ further GS changes needed for a simple request/response command.</p>
 <h3 id="32-oad-streaming-transport">3.2 OAD Streaming Transport [SCK-DEV: OAD_STREAMING]</h3>
 <p>OAD (Over-Air Download) transfers a complete firmware image to a remote
 board over RF in three phases.</p>
-<p><strong>Performance (335KB image):</strong></p>
+<p><strong>Performance (312 KB image, SCK-2400 V3, encrypted RF via the GS board, measured 11/2026):</strong></p>
 <table>
 <thead>
 <tr>
@@ -828,25 +1179,20 @@ board over RF in three phases.</p>
 </thead>
 <tbody>
 <tr>
-<td>Per-chunk ACK (legacy)</td>
-<td>168s</td>
-<td>2.0 KB/s</td>
-<td>35%</td>
-</tr>
-<tr>
-<td>Streaming, 20ms delay</td>
-<td>43.5s</td>
-<td>7.7 KB/s</td>
-<td>9%</td>
-</tr>
-<tr>
-<td><strong>Streaming, 10ms delay (production)</strong></td>
-<td><strong>24.1s</strong></td>
-<td><strong>13.9 KB/s</strong></td>
-<td><strong>5%</strong></td>
+<td><strong>Streaming, 128-byte chunks, 30 ms delay (default)</strong></td>
+<td><strong>84.6–85.9 s</strong></td>
+<td><strong>3.8 KB/s</strong></td>
+<td><strong>18%</strong></td>
 </tr>
 </tbody>
 </table>
+<blockquote>
+<p>Earlier editions quoted 24 s with 240-byte chunks at 10 ms. That figure
+predates RF encryption: 240 bytes of chunk data plus the 27 bytes of AES-CCM
+overhead don't fit a 255-byte RF packet, so the chunk size is now 128 bytes
+in both the firmware and the Ground Station (see L1). Faster settings are a
+future optimisation and must be re-verified against Section 2.4.8.</p>
+</blockquote>
 <h4 id="phase-1-cmd_oad_start-0x10">Phase 1 — <code>CMD_OAD_START</code> (0x10)</h4>
 <pre><code>Payload: [4B imgSize BE][2B crc16 BE]
 </code></pre>
@@ -854,8 +1200,11 @@ board over RF in three phases.</p>
 <ol>
 <li>Opens ext flash (<code>extFlashOpen()</code>)</li>
 <li>
-<p>Erases the OAD slot — <code>OAD_SLOT_OFFSET</code> through <code>imgSize + 4KB</code>,
-   rounded to sector boundary</p>
+<p>Rejects <code>imgSize</code> of 0 or over <code>0x4E000</code>; erases a leftover
+   non-GOLD page 0 (legacy layout); then erases the candidate slot —
+   <code>OAD_SLOT_OFFSET</code> (page 1, <code>0x1000</code>) through
+   <code>OAD_IMG_OFFSET + imgSize</code>, rounded to a 4 KB sector. Page 0 and the
+   golden image are never touched (Section 2.4.1)</p>
 </li>
 <li>
 <p>Initializes session state, sets <code>gOadActive = true</code></p>
@@ -869,12 +1218,17 @@ board over RF in three phases.</p>
 <pre><code>Payload: [4B offset BE][1B chunkLen][chunkData...]
 </code></pre>
 <p><strong>Streaming mode — no per-chunk ACK.</strong> The Ground Station sends all
-chunks back-to-back at the configured inter-chunk delay (10ms production
-default). The remote board writes each chunk to
-<code>OAD_IMG_OFFSET + offset</code> and returns immediately — no response.</p>
-<p><code>OAD_CHUNK_SIZE = 240</code> bytes. <strong>This must match the Ground Station's
-chunk size exactly</strong> — a mismatch causes every chunk to fail the
-<code>chunkLen &gt; OAD_CHUNK_SIZE</code> check silently (see L1).</p>
+chunks back-to-back at the configured inter-chunk delay (30 ms default).
+The remote board writes each chunk to <code>OAD_IMG_OFFSET + offset</code>
+(<code>0x2000 + offset</code>) and returns immediately — no response.</p>
+<p><code>OAD_CHUNK_SIZE = 128</code> bytes. <strong>This must match the Ground Station's
+<code>CHUNK_SIZE</code> exactly</strong> — a larger GS chunk fails the
+<code>chunkLen &gt; OAD_CHUNK_SIZE</code> check on every chunk (see L1).</p>
+<p><strong>GS board forwarding:</strong> chunks reach the remote through the GS board,
+which normally holds a 1500 ms reply window after each RF forward. OAD chunks
+are forwarded with <code>rf_forward_enqueue_ex(buf, len, false)</code> (no reply
+window), and the GS loop sleeps 2 ms instead of the beacon interval while the
+GS beacon is off. Without this the GS board drops almost every chunk (L31).</p>
 <p><strong><code>gOadActive</code> and the rfTask sleep:</strong> during OAD, <code>rfTask</code> must drain
 the RX queue fast enough to keep up with incoming chunks (~100Hz at 10ms).
 The RX queue holds only 4 entries.</p>
@@ -898,8 +1252,9 @@ chunks are silently dropped (see L2).</p>
 <li>Verifies <code>bytesReceived == imgSize</code></li>
 <li>Reads back the full image from ext flash and computes CRC16</li>
 <li>
-<p>If CRC matches, writes <code>ExtImageInfo_t</code> metadata to <code>EFL_ADDR_META</code>
-   with <code>imgCpStat = NEED_COPY</code></p>
+<p>If CRC matches, writes <code>ExtImageInfo_t</code> candidate metadata to page 1
+   (<code>0x1000</code>) with <code>imgCpStat = NEED_COPY</code> and
+   <code>counter = 0xFFFFFFFF</code> (trial not started, Section 2.4.2)</p>
 </li>
 <li>
 <p>Closes ext flash, sends ACK <code>[CMD_OAD_END][status]</code></p>
@@ -913,8 +1268,13 @@ already reset), the Ground Station treats this as success and waits for
 the board to reboot and resume beaconing.</p>
 <h4 id="cmd_oad_abort-0x13-and-cmd_oad_status-0x14"><code>CMD_OAD_ABORT</code> (0x13) and <code>CMD_OAD_STATUS</code> (0x14)</h4>
 <p>Abort clears session state and closes ext flash with no further action.
-Status returns <code>[1B active][4B bytesReceived][4B imgSize]</code> for progress
-monitoring.</p>
+Status returns 13 bytes:
+<code>[0x14][1B active][4B bytesReceived][4B imgSize][1B trialState][1B bootsUsed][1B goldenPresent]</code>.
+The last three bytes were added in November 2026 (Section 2.4.2). Older GS builds
+read only the first six.</p>
+<h4 id="cmd_oad_set_golden-0x15"><code>CMD_OAD_SET_GOLDEN</code> (0x15)</h4>
+<p>No payload. Copies the running image to the golden slot — see Section 2.4.5 for
+the procedure and error codes.</p>
 <hr />
 <h3 id="33-chunking-large-payload-responses">3.3 Chunking Large Payload Responses [SCK-DEV: CHUNKING]</h3>
 <p>The CCSDS↔ESP bridge (<code>handle_pico_cmd</code>) uses static 220/222-byte
@@ -1367,7 +1727,12 @@ or files UI), add a branch in the response-handling section of
 <tr>
 <td>0x14</td>
 <td><code>CMD_OAD_STATUS</code></td>
-<td>Query OAD progress</td>
+<td>Query OAD progress, trial state and golden presence</td>
+</tr>
+<tr>
+<td>0x15</td>
+<td><code>CMD_OAD_SET_GOLDEN</code></td>
+<td>Copy the running, confirmed image to the golden slot (Section 2.4.5)</td>
 </tr>
 <tr>
 <td>0x20</td>
@@ -1442,11 +1807,17 @@ headers.</p>
 <li>Patches <code>.prgEntry</code> and <code>.len</code> in <code>oad_image_header_app.c</code></li>
 <li>Triggers an incremental rebuild to bake the patched values into
    <code>.out</code> / <code>.hex</code></li>
+<li>Computes the image CRC-32 over bytes <code>[12, len)</code> and writes it into
+   the header at <code>0x4008</code> in the hex (<code>PatchSck2400ImageCrc32()</code>,
+   Section 2.4.6). The hex parser fills gaps with <code>0xFF</code>, so the image
+   matches a J2-flashed one byte for byte</li>
 </ol>
 <pre><code>OAD patch: oad_entry_vec at 0x0000D438 (summary table)
 OAD patch: computed image len = 0x000096D4 (end=0x0000D6D4)
 OAD patch: .prgEntry updated to 0x0000D438
 OAD patch: .len updated to 0x000096D4
+...
+Image CRC32 patched: 0x43256BFB over 0x4E000 bytes
 </code></pre>
 <p>If the patch step reports <strong>"already X or pattern not found"</strong> for both
 fields, the existing values already happen to match — this is benign. If
@@ -1455,7 +1826,9 @@ only one field reports this, investigate — it usually indicates a stale
 <h3 id="63-flashing">6.3 Flashing</h3>
 <p>The <strong>Flash</strong> button merges the application hex with BIM
 (<code>sck2400_merged.hex</code>) and programs the board via <code>srfprog</code> over the
-XDS110 2-pin cJTAG interface:</p>
+XDS110 2-pin cJTAG interface. The merged hex carries the BIM's CCFG, including the
+ROM bootloader settings. Check it with <code>check_ccfg.py</code> before provisioning
+(Section 2.4.7):</p>
 <pre><code>srfprog -t soc(XDS-&lt;serial&gt;, CC1352P) -e all -p all -v rb -f sck2400_merged.hex
 </code></pre>
 <blockquote>
@@ -1486,7 +1859,7 @@ shared). Each one cost real debugging time.</p>
 <tbody>
 <tr>
 <td>L1</td>
-<td><code>OAD_CHUNK_SIZE</code> in firmware must exactly match the Ground Station's chunk size — a mismatch causes every chunk to fail silently with no useful diagnostic</td>
+<td><code>OAD_CHUNK_SIZE</code> in firmware must exactly match the Ground Station's chunk size — a mismatch causes every chunk to fail silently with no useful diagnostic. Hit again 11/2026: firmware 128, GS still 240, so all 2496 chunks were NACKed and OAD END reported a CRC failure. Both are now 128 (240 + 27 B crypto overhead exceeds the 255 B RF packet)</td>
 <td>Critical</td>
 </tr>
 <tr>
@@ -1556,7 +1929,7 @@ shared). Each one cost real debugging time.</p>
 </tr>
 <tr>
 <td>L15</td>
-<td>BIM is permanent and never updated by application builds or OAD — a corrupted OAD image is simply never copied, and the board boots the last good internal-flash image</td>
+<td>BIM is permanent and never updated by application builds or OAD. A corrupted OAD image is never installed (CRC-16 at OAD END, CRC-32 in the BIM). An installed image that never confirms is replaced by the golden image after 3 boots (Section 2.4)</td>
 <td>High (safety property)</td>
 </tr>
 <tr>
@@ -1634,6 +2007,51 @@ shared). Each one cost real debugging time.</p>
 <td>XDS110 debugger erases NVS flash on every software reset (CMD_REBOOT) on the bench. Test NVS persistence with real power cycles — unplug/replug USB</td>
 <td>High</td>
 </tr>
+<tr>
+<td>L31</td>
+<td>The GS board's RF forward is single-slot and holds a 1500 ms reply window after each forward. Streamed OAD chunks were dropped about 99% of the time, and OAD over RF via the GS board had never worked (earlier successes were over direct UART). Forward chunks with <code>expectReply = false</code> and sleep 2 ms in the GS loop</td>
+<td>Critical</td>
+</tr>
+<tr>
+<td>L32</td>
+<td>TI's off-chip BIM keeps OAD metadata on external page 0, which is also its factory-image slot. "Revert to factory" re-copied whatever was last sent, so there was no real fallback. The golden image needs its own page, its own marker (<code>"GOLD"</code>) and a CRC check before anything is erased</td>
+<td>Critical</td>
+</tr>
+<tr>
+<td>L33</td>
+<td>If the BIM project still compiles TI's <code>ccfg_app.c</code> instead of <code>ccfg_sck.c</code>, the build succeeds and ships with the ROM bootloader <strong>disabled</strong> (<code>BL_CONFIG 0x00FFFFFF</code>). Always run <code>check_ccfg.py</code> on the BIM and merged hex; <code>build_bim_v3.bat</code> uses <code>-Werror=macro-redefined</code></td>
+<td>Critical</td>
+</tr>
+<tr>
+<td>L34</td>
+<td>The OAD header CRC-32 was never computed (left <code>0xFFFFFFFF</code>, <code>crcStat</code> preset), and TI's <code>CRC32_calc</code> can't read external flash in this BIM. The GS and BIM now compute the same CRC-32/IEEE over <code>[12, len)</code></td>
+<td>Critical</td>
+</tr>
+<tr>
+<td>L35</td>
+<td>When TI's BIM finds nothing valid it parks the chip in low-power mode forever — a permanent brick in orbit. The SCK BIM waits about 10 s and resets, retrying forever</td>
+<td>Critical</td>
+</tr>
+<tr>
+<td>L36</td>
+<td>The GS hex parser filled gaps with <code>0x00</code>. Erased flash is <code>0xFF</code>, so an OAD image differed from a J2-flashed one and its CRC could never match. Gap fill is <code>0xFF</code></td>
+<td>High</td>
+</tr>
+<tr>
+<td>L37</td>
+<td>The GS post-OAD reboot poll waited for <code>APID_CMD_ACK</code>, but <code>get_telem</code> answers on <code>APID_TLM_BEACON</code>. Every OAD reported "board did not respond" even when it worked</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>L38</td>
+<td>To test failover, build the update for a <em>different</em> APID and send it to the board's real APID. It never receives a command addressed to it, so it never confirms — a repeatable "can't talk to the ground" image without writing broken code. Use <code>SCK_TRIAL_TIMEOUT_S = 60</code> for the test and restore 1800 afterwards</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>L39</td>
+<td>Check the destination APID before every command during OAD work. An OAD aimed at the GS board (0x010) over UART erases the GS board's candidate slot, and a <code>get_telem</code> to the wrong APID looks exactly like a dead remote</td>
+<td>Medium</td>
+</tr>
 </tbody>
 </table>
 <hr />
@@ -1662,7 +2080,7 @@ shared). Each one cost real debugging time.</p>
 </tr>
 <tr>
 <td><code>oad_image_header_app.c</code></td>
-<td><code>.prgEntry</code> and <code>.len</code> — OAD image length, capped at <code>origin &lt; 0x52000</code> to exclude NVS</td>
+<td><code>.prgEntry</code> and <code>.len</code> — OAD image length, capped at <code>origin &lt; 0x52000</code> to exclude NVS; then the image CRC-32 in the hex header (<code>0x4008</code>)</td>
 </tr>
 </tbody>
 </table>
@@ -1688,7 +2106,7 @@ Called on startup and on board dropdown change.</p>
 dropdown change. Primary indicator for diagnosing the most common setup
 mistake — having the wrong board physically connected.</p>
 <hr />
-<p><em>SpaceCommsKit SCK-2400 Developer Guide v1.10</em>
+<p><em>SpaceCommsKit SCK-2400 Developer Guide v1.11</em>
 <em>For updates and latest version see https://spacecommskit.com/docs</em></p>
 </div>
 </div>
