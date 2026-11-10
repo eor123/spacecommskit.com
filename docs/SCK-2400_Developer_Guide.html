@@ -144,7 +144,7 @@
 <li><a href="#70-hard-won-lessons">7.0 Hard-Won Lessons</a></li>
 <li><a href="#80-ground-station-sck-2400-integration-notes">8.0 Ground Station — SCK-2400 Integration Notes</a></li></ul></div>
 <h1 id="spacecommskit-sck-2400-developer-guide">SpaceCommsKit SCK-2400 Developer Guide</h1>
-<p><strong>Version 1.12 — November 2026</strong>
+<p><strong>Version 1.13 — November 2026</strong>
 <strong>SpaceCommsKit — https://spacecommskit.com/docs</strong></p>
 <blockquote>
 <p>This document covers the SCK-2400 development stack — from the CCSDS
@@ -1877,7 +1877,9 @@ or files UI), add a branch in the response-handling section of
 <ol>
 <li>Set <strong>Project Dir</strong> to the <code>sck2400_firmware</code> folder</li>
 <li>Set <strong>Board Role</strong> — patches <code>SCK_APID_THIS_BOARD</code> in <code>ccsds.h</code></li>
-<li>Set <strong>RF Power Mode</strong> — patches <code>TX_POWER</code> in <code>radio.h</code></li>
+<li>Set <strong>Hardware</strong> — LaunchPad or SCK-2400 V3 (see 6.1.1); selects the CCS
+   configuration, SysConfig file, RF-switch logic, programmer target and BIM</li>
+<li>Set <strong>RF Power Mode</strong> — patches <code>SCK_TXPWR_MODE</code> in <code>radio.h</code> (0 = Bench, 1 = Field)</li>
 <li>Click <strong>Clean + Build</strong></li>
 </ol>
 <p>This runs <code>gmake clean</code> then <code>gmake all</code>, generating SysConfig output,
@@ -1888,6 +1890,48 @@ compiling all sources, and linking <code>sck2400_firmware.out</code> /
 <code>sck2400.syscfg</code>. Incremental builds can link against stale generated
 headers.</p>
 </blockquote>
+<h4 id="611-launchpad-vs-v3">6.1.1 LaunchPad vs SCK-2400 V3 builds — not interchangeable</h4>
+<p>The same source tree builds for two different boards, and a build for one
+<strong>will not work on the other</strong>. The Hardware dropdown must match the
+board you are flashing.</p>
+<table>
+<thead><tr><th></th><th>LaunchPad (LAUNCHXL-CC1352P-2)</th><th>SCK-2400 V3</th></tr></thead>
+<tbody>
+<tr><td>Chip</td><td>CC1352P1F3 (sub-1 GHz + 2.4 GHz)</td><td>CC2652P1F (2.4 GHz only)</td></tr>
+<tr><td>RF switch</td><td>Skyworks SKY13317-373LF (SP3T)</td><td>Skyworks SKYA21001 (SPDT)</td></tr>
+<tr><td><code>RF_SWITCH_SKYA21001</code> (radio.h)</td><td><code>0</code></td><td><code>1</code></td></tr>
+<tr><td>CCS configuration / SysConfig</td><td><code>Debug</code> / <code>sck2400.syscfg</code></td><td><code>V3</code> / <code>sck2400_v3.syscfg</code></td></tr>
+<tr><td>Programmer target (srfprog)</td><td><code>CC1352P</code></td><td><code>CC2652P</code></td></tr>
+<tr><td>BIM hex</td><td><code>sck2400_bim\Debug\</code></td><td><code>sck2400_bim\V3\</code></td></tr>
+</tbody>
+</table>
+<p><strong>Why a V3 build fails on a LaunchPad (and the other way round):</strong></p>
+<ul>
+<li><strong>RF switch.</strong> Both boards drive their antenna switch from DIO28/DIO29,
+   but the two switch parts have different truth tables. The SKYA21001 on V3 is
+   strictly complementary (DIO28 high = standard path for RX and bench TX, DIO29
+   high = 20 dBm PA path; never both). The LaunchPad's SP3T switch decodes the same
+   two lines differently. With the wrong logic the radio is routed to the wrong
+   path or to none, so the link is very weak or silent even though the firmware
+   runs.</li>
+<li><strong>Different chip.</strong> The images are built for different devices
+   (CC2652P vs CC1352P), with different device and CCFG settings. The flash tool is
+   told the target device and won't program the other one, and over OAD the
+   LaunchPad's BIM did not install a V3 image (observed 11/10/2026, Flash Status
+   stayed <code>trial: none</code>).</li>
+<li><strong>Pins and SysConfig.</strong> Each board has its own SysConfig file with its
+   own pin assignments (LEDs, UARTs, SPI). Build only the file that matches the
+   board — see L43.</li>
+</ul>
+<blockquote>
+<p><strong>Testing with a LaunchPad?</strong> Pick <strong>Hardware = LaunchPad</strong> in the
+Firmware tab and build. That sets <code>RF_SWITCH_SKYA21001 = 0</code>, the
+<code>Debug</code> configuration and the CC1352P target. A LaunchPad pairs fine with
+a V3 board over RF: the GS LaunchPad (0x010) and V3 board #1 (0x011) were the
+test pair for everything in this guide. The radio settings (2440 MHz,
+2-GFSK 250 kbps) and the encryption are the same on both boards.</p>
+</blockquote>
+
 <h3 id="62-oad-image-header-patching">6.2 OAD Image Header Patching</h3>
 <p>After a successful build, the Ground Station automatically:</p>
 <ol>
@@ -2242,7 +2286,7 @@ of the hex being sent:</p>
 <li>no record or stale → warning confirm, default No</li>
 </ul>
 <hr />
-<p><em>SpaceCommsKit SCK-2400 Developer Guide v1.12</em>
+<p><em>SpaceCommsKit SCK-2400 Developer Guide v1.13</em>
 <em>For updates and latest version see https://spacecommskit.com/docs</em></p>
 </div>
 </div>
