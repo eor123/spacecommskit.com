@@ -25,10 +25,12 @@ for today's hardware landscape.
 SpaceCommsKit's second platform, SCK-2400, is a 2.4GHz system built on the Texas
 Instruments CC1352P (development hardware: LAUNCHXL-CC1352P-2; production: CC2652P1FRGZ)
 using CCSDS Space Packet Protocol — the same framing standard used on real spacecraft.
-SCK-2400 adds Over-Air Download (OAD) firmware updates, verified at approximately 24
-seconds for a full 335KB firmware image at the production streaming rate — about 5% of
-a typical 8-minute LEO ground station pass. A built-in bootloader (BIM) guarantees a
-failed or interrupted OAD never bricks the board.
+SCK-2400 adds Over-Air Download (OAD) firmware updates, measured at about 85 seconds
+for a full 312KB firmware image over the encrypted RF link — about 18% of a typical
+8-minute LEO ground station pass. Updates are brick-proof: each image is CRC-checked
+twice, runs on trial, and is rolled back to a stored golden image automatically if it
+never hears from the ground; a ROM serial bootloader on the J4 header recovers a fully
+erased chip. All four layers were verified on SCK-2400 V3 hardware in November 2026.
 
 Boards are hand-assembled in Tennessee, USA using components sourced exclusively
 from authorized distributors (Digi-Key, Mouser, or manufacturer direct).
@@ -61,10 +63,11 @@ Space Packet Protocol — APID-based addressing, command ACKs, telemetry beacons
 the same framing standard used on real spacecraft.
 
 Key capabilities:
-- Over-Air Download (OAD): full firmware image (~335KB) transfers in ~24 seconds
-  at the production 10ms inter-chunk streaming rate (~5% of an 8-minute LEO pass)
-- BIM (Boot Image Manager): a failed or interrupted OAD never bricks the board —
-  the previous working firmware always remains bootable
+- Over-Air Download (OAD): full firmware image (~312KB) transfers in ~85 seconds
+  at the default 30ms inter-chunk rate over encrypted RF (~18% of an 8-minute LEO pass)
+- Brick-proof updates: a new image runs on trial (3 boots, 30-minute confirm window)
+  and the BIM restores a verified golden image if it is never confirmed; the BIM
+  never parks the chip, and the ROM serial bootloader on J4 can reflash it from scratch
 - CCSDS<->ESP payload bridge: the SCK-2400 remote board transparently translates
   CCSDS commands to ESP-framed commands for the SCK-PBL-1 payload board, so the
   same Pico firmware (main.py) runs unchanged on both SCK-915 and SCK-2400
@@ -84,9 +87,8 @@ and (2) the SCK-2400-M module, the same RF path with no power supply and
 castellated edge pads for power, UART, SPI and I2C, for soldering directly onto a
 customer's own board (https://www.spacecommskit.com/sck2400m.html).
 
-Full documentation: github.com/eor123/spacecommskit/blob/main/docs/SCK-2400_User_Guide.md
-and SCK-2400_Developer_Guide.md. Bringup dev-log notes:
-github.com/eor123/spacecommskit/tree/main/docs/dev-log
+Full documentation: https://www.spacecommskit.com/docs/SCK-2400_User_Guide.html
+and https://www.spacecommskit.com/docs/SCK-2400_Developer_Guide.html
 
 ## Ground Station Software — v1.2.0
 
@@ -158,11 +160,10 @@ are available at spacecommskit.com/mission-v1.html for free download.
 ## Documentation (GitHub)
 
 - Repository README: github.com/eor123/spacecommskit/blob/main/README.md
-- SCK-915 User Guide: github.com/eor123/spacecommskit/blob/main/docs/SCK-915_User_Guide.md
-- SCK-915 Developer Guide: github.com/eor123/spacecommskit/blob/main/docs/SCK-915_Developer_Guide.md
-- SCK-2400 User Guide: github.com/eor123/spacecommskit/blob/main/docs/SCK-2400_User_Guide.md
-- SCK-2400 Developer Guide: github.com/eor123/spacecommskit/blob/main/docs/SCK-2400_Developer_Guide.md
-- SCK-2400 Dev Log (bringup notes): github.com/eor123/spacecommskit/tree/main/docs/dev-log
+- SCK-915 User Guide: https://www.spacecommskit.com/docs/SCK-915_User_Guide.html
+- SCK-915 Developer Guide: https://www.spacecommskit.com/docs/SCK-915_Developer_Guide.html
+- SCK-2400 User Guide: https://www.spacecommskit.com/docs/SCK-2400_User_Guide.html
+- SCK-2400 Developer Guide: https://www.spacecommskit.com/docs/SCK-2400_Developer_Guide.html
 
 ## OpenLST Heritage
 

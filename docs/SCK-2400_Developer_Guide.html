@@ -144,7 +144,7 @@
 <li><a href="#70-hard-won-lessons">7.0 Hard-Won Lessons</a></li>
 <li><a href="#80-ground-station-sck-2400-integration-notes">8.0 Ground Station — SCK-2400 Integration Notes</a></li></ul></div>
 <h1 id="spacecommskit-sck-2400-developer-guide">SpaceCommsKit SCK-2400 Developer Guide</h1>
-<p><strong>Version 1.11 — November 2026</strong>
+<p><strong>Version 1.12 — November 2026</strong>
 <strong>SpaceCommsKit — https://spacecommskit.com/docs</strong></p>
 <blockquote>
 <p>This document covers the SCK-2400 development stack — from the CCSDS
@@ -810,6 +810,7 @@ application builds or OAD.</p>
 <tr><td><code>0x001000</code> (page 1)</td><td>Candidate metadata (the image being updated)</td><td><code>CMD_OAD_END</code>; trial bits by the BIM and app</td></tr>
 <tr><td><code>0x002000</code></td><td>Candidate image (up to <code>0x4E000</code>)</td><td><code>CMD_OAD_CHUNK</code></td></tr>
 <tr><td><code>0x080000</code></td><td>Golden image (up to <code>0x4E000</code>)</td><td><code>CMD_OAD_SET_GOLDEN</code></td></tr>
+<tr><td><code>0x0FE000</code>, <code>0x0FF000</code></td><td>Boot counter, two ping-pong pages (Section 3.9)</td><td><code>boot_counter_next()</code>, once per boot</td></tr>
 </tbody>
 </table>
 <blockquote class="warn">
@@ -1188,9 +1189,10 @@ board over RF in three phases.</p>
 </table>
 <blockquote>
 <p>Earlier editions quoted 24 s with 240-byte chunks at 10 ms. That figure
-predates RF encryption: 240 bytes of chunk data plus the 27 bytes of AES-CCM
-overhead don't fit a 255-byte RF packet, so the chunk size is now 128 bytes
-in both the firmware and the Ground Station (see L1). Faster settings are a
+predates RF encryption: a 240-byte chunk with its CCSDS header and command
+fields is 252 bytes before encryption, and the 21-byte nonce and MAC push it
+past the 255-byte RF packet limit. The chunk size is now 128 bytes in both
+the firmware and the Ground Station (see L1). Faster settings are a
 future optimisation and must be re-verified against Section 2.4.8.</p>
 </blockquote>
 <h4 id="phase-1-cmd_oad_start-0x10">Phase 1 — <code>CMD_OAD_START</code> (0x10)</h4>
@@ -1530,7 +1532,7 @@ matches .NET exactly.</p>
 </tr>
 <tr>
 <td>Nonce length</td>
-<td>13 bytes (from CCSDS seq counter, zero-padded)</td>
+<td>13 bytes: sender APID, boot count, message counter (see below)</td>
 </tr>
 <tr>
 <td>MAC length</td>
@@ -1556,8 +1558,85 @@ before each build. <code>security.h</code> is gitignored — never committed.</p
 Plaintext: 0x01  →  Ciphertext: 0x83  MAC: 85 84 6C 8D 8C 2A 0B 19
 </code></pre>
 <p><strong>Task context:</strong> <code>crypto_decrypt()</code> and <code>crypto_encrypt()</code> are safe to
-call from rfTask — pure C, no hardware dependencies. All decrypt →
-dispatch → encrypt happens inline in rfTask with no cross-task handoff.</p>
+call from rfTask — pure C, no hardware dependencies. On a remote, decrypt →
+dispatch → encrypt all happen in rfTask. On the GS board, uplink encryption
+runs in uart_task and downlink decryption in rfTask; each owns its own state
+(message counter vs replay table), so they never write the same data.</p>
+
+<h4 id="391-nonce">3.9.1 Nonce (since November 2026)</h4>
+<pre><code>byte  0-1   sender APID (SCK_APID_THIS_BOARD of the board that encrypted it)
+byte  2-5   boot count   (big-endian, +1 every boot, external flash)
+byte  6-9   message counter (big-endian, +1 every encrypted packet this boot)
+byte  10    nonce format version = 0x01
+byte 11-12  CCSDS sequence word (informational only)
+</code></pre>
+<p>AES-CCM must never reuse a nonce with the same key. Sender + boot count +
+counter is unique for the life of a board, so neither a reboot nor a restart of
+the Ground Station app can repeat one. The whole nonce is authenticated (it is
+part of CCM block B<sub>0</sub>), so a forged sender or counter fails the MAC.
+Packet size is unchanged: the nonce was already 13 bytes.</p>
+<blockquote class="crit">
+<p><strong>Old and new firmware cannot talk.</strong> Packets whose byte 10 is not
+<code>0x01</code> (everything built before November 2026) are rejected. Update the
+GS board and every remote together, over J2. A remote whose golden image
+predates the change must get a new golden image (Set Golden) before it relies
+on rollback.</p>
+</blockquote>
+
+<h4 id="392-replay">3.9.2 Replay protection</h4>
+<p>Each board keeps a small RAM table (4 senders) of the highest
+(boot count, message counter) it has <strong>authenticated</strong> from each sender
+APID. A packet is accepted only if its pair is newer. The table is updated only
+after the MAC verifies, and a reboot of the receiver clears it, which is safe
+because every peer's counters only move forward.</p>
+<p><strong>Boot counter</strong> (<code>boot_counter.c</code>): two 4 KB pages at the top of
+external flash, 512 slots of <code>{count, ~count}</code> each. One slot is programmed
+per boot (no erase); a page is erased once every 1024 boots. A slot counts only
+if the second word is the exact complement of the first, so a write cut short
+by a power loss or a half-erased page can't produce a bogus count. External
+flash isn't touched by J2 or J4 reflashing, so the count survives recovery. If
+external flash fails, the boot count is 0 and the board still runs.</p>
+
+<h4 id="393-recovery">3.9.3 Lockout recovery</h4>
+<p>A receiver rejects a peer whose boot count went <em>backwards</em> (its external
+flash was erased or replaced). Two ways back:</p>
+<table>
+<thead><tr><th>Mechanism</th><th>How</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td><code>CMD_CRYPTO_RESET_REPLAY</code> (0x16)</td><td>Clears the replay table of the board that receives it</td><td><strong>Local cable only</strong> (USB on the GS board, J4 on a remote). Over RF it is refused with <code>16 E1</code></td></tr>
+<tr><td>Silence timeout</td><td>After <code>SCK_CRYPTO_SILENCE_RESET_S</code> (6 h) with no authenticated packet, the table clears itself</td><td>Guarantees a remote in orbit can always be reached again. Trade-off: after a long silence, one old recorded packet could be replayed once</td></tr>
+</tbody>
+</table>
+
+<h4 id="394-diagnostics">3.9.4 Diagnostics</h4>
+<p><code>CMD_CRYPTO_STATUS</code> (0x17, allowed over RF) returns, big-endian:</p>
+<pre><code>[0x17][accepted 4B][rejMac 4B][rejReplay 4B][rejFormat 4B]
+      [replayClears 4B][silenceResets 4B][bootCount 4B]
+</code></pre>
+<p><code>0x16</code> returns the same block after <code>[0x16][status]</code>. A clear requested by
+0x16 takes effect at the next decrypted packet, so the reply still shows the old
+<code>replayClears</code>. A GS board that drops a remote's replies used to do so
+silently; send 0x17 to <code>0x010</code> and the reject counters say why (MAC, replay
+or format).</p>
+
+<h4 id="395-crypto-verification">3.9.5 Verification (passed on V3 board #1 and the GS LaunchPad, 11/10/2026)</h4>
+<table>
+<thead><tr><th>Test</th><th>Pass</th></tr></thead>
+<tbody>
+<tr><td>0x17 to the GS board, power-cycle, 0x17 again</td><td>Boot count goes 1 → 2</td></tr>
+<tr><td>Get Telem to the remote, then close and reopen the GS app, Get Telem again</td><td>Still answers (the pre-fix firmware dropped every reply here)</td></tr>
+<tr><td>Power-cycle the remote, then the GS board; Get Telem after each</td><td>Answers both times</td></tr>
+<tr><td>0x17 to the remote over RF</td><td>rejReplay 0, boot count matches its boots</td></tr>
+<tr><td>0x16 to <code>0x010</code> / to the remote over RF</td><td><code>16 00 …</code> / <code>16 E1</code></td></tr>
+<tr><td>OAD to the remote, Flash Status, Set Golden</td><td>About 85 s, confirmed, golden set</td></tr>
+</tbody>
+</table>
+<blockquote class="warn">
+<p><strong>Keys.</strong> The Provision tab's default keys are <code>FF…</code> placeholders, and the
+build log says so. Roll real keys, back them up outside the app folder, and
+rebuild every board with them before anything flies or ships. Both ends must use
+the same key set.</p>
+</blockquote>
 <hr />
 <h3 id="310-non-volatile-storage-reset-counter-and-safe-mode">3.10 Non-Volatile Storage — Reset Counter and Safe Mode [SCK-DEV: NV_STORAGE]</h3>
 <p>Non-volatile reset counter in internal flash at <code>0x52000</code> (8KB, pages
@@ -1735,6 +1814,16 @@ or files UI), add a branch in the response-handling section of
 <td>Copy the running, confirmed image to the golden slot (Section 2.4.5)</td>
 </tr>
 <tr>
+<td>0x16</td>
+<td><code>CMD_CRYPTO_RESET_REPLAY</code></td>
+<td>Clear this board's replay table — local cable only, refused over RF (Section 3.9.3)</td>
+</tr>
+<tr>
+<td>0x17</td>
+<td><code>CMD_CRYPTO_STATUS</code></td>
+<td>Crypto counters and boot count (Section 3.9.4)</td>
+</tr>
+<tr>
 <td>0x20</td>
 <td><code>CMD_PICO_PING</code></td>
 <td>Payload bridge — Pico ping</td>
@@ -1859,7 +1948,7 @@ shared). Each one cost real debugging time.</p>
 <tbody>
 <tr>
 <td>L1</td>
-<td><code>OAD_CHUNK_SIZE</code> in firmware must exactly match the Ground Station's chunk size — a mismatch causes every chunk to fail silently with no useful diagnostic. Hit again 11/2026: firmware 128, GS still 240, so all 2496 chunks were NACKed and OAD END reported a CRC failure. Both are now 128 (240 + 27 B crypto overhead exceeds the 255 B RF packet)</td>
+<td><code>OAD_CHUNK_SIZE</code> in firmware must exactly match the Ground Station's chunk size — a mismatch causes every chunk to fail silently with no useful diagnostic. Hit again 11/2026: firmware 128, GS still 240, so all 2496 chunks were NACKed and OAD END reported a CRC failure. Both are now 128 (a 240-byte chunk plus headers and the 21-byte nonce + MAC exceeds the 255 B RF packet)</td>
 <td>Critical</td>
 </tr>
 <tr>
@@ -2052,6 +2141,36 @@ shared). Each one cost real debugging time.</p>
 <td>Check the destination APID before every command during OAD work. An OAD aimed at the GS board (0x010) over UART erases the GS board's candidate slot, and a <code>get_telem</code> to the wrong APID looks exactly like a dead remote</td>
 <td>Medium</td>
 </tr>
+<tr>
+<td>L40</td>
+<td>A nonce built only from the CCSDS sequence number, with one global "last nonce" per board, broke three ways: restarting the GS app (sequence back to 2) locked out a remote that hadn't rebooted, the 14-bit sequence wraps after 16,384 packets (about six OADs), and a command and its reply shared a nonce under the same key. Nonce is now sender + boot count + counter with a per-sender replay table (Section 3.9)</td>
+<td>Critical</td>
+</tr>
+<tr>
+<td>L41</td>
+<td>The GS board dropped failed-MAC and replayed packets without counting them, so a crypto rejection looked exactly like a dead radio. It took a second app on the remote's J4 UART, watching its packet counters while the GS board's "packets good" also rose, to see the replies were arriving and being thrown away. <code>CMD_CRYPTO_STATUS</code> (0x17) now shows rejects by reason</td>
+<td>High</td>
+</tr>
+<tr>
+<td>L42</td>
+<td>The OAD destination is the APID box, not the Board Role the hex was built for. Two OADs of a remote image went to the GS board in one afternoon. The GS app now checks the build record (Section 8.6)</td>
+<td>High</td>
+</tr>
+<tr>
+<td>L43</td>
+<td>The Debug configuration was building both <code>sck2400.syscfg</code> and <code>sck2400_v3.syscfg</code>; the generated files come from whichever runs last. GS LaunchPad builds were right only when the LaunchPad file happened to run second. Exclude the V3 file from Debug (and the LaunchPad file from V3); check the log shows one SysConfig file</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>L44</td>
+<td>Every board on the bench was running the Provision tab's placeholder keys (<code>FF…</code>); the build log warns, but it's easy to miss. Roll and back up real keys before flight or shipping</td>
+<td>High</td>
+</tr>
+<tr>
+<td>L45</td>
+<td>CCS builds every <code>.c</code> file in the project folder. A host-side test program dropped in there (its own <code>main()</code>, a 1 MB fake flash) broke the link. Keep test code outside <code>sck2400_firmware</code></td>
+<td>Low</td>
+</tr>
 </tbody>
 </table>
 <hr />
@@ -2099,14 +2218,31 @@ locate the string. The GPS/Map tab polls automatically every 10 seconds.</p>
 them out and sets tooltips ("SCK-2400 only" / "SCK-915 only").
 Called on startup and on board dropdown change.</p>
 <h3 id="85-rf-crypto-status-indicator">8.5 RF Crypto Status Indicator</h3>
-<p><code>lblRfStatus</code> on the Home tab shows:</p>
-<pre><code>GS: 0x010  RF → 0x011 encrypted
+<p><code>lblRfStatus</code> on the Home tab shows where commands go — the APID box:</p>
+<pre><code>Commands → 0x010 (GS board, USB)
+Commands → 0x011 (relayed over RF, encrypted)
 </code></pre>
-<p>Updated by <code>UpdateRfStatusLabel()</code> on connect, disconnect, and board
-dropdown change. Primary indicator for diagnosing the most common setup
-mistake — having the wrong board physically connected.</p>
+<p>Updated by <code>UpdateRfStatusLabel()</code> on connect, disconnect, board dropdown
+change and every edit of the APID box. Before November 2026 it claimed to show
+the "physical board APID", but that value was only a copy of the APID box at
+connect time; the app has no way to ask which board is on the USB port.</p>
+<h3 id="86-oad-destination-check">8.6 OAD Destination Check (build record)</h3>
+<p>Start OAD sends to the APID box, which is easy to leave on <code>0x010</code> (the GS
+board itself). Since November 2026 every successful SCK-2400 build writes
+<code>&lt;hex&gt;.sckbuild</code> next to the hex:</p>
+<pre><code>{ "Apid": "0x011", "Role": "Remote 1  (APID 0x011)",
+  "Hardware": "SCK-2400 V3 (CC2652P, SKYA21001)",
+  "Crc32": "0x5B211D8A", "Built": "2026-11-10 14:05:12" }
+</code></pre>
+<p><code>ConfirmOadDestination()</code> uses it only if its CRC-32 matches the image header
+of the hex being sent:</p>
+<ul>
+<li>record ≠ APID box → warning: send to the build's board instead? (Yes switches the APID box too, so Flash Status and Set Golden follow)</li>
+<li>record = APID box → short confirm with board and CRC</li>
+<li>no record or stale → warning confirm, default No</li>
+</ul>
 <hr />
-<p><em>SpaceCommsKit SCK-2400 Developer Guide v1.11</em>
+<p><em>SpaceCommsKit SCK-2400 Developer Guide v1.12</em>
 <em>For updates and latest version see https://spacecommskit.com/docs</em></p>
 </div>
 </div>

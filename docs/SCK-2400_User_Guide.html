@@ -150,7 +150,7 @@
 <li><a href="#troubleshooting">Troubleshooting</a></li>
 <li><a href="#specifications">Specifications</a></li></ul></div>
 <h1 id="spacecommskit-sck-2400-ground-station-user-guide">SpaceCommsKit SCK-2400 — Ground Station User Guide</h1>
-<p><strong>Version 1.11 — November 2026</strong>
+<p><strong>Version 1.12 — November 2026</strong>
 <strong>SpaceCommsKit — https://spacecommskit.com</strong></p>
 <hr />
 <h2 id="overview">Overview</h2>
@@ -724,7 +724,9 @@ J4 header can reflash the chip from scratch.</p>
    <strong>Flash Status</strong>. The board should reply with
    <code>trial: confirmed</code> (or <code>none</code>) and
    <code>golden image: present</code>.</li>
-<li>Click <strong>Start OAD</strong>. A 312 KB image takes about
+<li>Click <strong>Start OAD</strong> and read the confirmation. It names the board the
+   firmware was built for. If that doesn't match the APID box, the app offers to
+   send it to the right board instead. A 312 KB image takes about
    <strong>85 seconds</strong> at the default 30 ms inter-chunk delay.</li>
 <li>When the log shows <code>image verified OK — board is rebooting...</code>,
    wait. The Ground Station polls the board until it answers, which usually takes about 10 seconds.
@@ -996,7 +998,7 @@ automatic fallback.</p>
 </tbody>
 </table>
 <hr />
-<p><em>SpaceCommsKit SCK-2400 User Guide v1.11</em>
+<p><em>SpaceCommsKit SCK-2400 User Guide v1.12</em>
 <em>For updates and source code see https://spacecommskit.com</em></p>
 </div>
 </div>
