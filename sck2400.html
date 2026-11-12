@@ -187,11 +187,11 @@
 <div class="section">
   <span class="eyebrow eyebrow-dark">System Architecture</span>
   <h2 class="section-title">From Ground to Remote — Fully Encrypted</h2>
-  <p class="section-lead">The encryption boundary sits between the USB cable and the RF link. The ground station app sends plaintext — the GS board handles all cryptography transparently.</p>
+  <p class="section-lead">The encryption boundary sits between the PC serial link and the RF link. The ground station app sends plaintext — the GS board handles all cryptography transparently.</p>
 
   <div style="background:var(--void);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:32px;margin-top:32px;font-family:var(--font-mono);font-size:13px;line-height:2;">
     <div style="color:var(--text-muted);">Ground Station App (Windows C#)</div>
-    <div style="color:var(--text-body);padding-left:20px;">↕ USB · 921600 baud · CCSDS · <span style="color:var(--cyan);">plaintext</span></div>
+    <div style="color:var(--text-body);padding-left:20px;">↕ USB-serial (J4 UART1) · 921600 baud · CCSDS · <span style="color:var(--cyan);">plaintext</span></div>
     <div style="color:var(--cyan);">SCK-2400 GS Board (CC2652P · APID 0x010)</div>
     <div style="color:var(--text-body);padding-left:20px;">↕ 2.4GHz RF · CCSDS · <span style="color:#f59e0b;">AES-128-CCM encrypted · +20 dBm</span></div>
     <div style="color:var(--cyan);">SCK-2400 Remote Board (CC2652P · APID 0x011)</div>

@@ -205,12 +205,20 @@ high-power operation.</p>
 <td>CC2652P-based 2.4GHz transceiver (+20 dBm high-power TX) (one Ground Station board, one Remote board)</td>
 </tr>
 <tr>
-<td>USB cables ×2</td>
-<td>Connect each board to your PC for programming and (GS board) operation</td>
+<td>5 V / 2 A power supply ×2</td>
+<td>One per board. The SCK-2400 has no USB port; it runs from its own 5 V supply</td>
+</tr>
+<tr>
+<td>3.3 V USB-serial adapter</td>
+<td>Connects the Ground Station board's J4 (UART1) header to your PC at 921600 baud. FTDI- or CP2102-based adapters work; many CH340/PL2303 clones are unreliable at this speed</td>
 </tr>
 <tr>
 <td>Antennas ×2</td>
-<td>2.4GHz antennas</td>
+<td>2.4 GHz antennas with SMA connectors</td>
+</tr>
+<tr>
+<td>XDS110 debug probe (optional)</td>
+<td>Only needed to reflash boards over the J2 header, for example a TI LaunchPad with its debug jumpers removed</td>
 </tr>
 <tr>
 <td>Raspberry Pi Pico payload board</td>
@@ -222,8 +230,10 @@ high-power operation.</p>
 </tr>
 </tbody>
 </table>
-<p>The development hardware is <strong>SCK-2400</strong> boards (two units — one Ground Station, one Remote).
-Production hardware is the SCK-2400 custom PCB using the CC2652P.</p>
+<p>Both boards are identical SCK-2400 V3 boards. The firmware sets which one is the
+Ground Station (APID <code>0x010</code>) and which is the Remote (<code>0x011</code>).
+A TI LAUNCHXL-CC1352P-2 LaunchPad can also act as the Ground Station board over its
+own USB port; see the Developer Guide.</p>
 <hr />
 <h2 id="installation">Installation</h2>
 <ol>
@@ -233,9 +243,11 @@ Production hardware is the SCK-2400 custom PCB using the CC2652P.</p>
    instructions.</p>
 </li>
 <li>
-<p><strong>Connect both boards</strong> to your PC via USB. Each LaunchPad exposes
-   two COM ports — the lower numbered port (e.g. COM8) is the XDS110
-   debug/programming interface used by the Ground Station app.</p>
+<p><strong>Connect the Ground Station board</strong> to your PC through the USB-serial
+   adapter on its J4 header (see <a href="#ground-station-board-apid-0x010">Hardware Connections</a>).
+   The adapter appears as one COM port; select it in the Ground Station app. If you use a
+   LaunchPad as the Ground Station, it exposes two COM ports instead: the lower-numbered one
+   (e.g. COM8) is the one the app uses.</p>
 </li>
 <li>
 <p><strong>Launch SCK Ground Station.</strong></p>
@@ -247,8 +259,10 @@ Production hardware is the SCK-2400 custom PCB using the CC2652P.</p>
 <h2 id="quick-start">Quick Start</h2>
 <p><strong>Quick Start Checklist:</strong></p>
 <ol>
-<li>Connect the Ground Station board (APID <code>0x010</code>) to your PC via USB</li>
-<li>Select its COM port and click <strong>Connect</strong></li>
+<li>Power both boards from their 5 V supplies</li>
+<li>Connect the Ground Station board's J4 (UART1) header to your PC through the
+USB-serial adapter (see <a href="#ground-station-board-apid-0x010">Hardware Connections</a>)</li>
+<li>Select the adapter's COM port and click <strong>Connect</strong></li>
 <li>Go to the <strong>Commands</strong> tab and click <strong>Get Telem</strong></li>
 <li>You should see a <code>tlm_beacon</code> response with a green checkmark</li>
 </ol>
@@ -266,9 +280,30 @@ field to the remote board's address (e.g. <code>011</code>) before sending comma
 <hr />
 <h2 id="hardware-connections">Hardware Connections</h2>
 <h3 id="ground-station-board-apid-0x010">Ground Station Board (APID 0x010)</h3>
-<p>Connect via USB directly to your PC. This board must remain connected
-for the duration of your session — it relays all RF traffic between the
-Ground Station app and the Remote board.</p>
+<p>The Ground Station board connects to your PC through a 3.3 V USB-serial adapter
+on its <strong>J4 (UART1)</strong> header, at 921600 baud. It must stay connected for the
+whole session: it relays all RF traffic between the Ground Station app and the
+Remote board.</p>
+<table>
+<thead><tr><th>J4 Pin</th><th>Signal</th><th>Connect to</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>GND</td><td>Adapter GND</td></tr>
+<tr><td>2</td><td>RX (DIO12)</td><td>Adapter TX</td></tr>
+<tr><td>3</td><td>TX (DIO13)</td><td>Adapter RX</td></tr>
+<tr><td>4</td><td>+3V3</td><td>Not connected</td></tr>
+<tr><td>5</td><td>BACKDOOR (DIO6)</td><td>Not connected</td></tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Power the board from its own 5 V / 2 A supply.</strong> Never power it from
+the adapter's 3.3 V pin: the adapter cannot supply the +20 dBm transmit peaks, and the
+board browns out.</li>
+<li><strong>TX goes to RX.</strong> Adapter TX goes to the board's RX and adapter RX to
+the board's TX. Some adapters label their pins for what they connect <em>to</em>, so if
+the board never answers, swap the TX and RX wires once before anything else.</li>
+<li><strong>Leave J4.5 open.</strong> Grounding it at reset starts the chip's ROM
+bootloader instead of the firmware (see <a href="#wired-recovery">Wired Recovery</a>).</li>
+</ul>
 <h3 id="remote-board-apid-0x011">Remote Board (APID 0x011)</h3>
 <p>This is the board that flies on your mission, or sits across the room
 during bench testing. It connects via RF to the Ground Station board and,
@@ -284,17 +319,17 @@ optionally, via UART to a Raspberry Pi Pico payload board.</p>
 </thead>
 <tbody>
 <tr>
-<td>DIO5 (header pin 10)</td>
+<td>J3.5 — TX (DIO5)</td>
 <td>GPIO1 (pin 2)</td>
 <td>UART TX → Pico RX</td>
 </tr>
 <tr>
-<td>DIO16 (header pin 32)</td>
+<td>J3.4 — RX (DIO16)</td>
 <td>GPIO0 (pin 1)</td>
 <td>UART RX ← Pico TX</td>
 </tr>
 <tr>
-<td>GND</td>
+<td>J3.1 — GND</td>
 <td>GND</td>
 <td>Common ground</td>
 </tr>
@@ -312,9 +347,14 @@ optionally, via UART to a Raspberry Pi Pico payload board.</p>
 </thead>
 <tbody>
 <tr>
-<td>SCK-2400 / LAUNCHXL-CC1352P-2</td>
-<td>5V USB</td>
-<td>~100mA idle, higher during RF TX</td>
+<td>SCK-2400 V3 (each board)</td>
+<td>5 V, from a supply rated 2 A</td>
+<td>Highest during +20 dBm TX</td>
+</tr>
+<tr>
+<td>LAUNCHXL-CC1352P-2 (if used as Ground Station)</td>
+<td>5 V USB</td>
+<td>~100 mA idle, higher during RF TX</td>
 </tr>
 <tr>
 <td>Raspberry Pi Pico</td>
@@ -864,10 +904,13 @@ automatic fallback.</p>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <h3 id="no-reply-to-get-telem-on-ground-station-board-0x010">No reply to Get Telem on Ground Station board (0x010)</h3>
 <ul>
-<li>Check the COM port selection matches the XDS110 interface</li>
+<li>Check the COM port is the USB-serial adapter's (or the XDS110's on a LaunchPad Ground Station)</li>
 <li>
-<p>Confirm the board is connected via USB (RF boards need external power
-  for sustained TX in field deployments)</p>
+<p>Swap the adapter's TX and RX wires once; a reversed pair is the most common cause</p>
+</li>
+<li>
+<p>Confirm the board is on its own 5 V supply, the adapter's 3.3 V wire is not
+  connected, and J4.5 is open</p>
 </li>
 <li>
 <p>Rapid LED double-blink pattern indicates the bootloader is running
