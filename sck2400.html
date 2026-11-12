@@ -64,7 +64,7 @@
   <div class="hero-inner">
     <span class="eyebrow">SpaceCommsKit · SCK-2400 · 2.4GHz CCSDS Radio</span>
     <h1 class="hero-title">SCK-2400<br><span>CCSDS · Encrypted · OAD · CC2652P · +20 dBm TX</span></h1>
-    <p class="hero-sub">The next generation SpaceCommsKit board — AES-128-CCM encrypted 2.4GHz RF, CCSDS Space Packet Protocol, over-air firmware updates in under 25 seconds, and a drop-in upgrade path from SCK-915. Same form and fit as the SCK-915, with onboard power supply and conditioning and headers for power, UART, SPI and I2C. Built for development, ready to fly on HAB and LEO missions.</p>
+    <p class="hero-sub">The next generation SpaceCommsKit board — AES-128-CCM encrypted 2.4GHz RF, CCSDS Space Packet Protocol, over-air firmware updates in about 90 seconds, and a drop-in upgrade path from SCK-915. Same form and fit as the SCK-915, with onboard power supply and conditioning and headers for power, UART, SPI and I2C. Built for development, ready to fly on HAB and LEO missions.</p>
     <div class="flex gap-16">
       <a href="#buy" class="btn btn-primary">Get Notified →</a>
       <a href="documentation.html" class="btn btn-outline">Read the Docs</a>
@@ -157,7 +157,7 @@
     <div class="card">
       <div style="font-size:32px;margin-bottom:12px;">🚀</div>
       <h3 style="margin-bottom:8px;font-size:16px;">Over-Air Firmware Update</h3>
-      <p style="color:var(--text-muted);font-size:14px;">Full ~320KB firmware images transfer over encrypted RF in under 25 seconds. BIM bootloader verifies CRC before copying — a failed or interrupted OAD never bricks the board. The previous firmware always boots as fallback.</p>
+      <p style="color:var(--text-muted);font-size:14px;">A full ~312 KB firmware image transfers over encrypted RF in about 85 seconds, and the board is back on the air about 10 seconds later. BIM bootloader verifies CRC before copying — a failed or interrupted OAD never bricks the board. The previous firmware always boots as fallback.</p>
     </div>
 
     <div class="card">
@@ -266,7 +266,7 @@
     <tr><td>Data Rate</td><td>7.4 kbaud</td><td>250 kbps</td></tr>
     <tr><td>TX Power</td><td>+27 dBm</td><td>+20 dBm</td></tr>
     <tr><td>Microcontroller</td><td>CC1110 · 26MHz · 32KB flash</td><td>CC2652P · 48MHz · 352KB flash</td></tr>
-    <tr><td>OAD update time</td><td>~40 seconds</td><td>&lt;25 seconds</td></tr>
+    <tr><td>OAD update time</td><td>~40 seconds</td><td>~85 s transfer (~312 KB), with verified fallback</td></tr>
     <tr><td>RTOS</td><td>OpenLST bare-metal</td><td>TI-RTOS7</td></tr>
     <tr><td>Pico payload</td><td>✓ Same SCK-PBL-1</td><td>✓ Same SCK-PBL-1 — zero Pico firmware changes</td></tr>
     <tr><td>Ground station</td><td>SCK Ground Station (SCK-915 mode)</td><td>SCK Ground Station (SCK-2400 mode)</td></tr>
