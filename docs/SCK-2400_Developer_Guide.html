@@ -144,7 +144,7 @@
 <li><a href="#70-hard-won-lessons">7.0 Hard-Won Lessons</a></li>
 <li><a href="#80-ground-station-sck-2400-integration-notes">8.0 Ground Station — SCK-2400 Integration Notes</a></li></ul></div>
 <h1 id="spacecommskit-sck-2400-developer-guide">SpaceCommsKit SCK-2400 Developer Guide</h1>
-<p><strong>Version 1.13 — November 2026</strong>
+<p><strong>Version 1.14 — November 2026</strong>
 <strong>SpaceCommsKit — https://spacecommskit.com/docs</strong></p>
 <blockquote>
 <p>This document covers the SCK-2400 development stack — from the CCSDS
@@ -1084,6 +1084,66 @@ while the Pico is the operational payload processor — the two are not
 normally live at the same time. <strong>Operational rule: do not have a
 debug probe connected to J2 while the Pico is also connected on the
 UART0 payload header</strong>, since both would drive DIO16 simultaneously.</p>
+</blockquote>
+<hr />
+<h3 id="26-hand-assembly-qfn">2.6 Hand Assembly of the QFN Parts</h3>
+<p>Boards built by hand, with a hand-printed stencil, need QFN edge pads that are longer and
+wider than the minimum land patterns many part libraries ship. With minimum pads, a slightly
+thin paste print leaves a cold or open joint even when placement is perfect. That is what
+caused two of the first SCK-2400 V3 failures in November 2026. Since then all SpaceCommsKit
+boards use the pads below.</p>
+<table>
+<thead>
+<tr><th>Part</th><th>Package</th><th>Edge pad (mm)</th><th>Pad span from chip centre</th><th>Past the body edge</th><th>Paste per pad</th><th>Previous pad</th></tr>
+</thead>
+<tbody>
+<tr><td>CC2652P (SCK-2400 V3, SCK-2400-M)</td><td>VQFN-48, 7 × 7 mm, 0.5 mm pitch</td><td>0.28 × 0.80</td><td>3.00–3.80 mm</td><td>0.30 mm</td><td>0.224 mm²</td><td>0.24 × 0.60 (0.144 mm²)</td></tr>
+<tr><td>CC1110 (SCK-915)</td><td>QFN-36, 6 × 6 mm, 0.5 mm pitch</td><td>0.28 × 0.995</td><td>2.405–3.40 mm</td><td>0.40 mm</td><td>0.279 mm²</td><td>0.28 × 0.75 (0.210 mm²)</td></tr>
+<tr><td>CC1190 (SCK-915)</td><td>QFN-16, 4 × 4 mm, 0.65 mm pitch</td><td>1.00 × 0.35</td><td>1.72–2.72 mm</td><td>0.72 mm</td><td>—</td><td>Unchanged (TI reference pattern)</td></tr>
+</tbody>
+</table>
+<p>For comparison, TI's LAUNCHXL-CC1352P uses 0.30 × 0.90 mm edge pads (3.00–3.90 mm from the
+chip centre) with 1:1 paste. The SCK-2400 pads stop slightly short of that so the existing
+fan-out traces keep their 0.127 mm clearance. On a new layout, use TI's size.</p>
+<ul>
+<li><strong>Extend pads outward, not inward.</strong> A longer outer end adds paste, gives a
+visible toe fillet for inspection, and leaves room for a soldering iron. Extending toward the
+centre pad only adds bridging risk.</li>
+<li><strong>Let the pads make their own solder-mask openings.</strong> Don't draw extra F.Mask
+openings around a QFN. Hand-drawn openings on the first V3 layout came within 0.01 mm of
+neighbouring traces and left bare trace past each pad end, which pulls solder away from the
+joint.</li>
+<li><strong>Centre pad.</strong> The CC2652P footprint uses 16 paste windows (about 68% of the
+5.15 mm pad) with the thermal vias in the gaps between them. The CC1110 footprint deliberately
+uses only 16 small paste dots (about 10%). Both keep the chip from floating on the centre pad,
+which would lift the edge pins off their pads.</li>
+</ul>
+<p><strong>Stencil and printing</strong></p>
+<ul>
+<li>Stencil 0.12–0.13 mm (5 mil), electropolished or nano-coated if possible. Edge-pad
+apertures 1:1 with the pads.</li>
+<li>Type 4 paste for 0.5 mm pitch. Let it reach room temperature and stir it before use.</li>
+<li>Hold the board in a jig with the stencil on alignment pins. Use a metal squeegee, one pass
+at about 45° with firm, even pressure, then lift the stencil straight up.</li>
+<li>Inspect every QFN edge pad under magnification before placing parts. If any deposit is
+thin, wipe the board and print again.</li>
+<li>Reflow: about 60–90 s above liquidus, peak about 240 °C for SAC305.</li>
+</ul>
+<p><strong>Inspection before first power</strong></p>
+<ol>
+<li>Inspect all four sides of each QFN under magnification for a fillet at every pad end.</li>
+<li><strong>Diode check:</strong> board unpowered, meter in diode mode, red lead on GND, black
+lead on each signal pin's trace (at a via, pad or header pin). A good joint reads about
+0.5–0.7 V through the chip's internal protection diode. A cold or open joint reads <strong>OL</strong>.
+Compare against a known-good board. Check at least the debug pins (J2), the RF pins and the
+UART pins.</li>
+<li>Optional touch-up: flux along each side and touch each pad end with a fine iron tip.</li>
+</ol>
+<blockquote class="warn">
+<p><strong>Symptoms of a QFN joint fault on a new board.</strong> "Debug interface is locked"
+on a factory-new CC2652P means a marginal JTAG_TMSC or JTAG_TCKC joint (chip pins 24/25), not a
+locked chip. Reflow those pins before trying a mass erase or the ROM bootloader. A board that
+boots (D1 flashes three times) but never answers over RF points to a joint in the RF path.</p>
 </blockquote>
 <hr />
 <h2 id="30-firmware-extension-reference">3.0 Firmware Extension Reference</h2>
@@ -2215,6 +2275,31 @@ shared). Each one cost real debugging time.</p>
 <td>CCS builds every <code>.c</code> file in the project folder. A host-side test program dropped in there (its own <code>main()</code>, a 1 MB fake flash) broke the link. Keep test code outside <code>sck2400_firmware</code></td>
 <td>Low</td>
 </tr>
+<tr>
+<td>L46</td>
+<td>"Debug interface is locked" on the first flash of a factory-new CC2652P was a cold solder joint on JTAG_TMSC (chip pin 24), not a locked chip. Reflow pins 24/25 before trying recovery (Section 2.6)</td>
+<td>High</td>
+</tr>
+<tr>
+<td>L47</td>
+<td>Two new V3 boards had cold QFN joints (TMSC, then an RF-side pin) despite perfect placement. The footprint's 0.24 × 0.60 mm edge pads were too small for hand-printed paste; enlarged to 0.28 × 0.80 mm (Section 2.6)</td>
+<td>High</td>
+</tr>
+<tr>
+<td>L48</td>
+<td>A USB-serial adapter on J4 got no reply because TX and RX were swapped, even after checking twice. Some adapters label pins for what they connect <em>to</em>. If a link that looks correct stays silent, swap TX and RX once first</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>L49</td>
+<td>A V3 board powered from the USB-serial adapter's 3.3 V pin read only 3.1 V and could brown out at +20 dBm TX. Power each V3 board from its own 5 V / 2 A supply</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>L50</td>
+<td>DRC on a copy of the board saved under a different file name runs KiCad's default rules (0.2 mm clearance), not the project's, and reports hundreds of false errors. Run DRC with the board under the project's own file name</td>
+<td>Low</td>
+</tr>
 </tbody>
 </table>
 <hr />
@@ -2286,7 +2371,7 @@ of the hex being sent:</p>
 <li>no record or stale → warning confirm, default No</li>
 </ul>
 <hr />
-<p><em>SpaceCommsKit SCK-2400 Developer Guide v1.13</em>
+<p><em>SpaceCommsKit SCK-2400 Developer Guide v1.14</em>
 <em>For updates and latest version see https://spacecommskit.com/docs</em></p>
 </div>
 </div>
