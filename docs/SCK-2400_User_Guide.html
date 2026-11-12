@@ -252,6 +252,13 @@ Production hardware is the SCK-2400 custom PCB using the CC2652P.</p>
 <li>Go to the <strong>Commands</strong> tab and click <strong>Get Telem</strong></li>
 <li>You should see a <code>tlm_beacon</code> response with a green checkmark</li>
 </ol>
+<blockquote class="warn">
+<p><strong>Your boards may be running placeholder keys.</strong> Unless you sent
+us your own AES keys with your order, both boards ship with the public
+placeholder keys from the open-source firmware. They give no security: anyone
+with the source code can read and command your radios. Generate your own keys
+before any real use; see <a href="#encryption-keys">Encryption Keys</a>.</p>
+</blockquote>
 <p>If you see the green checkmark, your Ground Station board is alive and
 the link is working. To talk to a Remote board over RF, set the <strong>APID</strong>
 field to the remote board's address (e.g. <code>011</code>) before sending commands
@@ -828,6 +835,26 @@ J2 isn't reachable or the debug probe can't connect.</p>
 <p>One-time setup for new boards — flashes the bootloader (BIM) and sets
 the board's APID (address). BIM is permanent after initial flashing and
 is never overwritten by subsequent application or OAD updates.</p>
+<h3 id="encryption-keys">Encryption Keys</h3>
+<p>Every packet between the boards is encrypted and authenticated with
+AES-128-CCM, using three keys built into the firmware. All boards that talk to
+each other must have the same three keys.</p>
+<ul>
+<li><strong>Placeholder keys.</strong> Boards ordered without your own keys ship
+with the public placeholder keys (all <code>0xFF</code>). The build log shows
+<code>security.h: using placeholder keys</code> while they are in use.
+Placeholder keys are fine for a first bench test and nothing else.</li>
+<li><strong>Your own keys.</strong> Click <strong>Generate</strong> in the Provision
+tab. The app writes the keys into the firmware build for you; they are never
+committed to git.</li>
+<li><strong>Reflash every board.</strong> Rebuild and flash the Ground Station
+board and every Remote board with the new keys, then set the golden image on
+each (below). A board on different keys cannot talk to the others.</li>
+<li><strong>Back up your keys.</strong> Store them somewhere safe and offline. If
+they are lost, every board has to be reflashed over the cable with new keys.</li>
+</ul>
+<p>If you sent us your keys and APIDs with your order, your boards were built
+and tested with them and are ready to use.</p>
 <p><strong>Last provisioning step:</strong> once the board's firmware has passed
 your tests, address the board and click <strong>Set Golden Image</strong>
 (Commands tab). Then confirm <strong>Flash Status</strong> shows
@@ -998,7 +1025,7 @@ automatic fallback.</p>
 </tbody>
 </table>
 <hr />
-<p><em>SpaceCommsKit SCK-2400 User Guide v1.12</em>
+<p><em>SpaceCommsKit SCK-2400 User Guide v1.13</em>
 <em>For updates and source code see https://spacecommskit.com</em></p>
 </div>
 </div>
