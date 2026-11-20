@@ -104,6 +104,11 @@
 .fc-head { fill: #8aa0b8; }
 .fc-sep { stroke: var(--border); stroke-dasharray: 6 4; }
 .fc-legend { font-size: 13px; color: var(--text-inv); margin: -18px 0 24px; }
+/* Board pinout figure (11/2026) */
+.doc-fig { margin: 8px 0 28px; }
+.doc-fig a { display: block; }
+.doc-fig img { display: block; width: 100%; height: auto; border-radius: var(--radius-lg); border: 1px solid var(--border); background: #fff; }
+.doc-fig figcaption { font-size: 13px; color: var(--text-inv); margin-top: 10px; }
 </style>
 </head>
 <body>
@@ -150,7 +155,7 @@
 <li><a href="#troubleshooting">Troubleshooting</a></li>
 <li><a href="#specifications">Specifications</a></li></ul></div>
 <h1 id="spacecommskit-sck-2400-ground-station-user-guide">SpaceCommsKit SCK-2400 — Ground Station User Guide</h1>
-<p><strong>Version 1.12 — November 2026</strong>
+<p><strong>Version 1.14 — November 2026</strong>
 <strong>SpaceCommsKit — https://spacecommskit.com</strong></p>
 <hr />
 <h2 id="overview">Overview</h2>
@@ -279,6 +284,40 @@ field to the remote board's address (e.g. <code>011</code>) before sending comma
 — the Ground Station board relays the command over RF automatically.</p>
 <hr />
 <h2 id="hardware-connections">Hardware Connections</h2>
+<h3 id="board-pinout">Board Pinout</h3>
+<p>Every connector on the SCK-2400 V3 board. You only need J1, J4 and the antenna to get
+started; the rest are for the payload board, programming and your own add-ons.</p>
+<figure class="doc-fig">
+<a href="../images/SCK-2400_Mini_V3_Pinout.png" target="_blank"><img src="../images/SCK-2400_Mini_V3_Pinout.png" alt="SCK-2400 Mini V3 connector pinout, top view, with every pin of J1 to J7 labelled" loading="lazy"></a>
+<figcaption>SCK-2400 Mini V3, top (component) side. The square pad on each header is pin 1. Colours show the function of each pin. Click for full size.</figcaption>
+</figure>
+<table>
+<thead><tr><th>Connector</th><th>Name</th><th>What it's for</th></tr></thead>
+<tbody>
+<tr><td>J1</td><td>5 VDC</td><td>Power input from the 5 V / 2 A supply. Pin 1 +5 V, pin 2 GND.</td></tr>
+<tr><td>J4</td><td>UART1</td><td>Link to your PC on the Ground Station board, 921600 baud. Also the wired-recovery port: BACKDOOR (pin 5) and RESET_N (pin 6). See <a href="#wired-recovery">Wired Recovery</a>.</td></tr>
+<tr><td>J3</td><td>UART0</td><td>Link to the Raspberry Pi Pico payload board, 115200 baud. Only pins 1 (GND), 4 (RX) and 5 (TX) are used.</td></tr>
+<tr><td>J6</td><td>SMA</td><td>2.4 GHz antenna, 50 Ω.</td></tr>
+<tr><td>J2</td><td>Prog/Debug</td><td>10-pin, 1.27 mm TI debug header for an XDS110 probe. Only needed to reflash a board over the cable.</td></tr>
+<tr><td>J7</td><td>I²C</td><td>Expansion I²C (SDA DIO15, SCL DIO14) with 4.7 kΩ pull-ups on the board, plus GND and 3.3 V for a small sensor.</td></tr>
+<tr><td>J5</td><td>SPI1</td><td>Expansion SPI (CS DIO26, POCI DIO25, PICO DIO24, SCLK DIO23). Not used by the standard firmware.</td></tr>
+<tr><td>D2 / D1</td><td>LEDs</td><td>D2 is the power LED (on whenever 3.3 V is present). D1 is the status LED, driven by the firmware on DIO7.</td></tr>
+</tbody>
+</table>
+<blockquote class="warn">
+<p><strong>Before you connect anything:</strong></p>
+<ul>
+<li><strong>Power the board only through J1.</strong> The +3V3 pins on J2, J4 and J7 are
+outputs from the board's regulator. Feeding power into them fights the regulator.</li>
+<li><strong>All signals are 3.3 V logic.</strong> None of the pins are 5 V tolerant.</li>
+<li><strong>J2 pin 6 and J3 pin 4 are the same signal</strong> (UART0 RX, DIO16). Don't leave
+a debug probe on J2 while the Pico is connected to J3.</li>
+<li><strong>Pins marked "not connected"</strong> (J3 pins 2, 3 and 6, J7 pin 5) go nowhere.
+Leave them free.</li>
+<li><strong>The four M3 mounting holes are not connected to ground.</strong></li>
+<li><strong>Never transmit without an antenna or a 50 Ω load</strong> (or attenuator) on J6.</li>
+</ul>
+</blockquote>
 <h3 id="ground-station-board-apid-0x010">Ground Station Board (APID 0x010)</h3>
 <p>The Ground Station board connects to your PC through a 3.3 V USB-serial adapter
 on its <strong>J4 (UART1)</strong> header, at 921600 baud. It must stay connected for the
@@ -292,6 +331,7 @@ Remote board.</p>
 <tr><td>3</td><td>TX (DIO13)</td><td>Adapter RX</td></tr>
 <tr><td>4</td><td>+3V3</td><td>Not connected</td></tr>
 <tr><td>5</td><td>BACKDOOR (DIO6)</td><td>Not connected</td></tr>
+<tr><td>6</td><td>RESET_N</td><td>Not connected</td></tr>
 </tbody>
 </table>
 <ul>
@@ -1068,7 +1108,7 @@ automatic fallback.</p>
 </tbody>
 </table>
 <hr />
-<p><em>SpaceCommsKit SCK-2400 User Guide v1.13</em>
+<p><em>SpaceCommsKit SCK-2400 User Guide v1.14</em>
 <em>For updates and source code see https://spacecommskit.com</em></p>
 </div>
 </div>

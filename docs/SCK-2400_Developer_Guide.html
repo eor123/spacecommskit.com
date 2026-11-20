@@ -104,6 +104,11 @@
 .fc-head { fill: #8aa0b8; }
 .fc-sep { stroke: var(--border); stroke-dasharray: 6 4; }
 .fc-legend { font-size: 13px; color: var(--text-inv); margin: -18px 0 24px; }
+/* Board pinout figure (11/2026) */
+.doc-fig { margin: 8px 0 28px; }
+.doc-fig a { display: block; }
+.doc-fig img { display: block; width: 100%; height: auto; border-radius: var(--radius-lg); border: 1px solid var(--border); background: #fff; }
+.doc-fig figcaption { font-size: 13px; color: var(--text-inv); margin-top: 10px; }
 </style>
 </head>
 <body>
@@ -144,7 +149,7 @@
 <li><a href="#70-hard-won-lessons">7.0 Hard-Won Lessons</a></li>
 <li><a href="#80-ground-station-sck-2400-integration-notes">8.0 Ground Station — SCK-2400 Integration Notes</a></li></ul></div>
 <h1 id="spacecommskit-sck-2400-developer-guide">SpaceCommsKit SCK-2400 Developer Guide</h1>
-<p><strong>Version 1.14 — November 2026</strong>
+<p><strong>Version 1.15 — November 2026</strong>
 <strong>SpaceCommsKit — https://spacecommskit.com/docs</strong></p>
 <blockquote>
 <p>This document covers the SCK-2400 development stack — from the CCSDS
@@ -545,43 +550,67 @@ easy to miss initially.</p>
 </blockquote>
 <p>Both boards are 3.3V — no level shifter required.</p>
 <h3 id="231-physical-connector-pinouts-sck-2400-mini-production-board">2.3.1 Physical Connector Pinouts — SCK-2400 Production Board</h3>
-<p><strong>UART0 header (Pico payload link, <code>DEBUG_UART</code>):</strong></p>
+<p>The figure and tables below are taken from the V3 layout (<code>sck_2400_Mini_V3.kicad_pcb</code>)
+and the V3 SysConfig (<code>sck2400_v3.syscfg</code>). Where this section and an older note
+disagree, this section is correct.</p>
+<figure class="doc-fig">
+<a href="../images/SCK-2400_Mini_V3_Pinout.png" target="_blank"><img src="../images/SCK-2400_Mini_V3_Pinout.png" alt="SCK-2400 Mini V3 connector pinout, top view, with every pin of J1 to J7 labelled" loading="lazy"></a>
+<figcaption>SCK-2400 Mini V3, top (component) side. The square pad on each header is pin 1. Colours show the function of each pin. Click for full size.</figcaption>
+</figure>
+<p><strong>V3 DIO map (package pin → DIO → function → board):</strong></p>
 <table>
-<thead>
-<tr>
-<th>Pin</th>
-<th>Signal</th>
-<th>Net</th>
-</tr>
-</thead>
+<thead><tr><th>Pkg pin</th><th>DIO</th><th>Function (SysConfig name)</th><th>Goes to</th></tr></thead>
 <tbody>
-<tr>
-<td>1</td>
-<td>GND</td>
-<td>GND</td>
-</tr>
-<tr>
-<td>2</td>
-<td>RX</td>
-<td>DIO16 (package pin 26)</td>
-</tr>
-<tr>
-<td>3</td>
-<td>TX</td>
-<td>DIO5 (package pin 10)</td>
-</tr>
-<tr>
-<td>4</td>
-<td>+3V3</td>
-<td>+3V3</td>
-</tr>
+<tr><td>10</td><td>DIO5</td><td><code>DEBUG_UART</code> TX</td><td>J3.5</td></tr>
+<tr><td>11</td><td>DIO6</td><td>Bootloader backdoor (CCFG)</td><td>J4.5, R40 10 kΩ pull-up</td></tr>
+<tr><td>12</td><td>DIO7</td><td><code>CONFIG_GPIO_GLED</code> status LED</td><td>R3 → D1</td></tr>
+<tr><td>14</td><td>DIO8</td><td><code>CONFIG_SPI_0</code> POCI (SSI0)</td><td>U3 flash DO</td></tr>
+<tr><td>15</td><td>DIO9</td><td><code>CONFIG_SPI_0</code> PICO</td><td>U3 flash DI</td></tr>
+<tr><td>16</td><td>DIO10</td><td><code>CONFIG_SPI_0</code> SCLK</td><td>U3 flash CLK</td></tr>
+<tr><td>18</td><td>DIO12</td><td><code>PAYLOAD_UART</code> RX, ROM bootloader RX</td><td>J4.2</td></tr>
+<tr><td>19</td><td>DIO13</td><td><code>PAYLOAD_UART</code> TX, ROM bootloader TX</td><td>J4.3</td></tr>
+<tr><td>20</td><td>DIO14</td><td><code>CONFIG_I2C_0</code> SCL</td><td>J7.4, R6 4.7 kΩ pull-up</td></tr>
+<tr><td>21</td><td>DIO15</td><td><code>CONFIG_I2C_0</code> SDA</td><td>J7.3, R5 4.7 kΩ pull-up</td></tr>
+<tr><td>24</td><td>TMSC</td><td>cJTAG data</td><td>J2.2</td></tr>
+<tr><td>25</td><td>TCKC</td><td>cJTAG clock</td><td>J2.4</td></tr>
+<tr><td>26</td><td>DIO16</td><td><code>DEBUG_UART</code> RX</td><td>J3.4 and J2.6</td></tr>
+<tr><td>27</td><td>DIO17</td><td>free</td><td>J2.8 only</td></tr>
+<tr><td>30</td><td>DIO20</td><td><code>CONFIG_SPI_0</code> CS</td><td>U3 flash CS</td></tr>
+<tr><td>35</td><td>RESET_N</td><td>chip reset</td><td>J2.10, J4.6</td></tr>
+<tr><td>36</td><td>DIO23</td><td><code>CONFIG_SPI_1</code> SCLK (SSI1)</td><td>J5.4</td></tr>
+<tr><td>37</td><td>DIO24</td><td><code>CONFIG_SPI_1</code> PICO</td><td>J5.3</td></tr>
+<tr><td>38</td><td>DIO25</td><td><code>CONFIG_SPI_1</code> POCI</td><td>J5.2</td></tr>
+<tr><td>39</td><td>DIO26</td><td><code>CONFIG_SPI_1</code> CS</td><td>J5.1</td></tr>
+<tr><td>41</td><td>DIO28</td><td><code>RF_SW_2G4</code></td><td>U6 V2 (standard path)</td></tr>
+<tr><td>42</td><td>DIO29</td><td><code>RF_SW_PA</code></td><td>U6 V1 (20 dBm PA path)</td></tr>
+</tbody>
+</table>
+<p>DIO11, 18, 19, 21, 22, 27 and 30 have no copper on V3.</p>
+<p><strong>J1 — 5 VDC power input:</strong></p>
+<table>
+<thead><tr><th>Pin</th><th>Signal</th><th>Net</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>+5 V in</td><td>Through ferrite L2 to +5V; D3 (STPS340U) clamps to GND</td></tr>
+<tr><td>2</td><td>GND</td><td>GND</td></tr>
+</tbody>
+</table>
+<p><strong>J3 — UART0 header (Pico payload link, <code>DEBUG_UART</code>), 6-pin:</strong></p>
+<table>
+<thead><tr><th>Pin</th><th>Signal</th><th>Net</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>GND</td><td>GND</td></tr>
+<tr><td>2</td><td>RTS</td><td>Not connected to U1</td></tr>
+<tr><td>3</td><td>—</td><td>No connection</td></tr>
+<tr><td>4</td><td>RX</td><td>DIO16 (package pin 26), shared with J2.6</td></tr>
+<tr><td>5</td><td>TX</td><td>DIO5 (package pin 10)</td></tr>
+<tr><td>6</td><td>CTS</td><td>Not connected to U1</td></tr>
 </tbody>
 </table>
 <blockquote>
-<p>RTS/CTS pads exist on this header from the original layout but are
-<strong>not used by current firmware</strong> — <code>uart_init()</code> configures plain 8N1
-with no flow control. Present in hardware for future use, not
-currently wired into the UART2 driver config.</p>
+<p>The RTS and CTS pads are left over from the original FTDI-style header. On V3 they are
+<strong>not routed to the CC2652P at all</strong>, so hardware flow control isn't possible
+without a board change. <code>uart_init()</code> configures plain 8N1 with no flow control.
+There is no +3V3 pin on J3; the Pico is powered from its own supply.</p>
 </blockquote>
 <p><strong>J4 — UART1 header (Ground Station link, <code>PAYLOAD_UART</code>, ROM bootloader), 6-pin on production V3:</strong></p>
 <table>
@@ -665,6 +694,34 @@ payload command avoids this entirely. Also enable <strong>"Enable Nonblocking
 Mode"</strong> on <code>DEBUG_UART</code> in SysConfig — this allocates the RX ring buffer
 required for <code>UART2_Mode_NONBLOCKING</code> reads to return immediately when no
 data is available.</p>
+<p><strong>J5 — SPI1 expansion header (<code>CONFIG_SPI_1</code>, SSI1):</strong></p>
+<table>
+<thead><tr><th>Pin</th><th>Signal</th><th>Net</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>CS</td><td>DIO26 (package pin 39)</td></tr>
+<tr><td>2</td><td>POCI</td><td>DIO25 (package pin 38)</td></tr>
+<tr><td>3</td><td>PICO</td><td>DIO24 (package pin 37)</td></tr>
+<tr><td>4</td><td>SCLK</td><td>DIO23 (package pin 36)</td></tr>
+</tbody>
+</table>
+<p>J5 has no power or ground pin; take GND from J3, J4 or J7. The standard firmware only uses
+SSI1 for the port self-test (command 0x1A sub-command 01, SPI peripheral, mode 1, 4 MHz
+maximum).</p>
+<p><strong>J7 — I²C expansion header (<code>CONFIG_I2C_0</code>):</strong></p>
+<table>
+<thead><tr><th>Pin</th><th>Signal</th><th>Net</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>GND</td><td>GND</td></tr>
+<tr><td>2</td><td>+3V3</td><td>+3V3 (regulator output; for small sensors only)</td></tr>
+<tr><td>3</td><td>SDA</td><td>DIO15 (package pin 21), R5 4.7 kΩ pull-up</td></tr>
+<tr><td>4</td><td>SCL</td><td>DIO14 (package pin 20), R6 4.7 kΩ pull-up</td></tr>
+<tr><td>5</td><td>—</td><td>No connection (extra pad on the footprint)</td></tr>
+</tbody>
+</table>
+<p>The pull-ups are fitted on the board, so external I²C modules don't need their own.
+The port self-test (0x1A sub-command 02) uses J7 as controller to address 0x42.</p>
+<p><strong>Mounting holes MK1–MK4:</strong> M3, plated, on a 50 × 40 mm pattern. They are
+<strong>not</strong> connected to GND.</p>
 <h3 id="24-bim-oad-boot-chain">2.4 BIM / OAD Boot Chain, Golden Image and Recovery [SCK-DEV: BIM_OAD]</h3>
 <p>The SCK-2400 is designed so that a remote board <strong>cannot be bricked by a
 firmware update</strong>, including one sent to a board in orbit. Four layers
@@ -1017,67 +1074,29 @@ pinout used on LAUNCHXL-CC1352P-2 boards. It allows an external XDS110
 (including a LaunchPad's onboard XDS110 in pass-through mode) to
 program/debug boards that don't carry their own onboard debug probe.</p>
 <blockquote>
-<p><strong>This is not a JTAG connector</strong>, despite two of its signal labels
-(<code>TCKC</code>, <code>TMSC</code>) being inherited from the CC1352P pin-naming in TI's
-pinout tool. Those names describe SWD-capable pins on the die, not a
-JTAG-standard header pinout. Refer to J2 as the <strong>Programming/Debug
-connector</strong> or <strong>XDS110 debug header</strong> in documentation and silkscreen
-— not "JTAG."</p>
+<p><strong>J2 is a 2-pin cJTAG connector</strong> (IEEE 1149.7: <code>TMSC</code> data and
+<code>TCKC</code> clock), on the same pins a 10-pin ARM Cortex header uses for SWDIO and
+SWCLK. The CC2652P does not support ARM SWD, so in CCS set the XDS110 connection to
+<strong>cJTAG (2-pin)</strong>. Call J2 the <strong>Programming/Debug connector</strong> or
+<strong>XDS110 debug header</strong> in documentation and silkscreen.</p>
 </blockquote>
 <table>
-<thead>
-<tr>
-<th>Pin</th>
-<th>Signal</th>
-</tr>
-</thead>
+<thead><tr><th>Pin</th><th>Signal</th><th>Pin</th><th>Signal</th></tr></thead>
 <tbody>
-<tr>
-<td>1</td>
-<td>U1-Reset_N</td>
-</tr>
-<tr>
-<td>2</td>
-<td>GND</td>
-</tr>
-<tr>
-<td>3</td>
-<td>U1-DIO_17</td>
-</tr>
-<tr>
-<td>4</td>
-<td>GND</td>
-</tr>
-<tr>
-<td>5</td>
-<td>U1-DIO_16</td>
-</tr>
-<tr>
-<td>6</td>
-<td>+3V3</td>
-</tr>
-<tr>
-<td>7</td>
-<td>U1-JTAG_TCKC</td>
-</tr>
-<tr>
-<td>8</td>
-<td>GND</td>
-</tr>
-<tr>
-<td>9</td>
-<td>U1-JTAG_TMSC</td>
-</tr>
-<tr>
-<td>10</td>
-<td>+3V3</td>
-</tr>
+<tr><td>1</td><td>+3V3 (target sense; do not feed)</td><td>2</td><td>U1-JTAG_TMSC</td></tr>
+<tr><td>3</td><td>GND</td><td>4</td><td>U1-JTAG_TCKC</td></tr>
+<tr><td>5</td><td>GND</td><td>6</td><td>UART0_RX (DIO16)</td></tr>
+<tr><td>7</td><td>key, no connection</td><td>8</td><td>U1-DIO_17</td></tr>
+<tr><td>9</td><td>GND</td><td>10</td><td>U1-Reset_N</td></tr>
 </tbody>
 </table>
+<p>Pin 1 is the bottom-right pad when the board is viewed with J2 at the top left, as in
+the pinout figure in Section 2.3.1. A probe that powers its target must not drive pin 1;
+the board runs from its own 5 V supply.</p>
 <p>A standard 10-pin ribbon cable from any LaunchPad's debug-out header
 plugs directly into J2 for external programming/debug.</p>
 <blockquote>
-<p><strong>DIO16 sharing note (2026-07):</strong> J2 pin 5 (DIO_16) is also <code>DEBUG_UART</code>
+<p><strong>DIO16 sharing note (2026-07):</strong> J2 pin 6 (DIO16) is also <code>DEBUG_UART</code>
 RX — the Pico payload link (see Section 2.3.1). This is intentional,
 not a conflict: J2 is used during development/programming sessions,
 while the Pico is the operational payload processor — the two are not
@@ -1120,9 +1139,10 @@ which would lift the edge pins off their pads.</li>
 </ul>
 <p><strong>Stencil and printing</strong></p>
 <ul>
-<li>Stencil 0.12–0.13 mm (5 mil), electropolished or nano-coated if possible. Edge-pad
-apertures 1:1 with the pads.</li>
-<li>Type 4 paste for 0.5 mm pitch. Let it reach room temperature and stir it before use.</li>
+<li>Stencil 0.10 mm (4 mil), electropolished or nano-coated if possible. Edge-pad
+apertures 1:1 with the pads. The thinner stencil also stops the 0201 parts in the RF chain
+tombstoning.</li>
+<li>Type 5 SAC305 no-clean paste. Let it reach room temperature and stir it before use.</li>
 <li>Hold the board in a jig with the stencil on alignment pins. Use a metal squeegee, one pass
 at about 45° with firm, even pressure, then lift the stencil straight up.</li>
 <li>Inspect every QFN edge pad under magnification before placing parts. If any deposit is
@@ -2371,7 +2391,7 @@ of the hex being sent:</p>
 <li>no record or stale → warning confirm, default No</li>
 </ul>
 <hr />
-<p><em>SpaceCommsKit SCK-2400 Developer Guide v1.14</em>
+<p><em>SpaceCommsKit SCK-2400 Developer Guide v1.15</em>
 <em>For updates and latest version see https://spacecommskit.com/docs</em></p>
 </div>
 </div>
