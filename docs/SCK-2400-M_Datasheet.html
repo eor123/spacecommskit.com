@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCK-2400-M Module Datasheet — SpaceCommsKit</title>
+<meta name="description" content="SCK-2400-M module datasheet (preliminary, rev A): pinout of all 34 castellated pins, J2 programming header, power, mechanical data, host-board design notes and firmware differences from the SCK-2400 board.">
+<link rel="canonical" href="https://www.spacecommskit.com/docs/SCK-2400-M_Datasheet.html">
+<link rel="stylesheet" href="../style.css">
+<style>
+.doc-content { max-width: 900px; margin: 0 auto; }
+.doc-content h1 { display:none; }
+.doc-content h2 {
+  font-size: 28px; font-weight: 700; color: var(--text-hero);
+  letter-spacing: -0.5px; margin: 56px 0 18px; padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+.doc-content > h2:first-of-type { border-top: none; margin-top: 0; }
+.doc-content h3 {
+  font-size: 20px; font-weight: 600; color: var(--cyan);
+  margin: 36px 0 12px;
+}
+.doc-content h4 {
+  font-size: 15px; font-weight: 600; color: var(--text-hero);
+  margin: 24px 0 10px; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.doc-content p { color: var(--text-inv); font-size: 15px; line-height: 1.75; margin-bottom: 16px; }
+.doc-content ul, .doc-content ol { color: var(--text-inv); font-size: 15px; line-height: 1.8; margin: 0 0 16px 22px; }
+.doc-content li { margin-bottom: 4px; }
+.doc-content li > p { margin-bottom: 4px; }
+.doc-content a { color: var(--cyan); }
+.doc-content strong { color: #fff; }
+.doc-content hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+.doc-content code {
+  font-family: var(--font-mono); font-size: 13px;
+  background: rgba(0,200,224,0.1); color: var(--cyan);
+  padding: 2px 6px; border-radius: 4px;
+}
+.doc-content pre {
+  background: var(--void); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 20px 24px;
+  overflow-x: auto; margin: 0 0 20px;
+}
+.doc-content pre code {
+  background: none; color: #cbd5e1; padding: 0;
+  font-size: 13px; line-height: 1.7;
+}
+.doc-content table {
+  width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 0 0 24px;
+}
+.doc-content th {
+  background: var(--blue); color: #fff; padding: 10px 14px; text-align: left;
+  font-size: 11.5px; font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase;
+  font-family: var(--font-mono);
+}
+.doc-content td {
+  padding: 9px 14px; border-bottom: 1px solid var(--border);
+  color: var(--text-inv); vertical-align: top;
+}
+.doc-content tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+.doc-content td:first-child { font-weight: 500; color: #fff; }
+.doc-content blockquote {
+  border-left: 4px solid var(--blue); background: rgba(26,111,212,0.08);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 20px; margin: 0 0 20px; color: var(--text-inv); font-size: 14px;
+}
+.doc-content blockquote.warn { border-left-color: var(--gold); background: rgba(240,165,0,0.08); }
+.doc-content blockquote.crit { border-left-color: var(--red); background: rgba(224,60,46,0.08); }
+.doc-content blockquote p:last-child { margin-bottom: 0; }
+.doc-meta {
+  font-family: var(--font-mono); font-size: 12px; color: var(--text-inv);
+  letter-spacing: 0.5px; margin-bottom: 8px;
+}
+.doc-toc {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 24px 28px; margin: 40px 0 56px;
+}
+.doc-toc-title {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--cyan); margin-bottom: 14px;
+}
+.doc-toc ul { list-style: none; margin: 0; columns: 2; column-gap: 32px; }
+.doc-toc li { margin-bottom: 6px; break-inside: avoid; }
+.doc-toc a { color: var(--text-inv); font-size: 13.5px; text-decoration: none; }
+.doc-toc a:hover { color: var(--cyan); text-decoration: underline; }
+@media (max-width: 700px) { .doc-toc ul { columns: 1; } }
+/* Firmware update / failover flow chart (11/2026) */
+.fc-wrap { overflow-x: auto; margin: 8px 0 28px; background: var(--void); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px; }
+.fc-wrap svg.fc { display: block; width: 100%; min-width: 640px; height: auto; }
+.fc-box { stroke-width: 1.5; }
+.fc-step { fill: var(--surface); stroke: var(--blue); }
+.fc-dec  { fill: var(--surface); stroke: var(--cyan); stroke-dasharray: 5 3; }
+.fc-info { fill: var(--surface); stroke: var(--border); }
+.fc-ok   { fill: rgba(34,197,94,0.10); stroke: #22c55e; }
+.fc-fall { fill: rgba(240,165,0,0.10); stroke: var(--gold); }
+.fc-warn { fill: rgba(240,165,0,0.06); stroke: var(--gold); stroke-dasharray: 5 3; }
+.fc-crit { fill: rgba(224,60,46,0.08); stroke: var(--red); }
+.fc-t { fill: var(--text-hero); font-family: var(--font-sans, system-ui, sans-serif); font-size: 14px; font-weight: 600; text-anchor: middle; }
+.fc-s { fill: var(--text-inv); font-family: var(--font-sans, system-ui, sans-serif); font-size: 12px; text-anchor: middle; }
+.fc-l { fill: var(--cyan); font-family: var(--font-mono); font-size: 11px; text-anchor: middle; }
+.fc-la { text-anchor: start; }
+.fc-ln { stroke: #8aa0b8; stroke-width: 1.5; fill: none; }
+.fc-dash { stroke-dasharray: 4 3; }
+.fc-head { fill: #8aa0b8; }
+.fc-sep { stroke: var(--border); stroke-dasharray: 6 4; }
+.fc-legend { font-size: 13px; color: var(--text-inv); margin: -18px 0 24px; }
+/* Board pinout figure (11/2026) */
+.doc-fig { margin: 8px 0 28px; }
+.doc-fig a { display: block; }
+.doc-fig img { display: block; width: 100%; height: auto; border-radius: var(--radius-lg); border: 1px solid var(--border); background: #fff; }
+.doc-fig figcaption { font-size: 13px; color: var(--text-inv); margin-top: 10px; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="../index.html" class="nav-logo">SpaceComms<span>Kit</span><span class="logo-tag">Docs</span></a>
+  <ul class="nav-links">
+    <li><a href="../index.html">Home</a></li>
+    <li><a href="../kit.html">SCK-915</a></li>
+    <li><a href="../sck2400m.html">SCK-2400-M</a></li>
+    <li><a href="../pico.html">SCK-PBL-1</a></li>
+    <li><a href="../documentation.html" class="active">Documentation</a></li>
+    <li><a href="../quickstart.html">Quick Start</a></li>
+    <li><a href="../software.html">Software</a></li>
+    <li><a href="../groundstation.html">Ground Station</a></li>
+    <li><a href="../about.html">About</a></li>
+    <li><a href="https://spacecommskit.myshopify.com" target="_blank" class="nav-cta">Buy a Kit</a></li>
+  </ul>
+</nav>
+
+<section class="hero" style="padding-bottom:40px;">
+  <div class="hero-inner" style="padding-bottom:40px;">
+    <span class="eyebrow">SCK-2400-M &middot; Documentation &middot; Module Datasheet</span>
+    <h1 class="hero-title" style="font-size:clamp(28px,4vw,44px);">SCK-2400-M Module Datasheet</h1>
+  </div>
+</section>
+
+<div class="section-dark">
+<div class="section">
+<div class="doc-content">
+<div class="doc-toc"><div class="doc-toc-title">On This Page</div><ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#pinout">Pinout</a></li>
+<li><a href="#pin-table">Pin Table</a></li>
+<li><a href="#j2">J2 Programming Header</a></li>
+<li><a href="#power">Power</a></li>
+<li><a href="#firmware">Firmware</a></li>
+<li><a href="#programming">Programming and Recovery</a></li>
+<li><a href="#mechanical">Mechanical</a></li>
+<li><a href="#host-board">Designing the Host Board</a></li>
+<li><a href="#status">Status and Open Items</a></li></ul></div>
+<h1 id="sck-2400-m-datasheet">SCK-2400-M Module Datasheet</h1>
+<p><strong>Version 0.1 (preliminary) — November 2026 — module rev A</strong>
+<strong>SpaceCommsKit — https://spacecommskit.com</strong></p>
+<blockquote class="warn">
+<p><strong>Preliminary.</strong> This datasheet is written from the rev A layout. Rev A boards
+have not been built or tested yet. Pin assignments are final for rev A; electrical figures
+marked TBD will be filled in after testing.</p>
+</blockquote>
+<hr />
+<h2 id="overview">Overview</h2>
+<p>The SCK-2400-M is the SCK-2400 radio as a solder-down module for your own board. It carries
+the same CC2652P, the same +20 dBm RF path and shield layout, the same external flash for the
+BIM bootloader and the same 10-pin programming header as the SCK-2400 board. It runs the same
+firmware, CCSDS protocol, AES-128-CCM encryption and over-air updates, and works with the same
+SCK Ground Station and SCK-PBL-1 payload board.</p>
+<p>What it leaves out is everything a host board can provide: there is no regulator, no
+headers for power or serial, no SMA and no mounting holes. The module runs from 3.3 V, the
+antenna connects by coax to a U.FL socket, and every signal comes out on 34 castellated pins
+on a 2.54 mm grid.</p>
+<table>
+<thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+<tbody>
+<tr><td>Microcontroller</td><td>TI CC2652P1FRGZ (VQFN-48)</td></tr>
+<tr><td>RF</td><td>2.4 GHz, +20 dBm high-power PA, same matching and SKYA21001 switch as the SCK-2400 V3</td></tr>
+<tr><td>Antenna</td><td>U.FL (Hirose U.FL-R-SMT-1), 50 Ω</td></tr>
+<tr><td>Supply</td><td>3.3 V on pins 2 and 33, no regulator on the module</td></tr>
+<tr><td>Host interfaces</td><td>UART0, UART1, SPI1, I²C, cJTAG, RESET_N, BOOT, 7 spare GPIO</td></tr>
+<tr><td>Programming</td><td>10-pin TI debug header J2 on the module, or cJTAG on pins 3–5</td></tr>
+<tr><td>Size</td><td>43.18 × 33.68 mm, 34 castellated pins (2 × 17, 2.54 mm pitch, rows 30.48 mm apart)</td></tr>
+<tr><td>Status LED</td><td>D1 on the module, driven by DIO7</td></tr>
+</tbody>
+</table>
+<hr />
+<h2 id="pinout">Pinout</h2>
+<figure class="doc-fig">
+<a href="../images/SCK-2400-M_rA_Pinout.png" target="_blank"><img src="../images/SCK-2400-M_rA_Pinout.png" alt="SCK-2400-M module rev A pinout, top view, all 34 edge pins and the J2 header labelled" loading="lazy"></a>
+<figcaption>Module rev A, top (component) side. Pin 1 is the square pad at the north-west corner.
+Pins 1–17 run west to east along the north edge, pins 18–34 run east to west along the south edge.
+Click for full size.</figcaption>
+</figure>
+<h2 id="pin-table">Pin Table</h2>
+<table>
+<thead><tr><th>Pin</th><th>Signal</th><th>DIO</th><th>Function and notes</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>GND</td><td>—</td><td>Ground</td></tr>
+<tr><td>2</td><td>3V3</td><td>—</td><td>3.3 V supply input. Connect both 3V3 pins (2 and 33).</td></tr>
+<tr><td>3</td><td>RESET_N</td><td>—</td><td>Reset, active low. 100 kΩ pull-up (R1) and 100 nF (C92) on the module. Also J2.10.</td></tr>
+<tr><td>4</td><td>TMSC</td><td>—</td><td>cJTAG data. Also J2.2.</td></tr>
+<tr><td>5</td><td>TCKC</td><td>—</td><td>cJTAG clock. Also J2.4.</td></tr>
+<tr><td>6</td><td>GND</td><td>—</td><td>Ground</td></tr>
+<tr><td>7</td><td>DIO11</td><td>DIO11</td><td>Spare GPIO</td></tr>
+<tr><td>8</td><td>UART1 RX</td><td>DIO12</td><td><code>PAYLOAD_UART</code> RX (ground-station link). ROM bootloader RX.</td></tr>
+<tr><td>9</td><td>UART1 TX</td><td>DIO13</td><td><code>PAYLOAD_UART</code> TX. ROM bootloader TX.</td></tr>
+<tr><td>10</td><td>I²C SCL</td><td>DIO14</td><td>4.7 kΩ pull-up R6 is <strong>not fitted</strong>. Fit it, or pull up on the host.</td></tr>
+<tr><td>11</td><td>I²C SDA</td><td>DIO15</td><td>4.7 kΩ pull-up R5 is <strong>not fitted</strong>. Fit it, or pull up on the host.</td></tr>
+<tr><td>12</td><td>GND</td><td>—</td><td>Ground</td></tr>
+<tr><td>13</td><td>DIO17</td><td>DIO17</td><td>Spare GPIO. Also J2.8 (the TDI position, unused by cJTAG), as on the V3 board.</td></tr>
+<tr><td>14</td><td>BOOT</td><td>DIO6</td><td>Bootloader backdoor, active low. 10 kΩ pull-up (R40) on the module.</td></tr>
+<tr><td>15</td><td>LED</td><td>DIO7</td><td>Status LED D1 on the module (through R3). Usable by the host as GPIO.</td></tr>
+<tr><td>16</td><td>GND</td><td>—</td><td>Ground</td></tr>
+<tr><td>17</td><td>GND</td><td>—</td><td>Ground</td></tr>
+<tr><td>18</td><td>GND</td><td>—</td><td>Ground</td></tr>
+<tr><td>19</td><td>GND</td><td>—</td><td>Ground</td></tr>
+<tr><td>20</td><td>DIO30</td><td>DIO30</td><td>Spare GPIO, analog-capable</td></tr>
+<tr><td>21</td><td>DIO27</td><td>DIO27</td><td>Spare GPIO, analog-capable</td></tr>
+<tr><td>22</td><td>SPI1 CS</td><td>DIO26</td><td><code>CONFIG_SPI_1</code> (SSI1)</td></tr>
+<tr><td>23</td><td>SPI1 POCI</td><td>DIO25</td><td><code>CONFIG_SPI_1</code></td></tr>
+<tr><td>24</td><td>SPI1 PICO</td><td>DIO24</td><td><code>CONFIG_SPI_1</code></td></tr>
+<tr><td>25</td><td>SPI1 SCLK</td><td>DIO23</td><td><code>CONFIG_SPI_1</code></td></tr>
+<tr><td>26</td><td>GND</td><td>—</td><td>Ground</td></tr>
+<tr><td>27</td><td>DIO22</td><td>DIO22</td><td>Spare GPIO</td></tr>
+<tr><td>28</td><td>DIO21</td><td>DIO21</td><td>Spare GPIO</td></tr>
+<tr><td>29</td><td>DIO19</td><td>DIO19</td><td>Spare GPIO</td></tr>
+<tr><td>30</td><td>DIO18</td><td>DIO18</td><td>Spare GPIO</td></tr>
+<tr><td>31</td><td>UART0 TX</td><td>DIO5</td><td>Pico payload link TX, 115200 baud. Same DIO as the V3 board.</td></tr>
+<tr><td>32</td><td>UART0 RX</td><td>DIO16</td><td>Pico payload link RX. Also J2.6.</td></tr>
+<tr><td>33</td><td>3V3</td><td>—</td><td>3.3 V supply input</td></tr>
+<tr><td>34</td><td>GND</td><td>—</td><td>Ground</td></tr>
+</tbody>
+</table>
+<p>The module has 11 GND pins. Connect all of them to the host's ground plane; they are also
+the RF return path.</p>
+<hr />
+<h2 id="j2">J2 Programming Header</h2>
+<p>J2 is the same 10-pin, 1.27 mm TI debug header as on the SCK-2400 board, with the same
+pinout, and the same XDS110 cable fits it.</p>
+<table>
+<thead><tr><th>Pin</th><th>Signal</th><th>Pin</th><th>Signal</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>+3V3 (module supply; target sense, do not feed)</td><td>2</td><td>TMSC</td></tr>
+<tr><td>3</td><td>GND</td><td>4</td><td>TCKC</td></tr>
+<tr><td>5</td><td>GND</td><td>6</td><td>UART0 RX (DIO16)</td></tr>
+<tr><td>7</td><td>key, no connection</td><td>8</td><td>DIO17 (unused; also edge pin 13)</td></tr>
+<tr><td>9</td><td>GND</td><td>10</td><td>RESET_N</td></tr>
+</tbody>
+</table>
+<blockquote>
+<p>J2 pin 6 is UART0 RX, the same line as edge pin 32. Don't leave a debug probe on J2
+while the Pico payload board is connected to UART0.</p>
+</blockquote>
+<hr />
+<h2 id="power">Power</h2>
+<ul>
+<li><strong>3.3 V on pins 2 and 33.</strong> Connect both. There is no regulator on the module,
+only the CC2652P's input decoupling and ferrite.</li>
+<li><strong>Supply range and peak current: TBD.</strong> They will be measured on rev A. Until
+then, size the host's 3.3 V rail for the +20 dBm transmit peaks with plenty of headroom, and
+keep its ripple low: the PA output depends on the supply.</li>
+<li><strong>All I/O is 3.3 V logic.</strong> None of the pins are 5 V tolerant.</li>
+<li><strong>J2 pin 1 is the module's own 3.3 V.</strong> A probe must sense it, not drive it.</li>
+</ul>
+<hr />
+<h2 id="firmware">Firmware</h2>
+<p>The module runs the <strong>same firmware image as the SCK-2400 board</strong>. Every DIO
+that the firmware uses (UART0 and UART1, the SPI0 flash, SPI1, I²C, the status LED, the
+bootloader backdoor and the RF switch pins) is on the same DIO on both boards, so builds,
+OAD updates and golden images are interchangeable.</p>
+<p>The one hardware difference that firmware or test can notice: the I²C pull-ups R5/R6 are
+not fitted on the module (footprints only, fitted on request), so I²C needs pull-ups on the
+host board. The SCK-2400 board keeps them fitted.</p>
+<hr />
+<h2 id="programming">Programming and Recovery</h2>
+<ul>
+<li><strong>XDS110 on J2</strong> with the standard 10-pin cable, or wired from the host board
+to pins 4 (TMSC), 5 (TCKC), 3 (RESET_N) and GND. Use cJTAG (2-pin) in CCS.</li>
+<li><strong>ROM serial bootloader:</strong> hold pin 14 (BOOT) low through a reset, then
+program over UART1 on pins 8 (RX) and 9 (TX). This is the same wired recovery as J4 on the
+SCK-2400 board; see the
+<a href="SCK-2400_User_Guide.html#wired-recovery">User Guide, Wired Recovery</a>.</li>
+<li><strong>Over the air:</strong> OAD, trial boot and golden-image fallback work exactly as on
+the SCK-2400 board.</li>
+</ul>
+<blockquote class="crit">
+<p>Never hold BOOT (pin 14) low in flight. With it low at reset, the module always starts the
+ROM bootloader.</p>
+</blockquote>
+<hr />
+<h2 id="mechanical">Mechanical</h2>
+<table>
+<thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+<tbody>
+<tr><td>Outline</td><td>43.18 × 33.68 mm</td></tr>
+<tr><td>Edge pins</td><td>34, on a 2.54 mm grid: 1.0 mm plated hole joined to a 0.8 mm castellated half-hole</td></tr>
+<tr><td>Row spacing</td><td>30.48 mm (1.200 in), centre to centre of the plated holes</td></tr>
+<tr><td>Pin 1</td><td>North-west corner, square pad</td></tr>
+<tr><td>Mounting holes</td><td>None</td></tr>
+<tr><td>Antenna</td><td>U.FL on the top side, east end</td></tr>
+<tr><td>Height, board thickness</td><td>TBD (rev A stack-up; RF shield and J2 are the tallest parts)</td></tr>
+</tbody>
+</table>
+<p>Mount the module either way:</p>
+<ul>
+<li><strong>Flat:</strong> solder the castellations directly to pads on the host. Lowest
+profile, best for a CubeSat stack.</li>
+<li><strong>Raised:</strong> fit 2.54 mm pin headers through the plated holes and plug or
+solder them into the host, with spacers, so the host can have parts underneath.</li>
+</ul>
+<hr />
+<h2 id="host-board">Designing the Host Board</h2>
+<ul>
+<li><strong>Footprint:</strong> two rows of 17 pads at 2.54 mm pitch, rows 30.48 mm apart,
+pin 1 top-left. For flat mounting, extend each pad about 1 mm outside the module outline so
+the castellation fillet can be inspected.</li>
+<li><strong>Ground:</strong> connect all 11 GND pins straight to a solid ground plane.</li>
+<li><strong>Under the module:</strong> keep exposed copper and vias out from under the module
+when it's soldered flat, especially under the RF section at the east end.</li>
+<li><strong>Power:</strong> a 3.3 V rail with bulk and 100 nF decoupling next to pins 2 and 33.</li>
+<li><strong>I²C: pull-ups are required on the host</strong> if you use pins 10/11. Fit 4.7 kΩ to 3.3 V on SCL and SDA (or your bus's own value). The module leaves them off so it never adds a second set to an existing bus.</li>
+<li><strong>Recovery access:</strong> bring out BOOT (14), RESET_N (3), UART1 (8, 9) and GND
+to a test point or header on the host, so a module can be reflashed after integration.</li>
+<li><strong>Antenna:</strong> route coax from the U.FL to the antenna; keep the cable away from
+the module's digital side.</li>
+</ul>
+<hr />
+<h2 id="status">Status and Open Items</h2>
+<ul>
+<li>Rev A layout complete. Boards will be ordered once the SCK-2400 V3 has finished
+verification, and tested with the same production tester.</li>
+<li>To be measured on rev A: supply range, transmit and idle current, output power through the
+U.FL, height and thermal behaviour when raised on headers.</li>
+<li>Product photo and 3D model to follow.</li>
+</ul>
+<hr />
+<p><em>SpaceCommsKit SCK-2400-M Module Datasheet v0.1 (preliminary)</em>
+<em>For updates see https://spacecommskit.com</em></p>
+</div>
+</div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="nav-logo" style="color:#fff;">SpaceComms<span style="color:var(--cyan);">Kit</span></div>
+      <p>OpenLST inspired. SCK-915 evolved. Open-source software, proprietary hand-assembled hardware. Tennessee, USA.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Products</h4>
+      <a href="../kit.html">SCK-915</a>
+      <a href="../sck2400.html">SCK-2400</a>
+      <a href="../sck2400m.html">SCK-2400-M</a>
+      <a href="../pico.html">SCK-PBL-1</a>
+    </div>
+    <div class="footer-col">
+      <h4>Resources</h4>
+      <a href="../documentation.html">Documentation</a>
+      <a href="../software.html">Software</a>
+      <a href="https://github.com/eor123/spacecommskit" target="_blank">GitHub</a>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <a href="mailto:info@spacecommskit.com">info@spacecommskit.com</a>
+      <a href="mailto:support@spacecommskit.com">support@spacecommskit.com</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2026 SpaceCommsKit &middot; Tennessee, USA &middot; Ships to United States only</p>
+    <p>Based on OpenLST by Planet Labs Inc. (GPLv3)</p>
+  </div>
+</footer>
+
+</body>
+</html>

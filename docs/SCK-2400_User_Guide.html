@@ -155,7 +155,7 @@
 <li><a href="#troubleshooting">Troubleshooting</a></li>
 <li><a href="#specifications">Specifications</a></li></ul></div>
 <h1 id="spacecommskit-sck-2400-ground-station-user-guide">SpaceCommsKit SCK-2400 — Ground Station User Guide</h1>
-<p><strong>Version 1.14 — November 2026</strong>
+<p><strong>Version 1.15 — November 2026</strong>
 <strong>SpaceCommsKit — https://spacecommskit.com</strong></p>
 <hr />
 <h2 id="overview">Overview</h2>
@@ -190,6 +190,9 @@ logging.</p>
 <li>Build and flash custom firmware to either board from the Ground
   Station app</li>
 </ul>
+<p>The same radio is also available as the <strong>SCK-2400-M</strong> solder-down module for
+your own board. Everything in this guide applies to it; only the connections differ. See the
+<a href="SCK-2400-M_Datasheet.html">SCK-2400-M Module Datasheet</a>.</p>
 <blockquote>
 <p><strong>Note:</strong> The SCK-2400 operates in the 2.4GHz ISM band. Check local
 regulations for power limits in your jurisdiction before field or
@@ -317,6 +320,12 @@ Leave them free.</li>
 <li><strong>The four M3 mounting holes are not connected to ground.</strong></li>
 <li><strong>Never transmit without an antenna or a 50 Ω load</strong> (or attenuator) on J6.</li>
 </ul>
+</blockquote>
+<blockquote>
+<p><strong>Using the SCK-2400-M module?</strong> Its UART1, UART0, programming and recovery
+signals come out on edge pins instead of headers: UART1 on pins 8/9, UART0 on pins 32/31,
+BOOT on pin 14 and RESET_N on pin 3. Wire them through your host board; the
+<a href="SCK-2400-M_Datasheet.html">module datasheet</a> has the full pinout.</p>
 </blockquote>
 <h3 id="ground-station-board-apid-0x010">Ground Station Board (APID 0x010)</h3>
 <p>The Ground Station board connects to your PC through a 3.3 V USB-serial adapter
@@ -1108,7 +1117,7 @@ automatic fallback.</p>
 </tbody>
 </table>
 <hr />
-<p><em>SpaceCommsKit SCK-2400 User Guide v1.14</em>
+<p><em>SpaceCommsKit SCK-2400 User Guide v1.15</em>
 <em>For updates and source code see https://spacecommskit.com</em></p>
 </div>
 </div>

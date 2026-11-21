@@ -50,9 +50,10 @@
   <div class="hero-inner">
     <span class="eyebrow">SpaceCommsKit · SCK-2400-M · Coming Soon</span>
     <h1 class="hero-title">SCK-2400-M<br><span>The SCK-2400 Radio, Ready to Solder Onto Your Board</span></h1>
-    <p class="hero-sub">The same RF path as the SCK-2400 (CC2652P, +20 dBm high-power TX) in a much smaller module. No power supply and no headers: power in, UART0, UART1, SPI, I2C, JTAG and spare GPIO come out on castellated edge pads along its two long edges, so you solder it directly onto your own custom board and get AES-128-CCM encrypted CCSDS packets and over-air firmware updates in about 90 seconds.</p>
+    <p class="hero-sub">The same RF path as the SCK-2400 (CC2652P, +20 dBm high-power TX) in a much smaller module. No power supply: 3.3 V in, UART0, UART1, SPI, I2C, cJTAG and spare GPIO come out on 34 castellated pins along its two long edges, so you solder it directly onto your own custom board and get AES-128-CCM encrypted CCSDS packets and over-air firmware updates in about 90 seconds.</p>
     <div class="flex gap-16">
       <a href="sck2400.html#buy" class="btn btn-primary">Get Notified →</a>
+      <a href="docs/SCK-2400-M_Datasheet.html" class="btn btn-outline">Module Datasheet</a>
       <a href="docs/SCK-2400_User_Guide.html" class="btn btn-outline">SCK-2400 User Guide</a>
       <a href="docs/SCK-2400_Developer_Guide.html" class="btn btn-outline">Developer Guide</a>
     </div>
@@ -72,10 +73,11 @@
       <p class="text-muted" style="margin-bottom:16px;">A fully programmable CC2652P platform in module form. Our open source (GPLv3) firmware is a working starting point. Program the module over JTAG and change it for your own use case. Hardware design is proprietary.</p>
       <table class="spec-table">
         <tr><th>Parameter</th><th>Value</th></tr>
-        <tr><td>Form factor</td><td>Compact solder-down module, approx. 43.7 × 33.6 mm</td></tr>
-        <tr><td>Power</td><td>None onboard — supplied by your host board (input requirements TBD)</td></tr>
-        <tr><td>Interfaces</td><td>Castellated edge pads on both long edges: power in, UART0, UART1, SPI, I2C, JTAG and spare GPIO (exact per-pad pinout TBD)</td></tr>
-        <tr><td>Programming / debug</td><td>JTAG on the edge pads (no 2×5 debug header)</td></tr>
+        <tr><td>Form factor</td><td>Solder-down module, 43.18 × 33.68 mm, 34 castellated pins (2 × 17 at 2.54 mm)</td></tr>
+        <tr><td>Power</td><td>3.3 V from your host board on pins 2 and 33; no regulator on the module (range TBD after rev A testing)</td></tr>
+        <tr><td>Interfaces</td><td>UART0, UART1, SPI1, I2C, cJTAG, RESET, BOOT and 7 spare GPIO on the edge pins (<a href="#pinout">pinout</a>)</td></tr>
+        <tr><td>Programming / debug</td><td>10-pin TI debug header (J2) on the module, plus cJTAG on edge pins 3–5</td></tr>
+        <tr><td>Antenna</td><td>U.FL, 50 Ω</td></tr>
         <tr><td>RF path</td><td>Same as SCK-2400</td></tr>
         <tr><td>Microcontroller</td><td>TI CC2652P1FRGZ</td></tr>
         <tr><td>RF Frequency</td><td>2.4GHz ISM band</td></tr>
@@ -84,19 +86,31 @@
         <tr><td>Protocol</td><td>CCSDS Space Packet</td></tr>
         <tr><td>Encryption</td><td>AES-128-CCM per-packet</td></tr>
         <tr><td>OAD</td><td>Over-air firmware update in about 90 s</td></tr>
-        <tr><td>Payload interface</td><td>115200 baud UART — Pico bridge</td></tr>
+        <tr><td>Payload interface</td><td>115200 baud UART0 (pins 31/32) — Pico bridge</td></tr>
       </table>
       <table class="spec-table" style="margin-top:20px;">
         <tr><th>Item</th><th>Status</th></tr>
         <tr><td>Package contents</td><td>TBD</td></tr>
         <tr><td>Firmware bringup</td><td>Encrypted RF, OAD, GPS and safe mode verified on hardware</td></tr>
-        <tr><td>Module status</td><td>TBD</td></tr>
+        <tr><td>Module status</td><td>Rev A layout complete; boards not yet built</td></tr>
         <tr><td>Price</td><td>TBD</td></tr>
         <tr><td>Ship date</td><td>TBD</td></tr>
       </table>
     </div>
   </div>
 </div>
+</div>
+
+<div class="section">
+  <span class="eyebrow eyebrow-dark" id="pinout">Pinout · Preliminary</span>
+  <h2 class="section-title">Every Pin on the Module</h2>
+  <p class="section-lead">Rev A, top view. 34 castellated pins on a 2.54 mm grid, rows 30.48 mm apart, so the module
+  solders flat onto your board or stands on ordinary pin headers. The full pin table, power notes and host-board
+  guidance are in the <a href="docs/SCK-2400-M_Datasheet.html">module datasheet</a>.</p>
+  <a href="images/SCK-2400-M_rA_Pinout.png" target="_blank"><img src="images/SCK-2400-M_rA_Pinout.png" alt="SCK-2400-M module rev A pinout" loading="lazy"
+     style="width:100%;border:1px solid var(--border-lt);border-radius:var(--radius-lg);box-shadow:var(--shadow);"></a>
+  <p class="text-muted mt-16">Rev A boards are not built yet. Pin assignments are fixed for rev A; electrical figures follow after testing.</p>
+  <div class="flex gap-16 mt-24"><a href="docs/SCK-2400-M_Datasheet.html" class="btn btn-primary">Read the Datasheet →</a></div>
 </div>
 
 <div class="section-dark">
@@ -107,8 +121,9 @@
   <table class="spec-table" style="margin-top:24px;max-width:860px;">
     <tr><th></th><th>SCK-2400</th><th>SCK-2400-M</th></tr>
     <tr><td>Power supply</td><td>Onboard supply and conditioning</td><td>None — from your host board</td></tr>
-    <tr><td>Connections</td><td>Headers: power, UART, SPI, I2C</td><td>Edge pads on two long edges: power in, UART0, UART1, SPI, I2C, JTAG, spare GPIO</td></tr>
-    <tr><td>Form factor</td><td>Same as SCK-915 (larger)</td><td>Compact module, approx. 43.7 × 33.6 mm</td></tr>
+    <tr><td>Connections</td><td>Headers: power, UART, SPI, I2C</td><td>34 edge pins: 3.3 V in, UART0, UART1, SPI, I2C, cJTAG, spare GPIO</td></tr>
+    <tr><td>Form factor</td><td>Same as SCK-915 (60 × 50 mm)</td><td>43.18 × 33.68 mm module</td></tr>
+    <tr><td>Antenna</td><td>SMA</td><td>U.FL</td></tr>
     <tr><td>Best for</td><td>Development, HAB, LEO</td><td>Embedding in your own board</td></tr>
     <tr><td>RF path</td><td colspan="2">Identical: CC2652P, 2.4 GHz, +20 dBm TX</td></tr>
   </table>
