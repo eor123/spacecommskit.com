@@ -149,7 +149,7 @@
 <li><a href="#70-hard-won-lessons">7.0 Hard-Won Lessons</a></li>
 <li><a href="#80-ground-station-sck-2400-integration-notes">8.0 Ground Station — SCK-2400 Integration Notes</a></li></ul></div>
 <h1 id="spacecommskit-sck-2400-developer-guide">SpaceCommsKit SCK-2400 Developer Guide</h1>
-<p><strong>Version 1.16 — November 2026</strong>
+<p><strong>Version 1.17 — November 2026</strong>
 <strong>SpaceCommsKit — https://spacecommskit.com/docs</strong></p>
 <blockquote>
 <p>This document covers the SCK-2400 development stack — from the CCSDS
@@ -1157,6 +1157,10 @@ SWCLK. The CC2652P does not support ARM SWD, so in CCS set the XDS110 connection
 <p>Pin 1 is the bottom-right pad when the board is viewed with J2 at the top left, as in
 the pinout figure in Section 2.3.1. A probe that powers its target must not drive pin 1;
 the board runs from its own 5 V supply.</p>
+<p><strong>Low-cost probe:</strong> the LP-MSPM0C1104 LaunchPad's XDS110 programs J2 over four wires
+from the XDS110 side of its J101 block (pin 11 SWDIO → J2.2, pin 13 SWCLK → J2.4, pin 9 NRST →
+J2.10, GND → J2.3). Verified on V3 on 11/23 (probe serial MC110001). Wiring and steps are in the
+<a href="SCK-2400_User_Guide.html#programming-with-a-launchpad">User Guide</a>.</p>
 <p>A standard 10-pin ribbon cable from any LaunchPad's debug-out header
 plugs directly into J2 for external programming/debug.</p>
 <blockquote>
@@ -2455,7 +2459,7 @@ of the hex being sent:</p>
 <li>no record or stale → warning confirm, default No</li>
 </ul>
 <hr />
-<p><em>SpaceCommsKit SCK-2400 Developer Guide v1.16</em>
+<p><em>SpaceCommsKit SCK-2400 Developer Guide v1.17</em>
 <em>For updates and latest version see https://spacecommskit.com/docs</em></p>
 </div>
 </div>

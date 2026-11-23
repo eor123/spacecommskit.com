@@ -155,7 +155,7 @@
 <li><a href="#troubleshooting">Troubleshooting</a></li>
 <li><a href="#specifications">Specifications</a></li></ul></div>
 <h1 id="spacecommskit-sck-2400-ground-station-user-guide">SpaceCommsKit SCK-2400 — Ground Station User Guide</h1>
-<p><strong>Version 1.15 — November 2026</strong>
+<p><strong>Version 1.16 — November 2026</strong>
 <strong>SpaceCommsKit — https://spacecommskit.com</strong></p>
 <hr />
 <h2 id="overview">Overview</h2>
@@ -226,7 +226,7 @@ high-power operation.</p>
 </tr>
 <tr>
 <td>XDS110 debug probe (optional)</td>
-<td>Only needed to reflash boards over the J2 header, for example a TI LaunchPad with its debug jumpers removed</td>
+<td>Only needed to reflash boards over the J2 header. The low-cost option is TI's LP-MSPM0C1104 LaunchPad (about $6); the SCK-2400 dev kit includes the programming cable for it. See <a href="#programming-with-a-launchpad">Programming with a $6 LaunchPad</a></td>
 </tr>
 <tr>
 <td>Raspberry Pi Pico payload board</td>
@@ -690,6 +690,60 @@ object files are the most common cause of mysterious firmware behavior.</p>
 <p>After flashing, send 2–3 <strong>Get Telem</strong> commands before moving the board
 to remote RF operation to confirm the radio stack is healthy.</p>
 </blockquote>
+<h3 id="programming-with-a-launchpad">Programming with a $6 LaunchPad</h3>
+<p>You don't need a dedicated debug probe to reflash an SCK-2400. TI's
+<strong>LP-MSPM0C1104</strong> LaunchPad costs about $6 and carries a full XDS110 debugger,
+the same probe built into larger LaunchPads. With its isolation jumpers removed, the XDS110 can
+program the SCK-2400 through four wires to J2. Tested on SCK-2400 V3 hardware with the Ground
+Station's <strong>Flash</strong> button.</p>
+<figure class="doc-fig">
+<a href="../images/LP-MSPM0C1104_SCK-2400_Wiring.png" target="_blank"><img src="../images/LP-MSPM0C1104_SCK-2400_Wiring.png" alt="Wiring from the LP-MSPM0C1104 J101 jumper block to the SCK-2400 J2 header: NRST to RESET_N, SWDIO to TMSC, SWCLK to TCKC, and GND" loading="lazy"></a>
+<figcaption>Four wires from the XDS110 side of J101 to J2. Drawing, not to scale.</figcaption>
+</figure>
+<h4>What you need</h4>
+<ul>
+<li>LP-MSPM0C1104 LaunchPad and a USB cable (buy from TI or a distributor)</li>
+<li>The <strong>SCK programming cable</strong>, included with the SCK-2400 dev kit: a 10-pin
+1.27 mm ribbon that plugs straight into J2, a small breakout board, and four labelled leads
+(SWDIO, SWCLK, NRST, GND) for the LaunchPad</li>
+</ul>
+<p>With the kit cable, plug the ribbon into J2 (red stripe to pin 1) and push the four leads
+onto the LaunchPad pins in the table below. To make your own cable instead, use any 2×5 1.27 mm
+breakout with a 10-pin ribbon (for example Adafruit's SWD breakout and cable) and four
+female–female jumper wires, wired the same way.</p>
+<h4>Wiring</h4>
+<p>J101 on the LaunchPad is a 2×7 jumper block. Odd-numbered pins (1–13) are the
+<strong>XDS110 side</strong>; even-numbered pins go to the LaunchPad's own MSPM0 chip. Remove all
+seven jumpers and wire only these:</p>
+<table>
+<thead><tr><th>LaunchPad</th><th>SCK-2400 J2</th><th>Signal</th></tr></thead>
+<tbody>
+<tr><td>J101 pin 11 (SWDIO)</td><td>2</td><td>TMSC, cJTAG data</td></tr>
+<tr><td>J101 pin 13 (SWCLK)</td><td>4</td><td>TCKC, cJTAG clock</td></tr>
+<tr><td>J101 pin 9 (NRST)</td><td>10</td><td>RESET_N</td></tr>
+<tr><td>Any GND pin on the BoosterPack headers</td><td>3, 5 or 9</td><td>Ground</td></tr>
+</tbody>
+</table>
+<blockquote class="warn">
+<p><strong>Leave the power pins unconnected.</strong> Don't wire J101 5V or 3V3, and don't
+connect anything to J2 pin 1: the SCK-2400 runs from its own 5 V supply, and the LaunchPad's
+3.3 V would fight the board's regulator. The UART pins (RXD, TXD) aren't needed either.</p>
+</blockquote>
+<h4>Flashing</h4>
+<ol>
+<li>Unplug any other LaunchPad or XDS110, so the Ground Station finds this one.</li>
+<li>Power the SCK-2400 from its 5 V supply, then plug the LaunchPad into USB.</li>
+<li>On the Firmware tab, click <strong>Flash</strong> (or <strong>Build + Flash</strong>). The log
+should show <code>XDS110 detected</code>, then <code>Connected over 2-pin cJTAG</code>, erase,
+program and verify.</li>
+<li>Send <strong>Get Telem</strong> to confirm the board is running.</li>
+</ol>
+<p>In CCS, use the <em>Texas Instruments XDS110 USB Debug Probe</em> connection with the
+CC2652P1F device and set <strong>cJTAG (1149.7) 2-pin advanced modes</strong>. If CCS offers to
+update the probe's firmware, accept.</p>
+<p><strong>If it fails:</strong> <code>Debug interface is locked</code> usually means SWDIO and
+SWCLK are swapped, a J101 jumper is still fitted, or a wire is on the MSPM0 (even-numbered)
+side. Check each wire for continuity from J101 to J2 with the power off.</p>
 <h2 id="firmware-updates-recovery">Firmware Updates, Failover &amp; Recovery</h2>
 <p>An SCK-2400 remote board can be updated over the air during a pass, and a
 bad update cannot leave it dead. Each update is checked twice. It then runs
@@ -1117,7 +1171,7 @@ automatic fallback.</p>
 </tbody>
 </table>
 <hr />
-<p><em>SpaceCommsKit SCK-2400 User Guide v1.15</em>
+<p><em>SpaceCommsKit SCK-2400 User Guide v1.16</em>
 <em>For updates and source code see https://spacecommskit.com</em></p>
 </div>
 </div>
